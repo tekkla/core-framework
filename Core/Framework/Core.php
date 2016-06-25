@@ -253,7 +253,7 @@ final class Core
     private function registerClassloader()
     {
         // Register core classloader
-        require_once (COREDIR . '/SplClassLoader.php');
+        require_once ('SplClassLoader.php');
 
         // Classloader to register
         $register = [
