@@ -1,4 +1,6 @@
 <?php
+namespace Core\Framework;
+
 use Core\Ajax\Ajax;
 use Core\Toolbox\Strings\CamelCase;
 
@@ -16,14 +18,6 @@ define('COREFW', 1);
 // Do not show errors by default!
 // @see loadSettings()
 ini_set('display_errors', 0);
-
-// Define path constants to the common framwork dirs
-define('COREDIR', BASEDIR . '/Core');
-define('LOGDIR', BASEDIR . '/Logs');
-define('APPSDIR', BASEDIR . '/Apps');
-define('THEMESDIR', BASEDIR . '/Themes');
-define('CACHEDIR', BASEDIR . '/Cache');
-define('APPSSECDIR', BASEDIR . '/AppsSec');
 
 final class Core
 {
@@ -88,11 +82,19 @@ final class Core
      */
     private $assetmanager;
 
-    public function __construct(string $basedir = null)
+    /**
+     *
+     * @param string $basedir
+     */
+    public function __construct()
     {
-        if (!empty($basedir)) {
-            define('BASEDIR', $basedir);
-        }
+        // Define path constants to the common framwork dirs
+        define('COREDIR', BASEDIR . '/Core');
+        define('LOGDIR', BASEDIR . '/Logs');
+        define('APPSDIR', BASEDIR . '/Apps');
+        define('THEMESDIR', BASEDIR . '/Themes');
+        define('CACHEDIR', BASEDIR . '/Cache');
+        define('APPSSECDIR', BASEDIR . '/AppsSec');
     }
 
     /**
@@ -123,7 +125,7 @@ final class Core
             // Init error handling system
             $this->initErrorHandler();
         }
-        catch (Throwable $t) {
+        catch (\Throwable $t) {
             error_log($t->getMessage() . ' (File: ' . $t->getFile() . ':' . $t->getLine());
             http_response_code(500);
             die('An error occured. The admin is informed. Sorry for this. :/');
@@ -172,7 +174,7 @@ final class Core
                 // Run dispatcher
                 $result = $this->dispatch();
             }
-            catch (Throwable $t) {
+            catch (\Throwable $t) {
                 $result = $this->error->handle('Core', 1, $t);
             }
             finally {
@@ -221,7 +223,7 @@ final class Core
                 $this->http->header->send();
             }
         }
-        catch (Throwable $t) {
+        catch (\Throwable $t) {
             $result = $this->error->handle('Core', 0, $t);
         }
 
@@ -424,12 +426,12 @@ final class Core
 
         if (empty($this->settings['db'])) {
             error_log('No DB data set in Settings.php');
-            Throw new Exception('Error on DB access');
+            Throw new \Exception('Error on DB access');
         }
 
         if (empty($this->settings['db']['default'])) {
             error_log('No DB "default" data set in Settings.php');
-            Throw new Exception('Error on DB access');
+            Throw new \Exception('Error on DB access');
         }
 
         foreach ($this->settings['db'] as $name => &$settings) {
@@ -438,7 +440,7 @@ final class Core
 
             // Check for databasename
             if (empty($settings['dsn'])) {
-                Throw new PDOException(sprintf('No DSN specified for "%s" db connection. Please add correct DSN for this connection in Settings.php', $name));
+                Throw new \PDOException(sprintf('No DSN specified for "%s" db connection. Please add correct DSN for this connection in Settings.php', $name));
             }
 
             // Check for DB defaults and map values
@@ -512,7 +514,7 @@ final class Core
         }
 
         if (empty($this->settings['baseurl'])) {
-            Throw new Exception('Baseurl not set in Settings.php');
+            Throw new \Exception('Baseurl not set in Settings.php');
         }
 
         // Define some basic url constants
@@ -524,7 +526,7 @@ final class Core
 
         // Check and set basic cookiename to config
         if (empty($this->settings['cookie'])) {
-            Throw new Exception('Cookiename not set in Settings.php');
+            Throw new \Exception('Cookiename not set in Settings.php');
         }
 
         $this->config->Core['cookie.name'] = $this->settings['cookie'];
