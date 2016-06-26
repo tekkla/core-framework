@@ -668,7 +668,7 @@ final class Core
 
         // Add minify processor on config demand
         if ($this->config->get('Core', 'asset.general.minify_js')) {
-            $ah->addProcessor(new \Core\Asset\Processor\JShrinkProcessor());
+            $ah->addProcessor(new \Core\Asset\Processor\JSMinProcessor());
         }
 
         // Create default css asset handler
