@@ -13,7 +13,8 @@
     "tekkla/core-mailer" : ">=0.0.1",
     "tekkla/core-toolbox" : ">=0.0.1",
     "tekkla/core-di" : ">=0.0.1",
-    "tekkla/core-html" : ">=0.0.1"
+    "tekkla/core-html" : ">=0.0.1",
+    "tekkla/core-data" : ">=0.0.1"
   },
   "repositories" : [ {
     "type" : "composer",
