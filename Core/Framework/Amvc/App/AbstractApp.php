@@ -576,9 +576,6 @@ abstract class AbstractApp
             $name = $this->getComponentsName();
         }
 
-        $string = new CamelCase($name);
-        $name = $string->camelize();
-
         $controller = $this->MVCFactory($name, 'Controller');
 
         return $controller;
