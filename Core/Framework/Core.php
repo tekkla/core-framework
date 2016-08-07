@@ -1,8 +1,14 @@
 <?php
 namespace Core\Framework;
 
+use Core\Framework\Amvc\App\AbstractApp;
+use Core\DI\DI;
+use Core\Page\Page;
 use Core\Ajax\Ajax;
+use Core\Security\Token\SessionToken;
 use Core\Toolbox\Strings\CamelCase;
+use Core\Toolbox\IO\Sendfile;
+use Psr\Log\LoggerInterface;
 
 /**
  * Core.php
@@ -11,9 +17,6 @@ use Core\Toolbox\Strings\CamelCase;
  * @copyright 2016
  * @license MIT
  */
-
-// Define framwork constant
-define('COREFW', 1);
 
 // Do not show errors by default!
 // @see loadSettings()
@@ -30,71 +33,97 @@ final class Core
 
     /**
      *
-     * @var \Core\DI
+     * @var array
      */
-    private $di;
+    private $apps = [];
+
+    /**
+     *
+     * @var string
+     */
+    public $basedir;
+
+    /**
+     *
+     * @var DI
+     */
+    public $di;
 
     /**
      *
      * @var \Core\Config\Config
      */
-    private $config;
+    public $config;
 
     /**
      *
      * @var \Core\Router\Router
      */
-    private $router;
+    public $router;
 
     /**
      *
-     * @var \Core\Security\Security
+     * @var \Core\Security\User\User
      */
-    private $security;
+    public $user;
+
+    /**
+     *
+     * @var \Core\Security\Ban\BanCheck
+     */
+    public $bancheck;
 
     /**
      *
      * @var \Core\Http\Http
      */
-    private $http;
+    public $http;
 
     /**
      *
      * @var \Core\Mailer\Mailer
      */
-    private $mailer;
-
-    /**
-     *
-     * @var \Core\Amvc\Creator
-     */
-    private $creator;
+    public $mailer;
 
     /**
      *
      * @var \Core\Error\ErrorHandler
      */
-    private $error;
+    public $error;
 
     /**
      *
      * @var \Core\Asset\AssetManager
      */
-    private $assetmanager;
+    public $assetmanager;
+
+    /**
+     *
+     * @var LoggerInterface
+     */
+    public $logger;
+
+    /**
+     *
+     * @var Page
+     */
+    public $page;
 
     /**
      *
      * @param string $basedir
      */
-    public function __construct()
+    public function __construct(string $basedir)
     {
         // Define path constants to the common framwork dirs
-        define('COREDIR', BASEDIR . '/Core');
-        define('LOGDIR', BASEDIR . '/Logs');
-        define('APPSDIR', BASEDIR . '/Apps');
-        define('THEMESDIR', BASEDIR . '/Themes');
-        define('CACHEDIR', BASEDIR . '/Cache');
-        define('APPSSECDIR', BASEDIR . '/AppsSec');
+        define('COREDIR', $basedir . '/Core');
+        define('LOGDIR', $basedir . '/Logs');
+        define('APPSDIR', $basedir . '/Apps');
+        define('THEMESDIR', $basedir . '/Themes');
+        define('CACHEDIR', $basedir . '/Cache');
+        define('APPSSECDIR', $basedir . '/AppsSec');
+
+        $this->basedir = $basedir;
     }
 
     /**
@@ -145,44 +174,44 @@ final class Core
             $this->initConfig();
             $this->initMailer();
             $this->initRouter();
-            $this->initLanguage();
-            $this->initCoreApp();
+
+            // Get an instance of Core app
+            $this->getAppInstance('Core');
+
             $this->initSecurity();
+            $this->initPage();
             $this->initAssetManager();
+
+            // Create references to Router and Http service
+            $this->http = $this->di->get('core.http');
 
             // Run highlevel system
             try {
 
-                // Create references to Router and Http service
-                $this->http = $this->di->get('core.http');
+                $this->autodiscoverApps();
 
-                $this->creator->autodiscover([
-                    APPSSECDIR,
-                    APPSDIR
-                ]);
-
-                // Match request against now all known routes
+                // Match request against the generic routes to get the ajax request flag and to match a fallback result.
                 $this->router->match();
 
-                // Call additional Init() methods in apps
-                foreach ($this->creator as $app) {
-                    if (method_exists($app, 'Init')) {
-                        $app->Init();
-                    }
-                }
+                // Initiate apps
+                $this->initApps();
+
+                // Match routes again as now possible app routes are available
+                $this->router->match();
 
                 // Run dispatcher
                 $result = $this->dispatch();
             }
             catch (\Throwable $t) {
-                $result = $this->error->handle('Core', 1, $t);
+                // $result = $this->error->handle('Core', 1, $t);
+                $result = $t->getMessage() . '(' . $t->getFile() . ':' . $t->getLine() . ')' . '<hr><pre>' . $t->getTraceAsString() . '</pre>';
             }
             finally {
 
                 // Send mails
-                $this->di->get('core.mailer')->send();
+                $this->mailer->send();
 
-                //
+                // Process all assets
                 $this->processAssets();
 
                 // Send cookies
@@ -204,7 +233,7 @@ final class Core
 
                     case 'file':
                         /* @var $sendfile \Core\Toolbox\IO\Sendfile */
-                        $sendfile = $this->di->get('core.toolbox.io.sendfile', $result);
+                        $sendfile = new Sendfile($result);
                         $sendfile->send();
 
                         break;
@@ -213,10 +242,36 @@ final class Core
 
                         $this->http->header->contentType('text/html', 'utf-8');
 
-                        /* @var $page \Core\Page\Page */
-                        $page = $this->di->get('core.page');
-                        $page->setContent($result);
-                        $result = $page->render();
+                        $language = $this->getAppInstance('Core')->language;
+
+                        // Add logoff button for logged in users
+                        if ($this->user->isGuest()) {
+                            $this->page->menu->createItem('register', $language->get('menu.register'), $this->router->generate('core.register'));
+                            $this->page->menu->createItem('login', $language->get('menu.login'), $this->router->generate('core.login', [
+                                'action' => 'login'
+                            ]));
+                        }
+
+                        // or add login and register buttons. But not when current user is currently on banlist
+                        else {
+
+                            $usermenu = $this->page->menu->createItem('login', $this->user->getDisplayname());
+
+                            // Show admin menu?
+                            if ($this->user->getAdmin()) {
+                                $usermenu->createItem('admin', $language->get('menu.admin'), $this->router->generate('core.admin'));
+                            }
+
+                            $usermenu->createItem('logout', $language->get('menu.logout'), $this->router->generate('core.login', [
+                                'action' => 'logout'
+                            ]));
+                        }
+
+
+                        $this->page->setHome($this->config->get('Core', 'url.home'));
+
+                        $this->page->setContent($result);
+                        $result = $this->page->render();
                 }
 
                 // Send headers so far
@@ -224,7 +279,8 @@ final class Core
             }
         }
         catch (\Throwable $t) {
-            $result = $this->error->handle('Core', 0, $t);
+            // $result = $this->error->handle('Core', 0, $t);
+            $result = $t->getMessage() . '(' . $t->getFile() . ':' . $t->getLine() . ')' . '<hr><pre>' . $t->getTraceAsString() . '</pre>';
         }
 
         echo $result;
@@ -234,7 +290,7 @@ final class Core
 
     private function loadSettings()
     {
-        $filename = BASEDIR . '/Settings.php';
+        $filename = $this->basedir . '/Settings.php';
 
         // Check for settings file
         if (!file_exists($filename) || !is_readable($filename)) {
@@ -257,10 +313,10 @@ final class Core
 
         // Classloader to register
         $register = [
-            'Core' => BASEDIR,
-            'Apps' => BASEDIR,
-            'AppsSec' => BASEDIR,
-            'Themes' => BASEDIR
+            'Core' => $this->basedir,
+            'Apps' => $this->basedir,
+            'AppsSec' => $this->basedir,
+            'Themes' => $this->basedir
         ];
 
         // Register classloader
@@ -275,12 +331,12 @@ final class Core
         $this->di->mapFactory('core.logger', '\Core\Logger\Logger');
 
         /* @var $logger \Core\Logger\Logger */
-        $logger = $this->di->get('core.logger');
+        $this->logger = $this->di->get('core.logger');
 
-        $logger->registerStream(new \Core\Logger\Streams\FileStream(LOGDIR . '/core.log'));
-        $logger->registerStream(new \Core\Logger\Streams\FirePhpStream());
+        $this->logger->registerStream(new \Core\Logger\Streams\FileStream(LOGDIR . '/core.log'));
+        $this->logger->registerStream(new \Core\Logger\Streams\FirePhpStream());
 
-        $this->di->mapValue('core.logger.default', $logger);
+        $this->di->mapValue('core.logger.default', $this->logger);
     }
 
     /**
@@ -292,111 +348,31 @@ final class Core
         // == CORE DI CONTAINER ============================================
         $this->di->mapValue('core.di', $this->di);
 
-        // == ROUTER =======================================================
-        $this->di->mapService('core.router', '\Core\Router\Router');
-
         // == HTTP =========================================================
-        $this->di->mapService('core.http.session', '\Core\Http\Session', 'db.default');
+
         $this->di->mapService('core.http', '\Core\Http\Http', [
             'core.http.cookie',
-            'core.http.post',
             'core.http.header'
         ]);
-        $this->di->mapService('core.http.cookie', '\Core\Http\Cookie\Cookies');
-        $this->di->mapService('core.http.post', '\Core\Http\Post');
-        $this->di->mapService('core.http.header', '\Core\Http\Header');
+        $this->di->mapService('core.http.cookie', '\Core\Http\Cookie\CookieHandler');
+        $this->di->mapService('core.http.header', '\Core\Http\Header\HeaderHandler');
 
-        // == UTILITIES ====================================================
-        $this->di->mapFactory('core.util.timer', '\Core\Utilities\Timer');
-        $this->di->mapFactory('core.util.time', '\Core\Utilities\Time');
-        $this->di->mapFactory('core.util.shorturl', '\Core\Utilities\ShortenURL');
-        $this->di->mapFactory('core.util.date', '\Core\Utilities\Date');
-        $this->di->mapFactory('core.util.debug', '\Core\Utilities\Debug');
-        $this->di->mapService('core.util.fire', '\FB');
-
-        // == SECURITY =====================================================
-        $this->di->mapService('core.security', '\Core\Security\Security', [
-            'core.security.user.current',
-            'core.security.users',
-            'core.security.group',
-            'core.security.token',
-            'core.security.login',
-            'core.security.permission'
-        ]);
-        $this->di->mapFactory('core.security.users', '\Core\Security\Users', [
-            'db.default',
-            'core.config',
-            'core.security.token',
-            'core.logger.default'
-        ]);
-        $this->di->mapFactory('core.security.user', '\Core\Security\User', [
-            'db.default'
-        ]);
-        $this->di->mapService('core.security.user.current', '\Core\Security\User', [
-            'db.default'
-        ]);
-        $this->di->mapService('core.security.group', '\Core\Security\Group', 'db.default');
-        $this->di->mapService('core.security.token', '\Core\Security\Token', [
-            'db.default',
-            'core.logger.default'
-        ]);
-        $this->di->mapService('core.security.login', '\Core\Security\Login', [
-            'db.default',
-            'core.config',
-            'core.http.cookie',
-            'core.security.token',
-            'core.logger.default'
-        ]);
-        $this->di->mapService('core.security.permission', '\Core\Security\Permission');
-
-        // == AMVC =========================================================
-        $this->di->mapService('core.amvc.creator', '\Core\Amvc\Creator', 'core.config');
-        $this->di->mapFactory('core.amvc.app', '\Core\Amvc\App');
 
         // == IO ===========================================================
         $this->di->mapService('core.toolbox.io.download', '\Core\Toolbox\IO\Download');
         $this->di->mapService('core.toolbox.io.file', '\Core\Toolbox\IO\File');
         $this->di->mapFactory('core.toolbox.io.sendfile', '\Core\Toolbox\IO\Sendfile');
 
-        // == MAILER =======================================================
-        $this->di->mapService('core.mailer', '\Core\Mailer\Mailer', [
-            'db.default',
-            'core.config',
-            'core.logger.default'
-        ]);
-
-        // == DATA ==========================================================
-        $this->di->mapService('core.data.validator', '\Core\Data\Validator\Validator');
-
         // == CONTENT =======================================================
         $this->di->mapService('core.page', '\Core\Page\Page', [
-            'core.router',
-            'core.config',
-            'core.amvc.creator',
-            'core.html.factory',
-            'core.page.body.nav',
-            'core.page.head.css',
-            'core.page.head.js',
-            'core.message.default'
+            'core.html.factory'
         ]);
-        $this->di->mapFactory('core.page.head.css', '\Core\Page\Head\Css\Css', [
-            'core.config'
-        ]);
-        $this->di->mapFactory('core.page.head.js', '\Core\Page\Head\Javascript\Javascript', [
-            'core.config',
-            'core.router'
-        ]);
-        $this->di->mapService('core.page.body.nav', '\Core\Page\Body\Menu\Menu');
-        $this->di->mapFactory('core.page.body.menu', '\Core\Page\Body\Menu\Menu');
 
         // == HTML ==========================================================
         $this->di->mapService('core.html.factory', '\Core\Html\HtmlFactory');
 
         // == AJAX ==========================================================
         $this->di->mapService('core.ajax', '\Core\Ajax\Ajax');
-
-        // == ASSET =========================================================
-        $this->di->mapService('core.asset', '\Core\Asset\AssetManager');
     }
 
     /**
@@ -504,7 +480,6 @@ final class Core
         $repository->setPdo($this->di->get('db.default.conn'));
         $repository->setTable('tekfw_core_configs');
 
-        /* @var $config \Core\config\Config */
         $this->config = new \Core\Config\Config($repository);
         $this->config->load();
 
@@ -521,47 +496,43 @@ final class Core
         define('BASEURL', $this->settings['protocol'] . '://' . $this->settings['baseurl']);
         define('THEMESURL', BASEURL . '/Themes');
 
-        $this->config->Core->set('site.protocol', $this->settings['protocol']);
-        $this->config->Core->set('site.baseurl', $this->settings['baseurl']);
+        $this->config->set('Core', 'site.protocol', $this->settings['protocol']);
+        $this->config->set('Core', 'site.baseurl', $this->settings['baseurl']);
 
         // Check and set basic cookiename to config
         if (empty($this->settings['cookie'])) {
             Throw new \Exception('Cookiename not set in Settings.php');
         }
 
-        $this->config->Core['cookie.name'] = $this->settings['cookie'];
+        $this->config->set('Core', 'cookie.name', $this->settings['cookie']);
 
         // Add dirs to config
         $dirs = [
             // Framework directory
-            'fw' => BASEDIR . '/Core',
+            'fw' => $this->basedir . '/Core',
 
             // Framwork subdirectories
-            'js' => BASEDIR . '/Js',
-            'lib' => BASEDIR . '/Core',
-            'html' => BASEDIR . '/Core/Html',
-            'cache' => BASEDIR . '/Cache',
+            'assets' => $this->basedir . '/Assets',
+            'lib' => $this->basedir . '/Core',
+            'html' => $this->basedir . '/Core/Html',
+            'cache' => $this->basedir . '/Cache',
 
             // Public application dir
-            'apps' => BASEDIR . '/Apps',
-
-            // Secure application dir
-            'appssec' => BASEDIR . '/AppsSec'
+            'apps' => $this->basedir . '/Apps'
         ];
 
-        $this->config->addPaths('Core', $dirs);
+        $this->config->Core->addPaths($dirs);
 
         // Add urls to config
         $urls = [
             'apps' => BASEURL . '/Apps',
-            'appssec' => BASEURL . '/AppsSec',
-            'js' => BASEURL . '/Js',
+            'assets' => BASEURL . '/Assets',
             'cache' => BASEURL . '/Cache',
             'vendor' => BASEURL . '/vendor',
             'vendor_tekkla' => BASEURL . '/vendor/tekkla'
         ];
 
-        $this->config->addUrls('Core', $urls);
+        $this->config->Core->addUrls($urls);
 
         $this->di->mapValue('core.config', $this->config);
     }
@@ -572,8 +543,8 @@ final class Core
         $this->di->mapFactory('core.mailer.mail', '\Core\Mailer\Mail');
 
         /* @var $mailer \Core\Mailer\Mailer */
-        $mailer = $this->di->get('core.mailer');
-        $mailer->setLogger($this->di->get('core.logger.default'));
+        $this->mailer = $this->di->get('core.mailer');
+        $this->mailer->setLogger($this->di->get('core.logger.default'));
 
         /* @var $db \Core\Data\Connectors\Db\Db */
         $db = $this->di->get('db.default');
@@ -581,6 +552,7 @@ final class Core
         $db->qb([
             'table' => 'core_mtas'
         ]);
+
         $mtas = $db->all();
 
         foreach ($mtas as $obj) {
@@ -597,7 +569,7 @@ final class Core
                 $mta->{$prop} = $val;
             }
 
-            $mailer->registerMta($mta);
+            $this->mailer->registerMta($mta);
         }
     }
 
@@ -615,15 +587,6 @@ final class Core
         // Start the session
         session_start();
 
-        if (empty($_SESSION['Core']['user'])) {
-            $_SESSION['Core'] = [
-                'logged_in' => false,
-                'user' => [
-                    'id' => 0
-                ]
-            ];
-        }
-
         // Create session id constant
         define('SID', session_id());
     }
@@ -638,33 +601,58 @@ final class Core
      */
     private function initRouter()
     {
-        $this->router = $this->di->get('core.router');
+        $this->di->mapService('core.router', '\Core\Router\Router');
 
+        $this->router = $this->di->get('core.router');
+        $this->router->setBaseUrl(BASEURL);
         $this->router->setParametersToTarget([
             'app',
             'controller',
             'action'
         ]);
+        $this->router->addMatchTypes([
+            'mvc' => '[A-Za-z0-9_]++'
+        ]);
+
+        // Generic routes
+        $routes = [
+            'index' => [
+                'route' => '/[mvc:app]/[mvc:controller]',
+                'target' => [
+                    'action' => 'index'
+                ]
+            ],
+            'action' => [
+                'route' => '/[mvc:app]/[mvc:controller]/[mvc:action]'
+            ],
+            'id' => [
+                'route' => '/[mvc:app]/[mvc:controller]/[i:id]?/[mvc:action]'
+            ],
+            'child' => [
+                'route' => '/[mvc:app]/[mvc:controller]/[i:id]?/[mvc:action]/of/[i:id_parent]'
+            ]
+        ];
+
+        foreach ($routes as $name => $route) {
+            $this->router->map($route['method'] ?? 'GET|POST', $route['route'], $route['target'] ?? [], 'generic.' . $name);
+        }
     }
 
     /**
-     * Creates core.language service and sets the name of the fallback language storage to 'Core'
+     * Initiates the AssetManager
      */
-    private function initLanguage()
-    {
-        $this->di->mapService('core.language', '\Core\Language\Language');
-
-        /* @var $language \Core\Language\Language */
-        $language = $this->di->get('core.language');
-        $language->setFallbackStorageName('Core');
-    }
-
     private function initAssetManager()
     {
+        $this->di->mapService('core.asset', '\Core\Asset\AssetManager');
+
         $this->assetmanager = $this->di->get('core.asset');
 
         // Create default js asset handler
         $ah = $this->assetmanager->createAssetHandler('js', 'js');
+        $ah->setBasedir($this->basedir);
+        $ah->setBaseurl(BASEURL);
+
+        $this->di->mapValue('core.asset.js', $ah);
 
         // Add minify processor on config demand
         if ($this->config->get('Core', 'asset.general.minify_js')) {
@@ -673,13 +661,22 @@ final class Core
 
         // Create default css asset handler
         $ah = $this->assetmanager->createAssetHandler('css', 'css');
+        $ah->setBasedir($this->basedir);
+        $ah->setBaseurl(BASEURL);
+
+        $this->di->mapValue('core.asset.css', $ah);
 
         // Add minify processor on config demand
         if ($this->config->get('Core', 'asset.general.minify_css')) {
             $ah->addProcessor(new \Core\Asset\Processor\CssMinProcessor());
+            $ah->addProcessor(new \Core\Asset\Processor\ReplaceProcessor('../fonts/', '../Themes/Core/fonts/'));
+            $ah->addProcessor(new \Core\Asset\Processor\ReplaceProcessor('../img/', '../Themes/Core/img/'));
         }
     }
 
+    /**
+     * Inits error handler
+     */
     private function initErrorHandler()
     {
         $this->di->mapService('core.error', '\Core\Error\ErrorHandler');
@@ -702,6 +699,9 @@ final class Core
         }
     }
 
+    /**
+     * Inits message handler
+     */
     private function initMessageHandler()
     {
         $this->di->mapFactory('core.message.message_handler', '\Core\Message\MessageHandler');
@@ -728,42 +728,142 @@ final class Core
     }
 
     /**
-     * Inits secured app Core
-     *
-     * The Core app is not really an app. It's more or less the logical and visual part of the framework
-     * that puts all the pieces together and offers a frontend to manage parts of the site with all
-     * the other possible apps.
+     * Intis page
      */
-    private function initCoreApp()
+    private function initPage()
     {
-        /* @var $creator \Core\Amvc\Creator */
-        $this->creator = $this->di->get('core.amvc.creator');
-        $this->creator->getAppInstance('Core');
+
+        /* @var $page \Core\Page\Page */
+        $this->page = $this->di->get('core.page');
+
+        $configs = [
+            'url.assets',
+            'dir.assets',
+            'url.vendor_tekkla',
+            'style.theme.name',
+            'style.bootstrap.version',
+            'style.bootstrap.local',
+            'js.jquery.version',
+            'js.general.position',
+            'js.jquery.local',
+            'js.style.fadeout_time'
+        ];
+
+        foreach ($configs as $name) {
+            $this->page->config->add($name, $this->config->get('Core', $name));
+        }
+
+        $this->page->setTitle($this->config->get('Core', 'site.general.name'));
     }
 
     /**
      * Inits security system
      *
      * Creates Security service instance.
-     * Checks current user if there is a ban.
+     * Checks current user if there is an active ban present.
      * Runs autologin procedure and loads user data on success.
      * Creates random session token which must be sent with each form or all posted data will be dropped.
      *
-     * @return void
+     * @TODO Create BanHandler!!!
      */
     private function initSecurity()
     {
-        /* @var $security \Core\Security\Security */
-        $this->security = $this->di->get('core.security');
+        // Map user services, factories and values
+        $this->di->mapFactory('core.security.user', '\Core\Security\User\User');
+        $this->di->mapValue('core.security.user.current', $this->di->get('core.security.user'));
+        $this->di->mapService('core.security.user.handler', '\Core\Security\User\UserHandler', [
+            'db.default'
+        ]);
 
-        $this->security->users->checkBan();
-        $this->security->login->doAutoLogin();
+        // Create a security related logger service
 
-        if ($this->security->login->loggedIn()) {
-            $this->security->user->load($_SESSION['Core']['user']['id']);
+        /* @var $logger \Core\Logger\Logger */
+        $logger = $this->di->get('core.logger');
+
+        $logger->registerStream(new \Core\Logger\Streams\FileStream(LOGDIR . '/security.log'));
+        $logger->registerStream(new \Core\Logger\Streams\FirePhpStream());
+
+        // Bancheck
+        $this->di->mapService('core.security.ban.check', '\Core\Security\Ban\BanCheck', 'db.default');
+
+        $this->bancheck = $this->di->get('core.security.ban.check');
+        $this->bancheck->setIp($_SERVER['REMOTE_ADDR']);
+        $this->bancheck->setTries($this->config->get('Core', 'security.ban.tries'));
+        $this->bancheck->setTtlBanLogEntry($this->config->get('Core', 'security.ban.ttl.log'));
+        $this->bancheck->setTtlBan($this->config->get('Core', 'security.ban.ttl.ban'));
+        $this->bancheck->setLogger($logger);
+
+        if ($this->bancheck->checkBan()) {
+            // @TODO Create BanHandler!!!
+            die('You\'ve been banned');
         }
 
-        $this->security->token->generateRandomSessionToken();
+        // Create the current user object
+        $this->user = $this->di->get('core.security.user.current');
+
+        // Handle login
+        $this->di->mapService('core.security.login', '\Core\Security\Login\Login', 'db.default');
+
+        /* @var $login \Core\Security\Login\Login */
+        $login = $this->di->get('core.security.login');
+        $login->setBan((bool) $this->config->get('Core', 'security.ban.active'));
+        $login->setSalt($this->config->get('Core', 'security.encrypt.salt'));
+        $login->setCookieName($this->config->get('Core', 'cookie.name'));
+        $login->setRemember($this->config->get('Core', 'security.login.autologin.active'));
+        $login->setLogger($logger);
+
+        // Not logged in and active autologin?
+        if ($login->loggedIn()) {
+            $id = $login->getId();
+        }
+        elseif ($login->getRemember()) {
+
+            $this->di->mapService('core.security.login.autologin', '\Core\Security\Login\Autologin', 'db.default');
+
+            /* @var $autologin \Core\Security\Login\Autologin */
+            $autologin = $this->di->get('core.security.login.autologin');
+            $autologin->setExpiresAfter($this->config->get('Core', 'security.login.autologin.expires_after'));
+            $autologin->setCookieName($this->config->get('Core', 'cookie.name'));
+            $autologin->setLogger($logger);
+
+            $id = $autologin->doAutoLogin();
+        }
+
+        /* @var $userhandler \Core\Security\User\UserHandler */
+        $userhandler = $this->di->get('core.security.user.handler');
+        $userhandler->setLogger($logger);
+
+        // Userdata to load?
+        if (!empty($id)) {
+            $this->user->setId($id);
+            $userhandler->loadUser($this->user);
+        }
+
+        // Generate a session token that can be used for sending data in session context.
+        $token = new SessionToken();
+
+        if (!$token->exists()) {
+            $token->generate();
+        }
+
+        $this->di->mapValue('core.security.form.token', $token->getToken());
+        $this->di->mapValue('core.security.form.token.name', $this->config->get('Core', 'security.form.token'));
+    }
+
+    /**
+     * Calls an existing event method of an app
+     *
+     * @param AbstractApp $app
+     * @param string $event
+     */
+    private function callAppEvent(AbstractApp $app, string $event)
+    {
+        if (method_exists($app, $event)) {
+            return call_user_func([
+                $app,
+                $event
+            ]);
+        }
     }
 
     /**
@@ -780,86 +880,70 @@ final class Core
         // Handle possible posted data
         $this->managePost();
 
-        // Handle default settings when we have a default
+        // Send 404 error when no app name is defined in router
         if (empty($this->router['target']['app'])) {
             return $this->send404('No appname to call.');
         }
 
+        // We need this toll for some following string conversions
         $string = new CamelCase($this->router['target']['app']);
 
+        // The apps classname is camelcased so the name from router match need to be converted.
         $app_name = $string->camelize();
 
-        /* @var $app \Core\Amvc\App */
-        $app = $this->creator->getAppInstance($app_name);
+        // Get app instance from app handler
+        $app = $this->getAppInstance($app_name);
 
+        // Send 404 error when there is no app instance
         if (empty($app)) {
             return $this->send404('app.object');
         }
 
-        // Call maybe existing global app methods
-        $app_methods = [
+        // Call app event: Run()
+        $event_result = $this->callAppEvent($app, 'Run');
 
-            /**
-             * Each app can have it's own Run() procedure.
-             *
-             * This procedure is used to init apps with more than the app creator does.
-             * Use this method to call forceLogin() method of Login service.
-             * To use this feature the app needs a Run() method in it's main file.
-             */
-            'Run'
-        ];
-
-        foreach ($app_methods as $method) {
-
-            if (method_exists($app, $method)) {
-
-                call_user_func([
-                    $app,
-                    $method
-                ]);
-
-                // Check for redirect by changes in router after
-                $string->setString($this->router['target']['app']);
-
-                if ($app_name != $string->camelize()) {
-                    return $this->dispatch(false);
-                }
-            }
+        // Redirect from event?
+        if (!empty($event_result) && $event_result != $app_name) {
+            $this->router->setParam('app', $event_result);
+            $this->router->match();
+            $this->dispatch();
+            return;
         }
-
-        if (empty($this->router['target']['controller'])) {
-            return $this->send404('controller.name');
-        }
-
-        $string->setString($this->router['target']['controller']);
-
-        $controller_name = $string->camelize();
 
         // Load controller object
+        $string->setString($this->router['target']['controller'] ?? 'Index');
+        $controller_name = $string->camelize();
+
         $controller = $app->getController($controller_name);
 
+        // Send 404 when controller could not be loaded
         if ($controller == false) {
             return $this->send404('Controller::' . $controller_name);
         }
 
+        // Handle controller action
         $string->setString($this->router['target']['action'] ?? 'Index');
-
-        // Which controller action has to be run?
         $action = $string->camelize();
 
         if (!method_exists($controller, $action)) {
             return $this->send404('Action::' . $action);
         }
 
+        // Prepare controller object
+        $controller->setAction($action);
+        $controller->setParams($this->router->getParams());
+        $controller->setRoute($this->router->getCurrentRoute());
+
         if ($this->router->isAjax()) {
 
+            // Controller needs to know the output format
             $this->router->setFormat('json');
 
             $this->http->header->contentType('application/json', 'utf-8');
             $this->http->header->noCache();
 
             // Result will be processed as ajax command list
-            $controller->ajax($action, $this->router['params']);
+            $controller->ajax();
 
             /* @var $ajax \Core\Ajax\Ajax */
             $ajax = $this->di->get('core.ajax');
@@ -880,7 +964,7 @@ final class Core
                     $alert->setDismissable($msg->getDismissable());
 
                     // Fadeout message?
-                    if ($this->config->Core->get('js.style.fadeout_time') > 0 && $msg->getFadeout()) {
+                    if ($this->config->get('Core', 'js.style.fadeout_time') > 0 && $msg->getFadeout()) {
                         $alert->html->addCss('fadeout');
                     }
 
@@ -913,12 +997,17 @@ final class Core
             $result = $ajax->process();
         }
         else {
-            $result = $controller->run($action, $this->router['params']);
+
+            $result = $controller->run($action, $this->router->getParams());
+            $this->router->setFormat($controller->getFormat());
         }
 
         return $result;
     }
 
+    /**
+     * Mangaes and handles $_POST data by checking $_POST for sent session token and apply
+     */
     private function managePost()
     {
         // Do only react on POST requests
@@ -926,15 +1015,29 @@ final class Core
             return;
         }
 
+        /* @var $post \Core\Http\Post\Post */
+        $this->di->mapService('core.http.post', '\Core\Http\Post\Post');
+
+        $post = $this->di->get('core.http.post');
+
+        // Setting the name of the session token that has to/gets sent with a form
+        $post->setTokenName($this->config->get('Core', 'security.form.token'));
+
         // Validate posted token with session token
-        if (!$this->security->token->validatePostToken()) {
+        if (!$post->validateCompareWithPostToken($this->di->get('core.security.form.token'))) {
             return;
         }
 
-        // Trim data
-        array_walk_recursive($_POST, function (&$data) {
-            $data = trim($data);
-        });
+        // Some data cleanup
+        $post->trimData();
+
+        // Assingn app related post data to the corresponding app
+        $post_data = $post->get();
+
+        foreach ($post_data as $name => $data) {
+            $app = $this->getAppInstance($name);
+            $app->post->set($data);
+        }
     }
 
     /**
@@ -942,26 +1045,36 @@ final class Core
      */
     private function processAssets()
     {
-        $ah = $this->assetmanager->getAssetHandler('js');
+        $js = $this->assetmanager->getAssetHandler('js');
 
         $afh = new \Core\Asset\AssetFileHandler();
         $afh->setFilename($this->config->get('Core', 'dir.cache') . '/script.js');
         $afh->setTTL($this->config->get('Core', 'cache.ttl.js'));
 
-        $ah->setFileHandler($afh);
+        $js->setFileHandler($afh);
 
-        $ah = $this->assetmanager->getAssetHandler('css');
+        $css = $this->assetmanager->getAssetHandler('css');
 
         $theme = $this->config->get('Core', 'style.theme.name');
 
-        $ah->addProcessor(new \Core\Asset\Processor\ReplaceProcessor('../fonts/', '../Themes/' . $theme . '/fonts/'));
-        $ah->addProcessor(new \Core\Asset\Processor\ReplaceProcessor('../img/', '../Themes/' . $theme . '/img/'));
+        $css->addProcessor(new \Core\Asset\Processor\ReplaceProcessor('../fonts/', '../Themes/' . $theme . '/fonts/'));
+        $css->addProcessor(new \Core\Asset\Processor\ReplaceProcessor('../img/', '../Themes/' . $theme . '/img/'));
 
         $afh = new \Core\Asset\AssetFileHandler();
         $afh->setFilename($this->config->get('Core', 'dir.cache') . '/style.css');
         $afh->setTTL($this->config->get('Core', 'cache.ttl.css'));
 
-        $ah->setFileHandler($afh);
+        $css->setFileHandler($afh);
+
+        foreach ($this->apps as $app) {
+            foreach ($app->javascript as $aio) {
+                $js->addObject($aio);
+            }
+
+            foreach ($app->css as $aio) {
+                $css->addObject($aio);
+            }
+        }
 
         // Process assets
         $this->assetmanager->process();
@@ -984,5 +1097,140 @@ final class Core
         $this->http->header->sendHttpError(404);
 
         return $msg;
+    }
+
+    /**
+     * Get a singleton app object
+     *
+     * @param string $name
+     *            Name of app instance to get
+     *
+     * @return \Core\Amvc\App\AbstractApp
+     */
+    public function &getAppInstance(string $name)
+    {
+        if (empty($name)) {
+            Throw new FrameworkException('Core::getAppInstance() needs an app name');
+        }
+
+        $string = new CamelCase($name);
+        $name = $string->camelize();
+
+        // App instances are singletons!
+        if (!array_key_exists($name, $this->apps)) {
+
+            // Create class name
+            $class = '\Apps\\' . $name . '\\' . $name;
+
+            //
+            $filename = $this->basedir . str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
+
+            if (!file_exists($filename)) {
+                Throw new FrameworkException(sprintf('Apps could not find an app classfile "%s" for app "%s"', $name, $filename));
+            }
+
+            // Default arguments for each app instance
+            $args = [
+                $name,
+                $this->config->getStorage($name),
+                $this
+            ];
+
+            $instance = $this->di->instance($class, $args);
+
+            if (!$instance instanceof AbstractApp) {
+                Throw new FrameworkException('Apps must be an instance of AbstractApp class!');
+            }
+
+            $instance->setName($name);
+            $instance->language->setCode($this->config->get('Core', 'site.language.default'));
+
+            $this->apps[$name] = $instance;
+        }
+
+        return $this->apps[$name];
+    }
+
+    /**
+     * Autodiscovers installed apps in the given path
+     *
+     * When an app is found an instance of it will be created.
+     *
+     * @param string|array $path
+     *            Path to check for apps. Can be an array of paths
+     */
+    private function autodiscoverApps()
+    {
+        $path = APPSDIR;
+
+        if (!is_array($path)) {
+            $path = (array) $path;
+        }
+
+        foreach ($path as $apps_dir) {
+
+            if (is_dir($apps_dir)) {
+
+                if (($dh = opendir($apps_dir)) !== false) {
+
+                    while (($name = readdir($dh)) !== false) {
+
+                        if ($name{0} == '.' || $name == 'Core' || is_file($apps_dir . '/' . $name)) {
+                            continue;
+                        }
+
+                        $app = $this->getAppInstance($name);
+                    }
+
+                    closedir($dh);
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns a list of loaded app names
+     *
+     * @param bool $only_names
+     *            Optional flag to switch the return value to be only an array of app names or instances (Default: true)
+     *
+     * @return array
+     */
+    public function getLoadedApps(bool $only_names = true)
+    {
+        if ($only_names) {
+            return array_keys($this->apps);
+        }
+
+        return $this->apps;
+    }
+
+    /**
+     * Inits all loaded apps, calls core specific actions and maps
+     */
+    private function initApps() {
+
+        // Run app specfic functions
+
+        /* @var $app \Core\Amvc\App\Abstractapp */
+        foreach ($this->apps as $app) {
+
+            // Call additional Init() methods in apps
+            if (method_exists($app, 'Init')) {
+                $app->Init();
+            }
+
+            switch ($app->getName()) {
+                case 'Core':
+                    // Create home url
+                    $type = $this->user->isGuest() ? 'guest' : 'user';
+                    $route = $this->config->get('Core', 'home.' . $type . '.route');
+                    $params = parse_ini_string($this->config->get('Core', 'home.' . $type . '.params'));
+
+                    $this->config->set('Core', 'url.home', $app->url($route, $params));
+
+                    break;
+            }
+        }
     }
 }
