@@ -149,7 +149,7 @@ final class Core
             // Create core DI container instance!
             $this->di = \Core\DI\DI::getInstance();
 
-            $this->initLogger('core');
+            $this->initLogger();
 
             // Init error handling system
             $this->initErrorHandler();
@@ -269,8 +269,8 @@ final class Core
 
 
                         $this->page->setHome($this->config->get('Core', 'url.home'));
-
                         $this->page->setContent($result);
+
                         $result = $this->page->render();
                 }
 
@@ -326,15 +326,13 @@ final class Core
         }
     }
 
-    private function initLogger($type)
+    private function initLogger()
     {
         $this->di->mapFactory('core.logger', '\Core\Logger\Logger');
 
         /* @var $logger \Core\Logger\Logger */
         $this->logger = $this->di->get('core.logger');
-
         $this->logger->registerStream(new \Core\Logger\Streams\FileStream(LOGDIR . '/core.log'));
-        $this->logger->registerStream(new \Core\Logger\Streams\FirePhpStream());
 
         $this->di->mapValue('core.logger.default', $this->logger);
     }
@@ -779,9 +777,9 @@ final class Core
 
         /* @var $logger \Core\Logger\Logger */
         $logger = $this->di->get('core.logger');
-
         $logger->registerStream(new \Core\Logger\Streams\FileStream(LOGDIR . '/security.log'));
-        $logger->registerStream(new \Core\Logger\Streams\FirePhpStream());
+
+        $this->di->mapValue('core.logger.security', $logger);
 
         // Bancheck
         $this->di->mapService('core.security.ban.check', '\Core\Security\Ban\BanCheck', 'db.default');
