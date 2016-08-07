@@ -9,6 +9,7 @@ use Core\Security\Token\SessionToken;
 use Core\Toolbox\Strings\CamelCase;
 use Core\Toolbox\IO\Sendfile;
 use Psr\Log\LoggerInterface;
+use Core\Message\MessageHandler;
 
 /**
  * Core.php
@@ -108,6 +109,12 @@ final class Core
      * @var Page
      */
     public $page;
+
+    /**
+     *
+     * @var MessageHandler
+     */
+    public $message;
 
     /**
      *
@@ -707,10 +714,10 @@ final class Core
         $this->di->mapFactory('core.message.message', '\Core\Notification\Notifcation');
 
         /* @var $handler \Core\Message\MessageHandler */
-        $handler = $this->di->get('core.message.message_handler');
+        $this->message = $this->di->get('core.message.message_handler');
 
         // Map the handler as frameworks default messagehandler
-        $this->di->mapValue('core.message.default', $handler);
+        $this->di->mapValue('core.message.default', $this->message);
 
         // Init a message session array if not exists until now
         if (empty($_SESSION['Core']['messages'])) {
@@ -722,7 +729,7 @@ final class Core
         $storage = $this->di->get('core.message.message_storage');
         $storage->setStorage($_SESSION['Core']['messages']);
 
-        $handler->setStorage($storage);
+        $this->message->setStorage($storage);
     }
 
     /**
