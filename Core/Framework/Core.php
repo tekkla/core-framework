@@ -732,7 +732,7 @@ final class Core
         $this->message = new MessageFacade($handler);
 
         // Map the handler as frameworks default messagehandler
-        $this->di->mapValue('core.message.default', $this->message);
+        $this->di->mapValue('core.message.default', $handler);
     }
 
     /**
