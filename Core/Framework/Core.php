@@ -10,6 +10,7 @@ use Core\Toolbox\Strings\CamelCase;
 use Core\Toolbox\IO\Sendfile;
 use Psr\Log\LoggerInterface;
 use Core\Message\MessageHandler;
+use Core\Framework\Notification\MessageFacade;
 
 /**
  * Core.php
@@ -112,7 +113,7 @@ final class Core
 
     /**
      *
-     * @var MessageHandler
+     * @var MessageFacade
      */
     public $message;
 
@@ -714,10 +715,7 @@ final class Core
         $this->di->mapFactory('core.message.message', '\Core\Notification\Notifcation');
 
         /* @var $handler \Core\Message\MessageHandler */
-        $this->message = $this->di->get('core.message.message_handler');
-
-        // Map the handler as frameworks default messagehandler
-        $this->di->mapValue('core.message.default', $this->message);
+        $handler = $this->di->get('core.message.message_handler');
 
         // Init a message session array if not exists until now
         if (empty($_SESSION['Core']['messages'])) {
@@ -729,7 +727,12 @@ final class Core
         $storage = $this->di->get('core.message.message_storage');
         $storage->setStorage($_SESSION['Core']['messages']);
 
-        $this->message->setStorage($storage);
+        $handler->setStorage($storage);
+
+        $this->message = new MessageFacade($handler);
+
+        // Map the handler as frameworks default messagehandler
+        $this->di->mapValue('core.message.default', $this->message);
     }
 
     /**
