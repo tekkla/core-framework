@@ -3,7 +3,7 @@ namespace Core\Framework;
 
 use Core\Framework\Amvc\App\AbstractApp;
 use Core\DI\DI;
-use Core\Page\Page;
+use Core\Framework\Page\Page;
 use Core\Ajax\Ajax;
 use Core\Security\Token\SessionToken;
 use Core\Toolbox\Strings\CamelCase;
@@ -738,7 +738,7 @@ final class Core
             'core.html.factory'
         ]);
 
-        /* @var $page \Core\Page\Page */
+        /* @var $page \Core\Framework\Page\Page */
         $this->page = $this->di->get('core.page');
 
         $configs = [

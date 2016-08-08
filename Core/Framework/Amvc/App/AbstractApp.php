@@ -8,7 +8,7 @@ use Core\Framework\Amvc\App\Css\CssHandler;
 use Core\Framework\Amvc\App\Javascript\JavascriptHandler;
 use Core\Framework\Amvc\App\Css\CssHandlerInterface;
 use Core\Framework\Amvc\App\Javascript\JavascriptHandlerInterface;
-use Core\Page\Page;
+use Core\Framework\Page\Page;
 use Core\Config\ConfigStorage;
 use Core\Framework\Amvc\Controller\Controller;
 use Core\Framework\Amvc\View\View;
