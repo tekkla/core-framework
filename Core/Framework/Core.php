@@ -159,8 +159,9 @@ final class Core
             $this->di->mapValue('core.di', $this->di);
 
             $this->initLogger();
-
-            // Init error handling system
+            $this->initRouter();
+            $this->initHttp();
+            $this->initDatabase();
             $this->initErrorHandler();
         }
         catch (\Throwable $t) {
@@ -176,14 +177,11 @@ final class Core
         try {
 
             // Run inits
-            $this->initDatabase();
-            $this->initMessageHandler();
             $this->initDependencies();
             $this->initSession();
+            $this->initMessageHandler();
             $this->initConfig();
             $this->initMailer();
-            $this->initRouter();
-            $this->initHttp();
 
             // Get an instance of Core app
             $this->getAppInstance('Core');
@@ -198,7 +196,7 @@ final class Core
                 $this->autodiscoverApps();
 
                 // Match request against the generic routes to get the ajax request flag and to match a fallback result.
-                $this->router->match();
+                #$this->router->match();
 
                 // Initiate apps
                 $this->initApps();
@@ -621,6 +619,8 @@ final class Core
         foreach ($routes as $name => $route) {
             $this->router->map($route['method'] ?? 'GET|POST', $route['route'], $route['target'] ?? [], 'generic.' . $name);
         }
+
+        $this->router->match();
     }
 
     /**
@@ -679,6 +679,9 @@ final class Core
      */
     private function initErrorHandler()
     {
+
+
+
         $this->di->mapService('core.error', '\Core\Framework\Error\ErrorHandler');
 
         $this->error = $this->di->get('core.error');

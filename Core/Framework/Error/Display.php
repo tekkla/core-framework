@@ -45,8 +45,6 @@ class Display
 
     public function setMessage($message)
     {
-
-
         $this->message = $message;
 
         return $this;
@@ -69,7 +67,7 @@ class Display
     public function highLevel()
     {}
 
-    public function lowLevel($details=false)
+    public function lowLevel($details = false)
     {
         $html = '
         <html>
@@ -90,9 +88,9 @@ class Display
                     <p><strong>' . $this->message . '</strong></p>
                     <p>in ' . $this->file . ' (Line: ' . $this->line . ')</p>';
 
-                    if (! empty($this->trace)) {
-                    $html .= '<pre>' . $this->trace . '</pre>';
-                    }
+        if (!empty($this->trace)) {
+            $html .= '<pre>' . $this->trace . '</pre>';
+        }
 
         $html .= '
                 </div>

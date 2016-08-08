@@ -21,54 +21,6 @@ class HighLevelHandler extends HandlerAbstract
      */
     private $t;
 
-    protected $dependencies = [
-        'router' => 'core.router',
-        'user' => 'core.security.user.current',
-        'ajax' => 'core.ajax',
-        'message' => 'core.message',
-        'db' => 'db.default',
-        'cfg' => 'core.config'
-    ];
-
-    /**
-     *
-     * @var \Core\Router\Router
-     */
-    protected $router;
-
-    /**
-     *
-     * @var \Core\Security\User\User
-     */
-    protected $user;
-
-    /**
-     *
-     * @var \Core\Ajax\Ajax
-     */
-    protected $ajax;
-
-    /**
-     *
-     * @var \Core\Data\Connectors\Db\Db
-     */
-    protected $db;
-
-    /**
-     *
-     * @var \Core\Page\Body\Message\Message
-     */
-    protected $message;
-
-    /**
-     *
-     * @var Core\Cfg\Cfg
-     */
-    protected $config;
-
-
-
-
     public function run(\Throwable $t)
     {
         // Store error
