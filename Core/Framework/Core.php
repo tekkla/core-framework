@@ -89,7 +89,7 @@ final class Core
 
     /**
      *
-     * @var \Core\Error\ErrorHandler
+     * @var \Core\Framework\Error\ErrorHandler
      */
     public $error;
 
@@ -154,8 +154,9 @@ final class Core
 
             $ajax = new Ajax();
 
-            // Create core DI container instance!
+            // Create core DI container instance and map the instance to comntainer
             $this->di = \Core\DI\DI::getInstance();
+            $this->di->mapValue('core.di', $this->di);
 
             $this->initLogger();
 
@@ -182,6 +183,7 @@ final class Core
             $this->initConfig();
             $this->initMailer();
             $this->initRouter();
+            $this->initHttp();
 
             // Get an instance of Core app
             $this->getAppInstance('Core');
@@ -189,9 +191,6 @@ final class Core
             $this->initSecurity();
             $this->initPage();
             $this->initAssetManager();
-
-            // Create references to Router and Http service
-            $this->http = $this->di->get('core.http');
 
             // Run highlevel system
             try {
@@ -275,7 +274,6 @@ final class Core
                             ]));
                         }
 
-
                         $this->page->setHome($this->config->get('Core', 'url.home'));
                         $this->page->setContent($result);
 
@@ -350,29 +348,10 @@ final class Core
      */
     private function initDependencies()
     {
-
-        // == CORE DI CONTAINER ============================================
-        $this->di->mapValue('core.di', $this->di);
-
-        // == HTTP =========================================================
-
-        $this->di->mapService('core.http', '\Core\Http\Http', [
-            'core.http.cookie',
-            'core.http.header'
-        ]);
-        $this->di->mapService('core.http.cookie', '\Core\Http\Cookie\CookieHandler');
-        $this->di->mapService('core.http.header', '\Core\Http\Header\HeaderHandler');
-
-
         // == IO ===========================================================
         $this->di->mapService('core.toolbox.io.download', '\Core\Toolbox\IO\Download');
         $this->di->mapService('core.toolbox.io.file', '\Core\Toolbox\IO\File');
         $this->di->mapFactory('core.toolbox.io.sendfile', '\Core\Toolbox\IO\Sendfile');
-
-        // == CONTENT =======================================================
-        $this->di->mapService('core.page', '\Core\Page\Page', [
-            'core.html.factory'
-        ]);
 
         // == HTML ==========================================================
         $this->di->mapService('core.html.factory', '\Core\Html\HtmlFactory');
@@ -645,6 +624,21 @@ final class Core
     }
 
     /**
+     * Inits the http library system for cookie and header handling
+     */
+    private function initHttp()
+    {
+        $this->di->mapService('core.http', '\Core\Http\Http', [
+            'core.http.cookie',
+            'core.http.header'
+        ]);
+        $this->di->mapService('core.http.cookie', '\Core\Http\Cookie\CookieHandler');
+        $this->di->mapService('core.http.header', '\Core\Http\Header\HeaderHandler');
+
+        $this->http = $this->di->get('core.http');
+    }
+
+    /**
      * Initiates the AssetManager
      */
     private function initAssetManager()
@@ -685,17 +679,17 @@ final class Core
      */
     private function initErrorHandler()
     {
-        $this->di->mapService('core.error', '\Core\Error\ErrorHandler');
+        $this->di->mapService('core.error', '\Core\Framework\Error\ErrorHandler');
 
         $this->error = $this->di->get('core.error');
 
         $core_handler = [
             0 => [
-                'ns' => '\Core\Error',
+                'ns' => '\Core\Framework\Error',
                 'class' => 'LowLevelHandler'
             ],
             1 => [
-                'ns' => '\Core\Error',
+                'ns' => '\Core\Framework\Error',
                 'class' => 'HighLevelHandler'
             ]
         ];
@@ -740,6 +734,9 @@ final class Core
      */
     private function initPage()
     {
+        $this->di->mapService('core.page', '\Core\Framework\Page\Page', [
+            'core.html.factory'
+        ]);
 
         /* @var $page \Core\Page\Page */
         $this->page = $this->di->get('core.page');
@@ -1216,7 +1213,8 @@ final class Core
     /**
      * Inits all loaded apps, calls core specific actions and maps
      */
-    private function initApps() {
+    private function initApps()
+    {
 
         // Run app specfic functions
 
