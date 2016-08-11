@@ -204,7 +204,9 @@ class ErrorHandler
     private function getHeadline(): string
     {
 
-        return '<h1>Error occured (' . $this->throwable->getCode() . ')</h1>';
+        $code = !empty($this->throwable->getCode()) ? ' (' . $this->throwable->getCode() . ')' : '';
+
+        return '<h1>Error occured' . $code .'</h1>';
     }
 
     private function getMessage(): string
