@@ -355,12 +355,12 @@ final class Core
 
         // Check logir exists
         if (!file_exists(LOGDIR)) {
-            Throw new FrameworkException(sprintf('Logdir does not exist. Please create "%s" and make sure it is writabvle.', LOGDIR));
+            Throw new FrameworkException(sprintf('Logdir does not exist. Please create "%s" and make sure it is writable.', LOGDIR));
         }
 
         // Check logdir to be writable
         if (!is_writable(LOGDIR)) {
-            Throw new FrameworkException(sprintf('Logdir "%s" is not writable. Please proper accessrights', LOGDIR));
+            Throw new FrameworkException(sprintf('Logdir "%s" is not writable. Please set proper accessrights', LOGDIR));
         }
 
         $this->di->mapFactory('core.logger', '\Core\Logger\Logger');
