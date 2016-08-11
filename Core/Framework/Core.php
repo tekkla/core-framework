@@ -160,9 +160,6 @@ final class Core
             $this->di->mapValue('core.di', $this->di);
 
             $this->initLogger();
-
-            // Init error handling system
-            $this->initErrorHandler();
         }
         catch (\Throwable $t) {
 
@@ -700,31 +697,6 @@ final class Core
             $ah->addProcessor(new \Core\Asset\Processor\CssMinProcessor());
             $ah->addProcessor(new \Core\Asset\Processor\ReplaceProcessor('../fonts/', '../Themes/Core/fonts/'));
             $ah->addProcessor(new \Core\Asset\Processor\ReplaceProcessor('../img/', '../Themes/Core/img/'));
-        }
-    }
-
-    /**
-     * Inits error handler
-     */
-    private function initErrorHandler()
-    {
-        $this->di->mapService('core.error', '\Core\Framework\Error\ErrorHandler');
-
-        $this->error = $this->di->get('core.error');
-
-        $core_handler = [
-            0 => [
-                'ns' => '\Core\Framework\Error',
-                'class' => 'LowLevelHandler'
-            ],
-            1 => [
-                'ns' => '\Core\Framework\Error',
-                'class' => 'HighLevelHandler'
-            ]
-        ];
-
-        foreach ($core_handler as $id => $handler) {
-            $this->error->registerHandler('Core', $id, $handler['ns'], $handler['class']);
         }
     }
 
