@@ -201,6 +201,7 @@ class ErrorHandler
 
     private function getHeadline(): string
     {
+
         return '<h1>Error occured (' . $this->throwable->getCode() . ')</h1>';
     }
 
@@ -334,39 +335,34 @@ class ErrorHandler
     /**
      * Creates html error message
      */
-    private function createErrorHtml($dismissable = false)
+    private function createErrorHtml(bool $dismissable = false)
     {
-        $this->error_html = '
-        <div class="alert alert-danger' . ($dismissable == true ? ' alert-dismissible' : '') . '" role="alert" id="' . $this->id . '">';
+        $html = '
+        <div class="alert alert-danger' . ($dismissable == true ? ' alert-dismissible' : '') . '" role="alert" id="core-error-' . $this->throwable->getCode() . '">';
 
-        if ($dismissable == true) {
-            $this->error_html .= '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>';
+        if ($dismissable) {
+            $html .= '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>';
         }
 
         switch (true) {
-            case method_exists($this->t, 'getPublic') && $this->throwable->getPublic():
-            case (bool) $this->user->getAdmin():
-            case !empty($this->config->Core['error.display.skip_security_check']):
-                $this->error_html .= '
-                <h3 class="no-v-margin">' . $this->throwable->getMessage() . '<br>
-                <small><strong>File:</strong> ' . $this->throwable->getFile() . ' (Line: ' . $this->throwable->getLine() . ')</small></h3>
-                <strong>Trace</strong>
-                <pre>' . $this->throwable->getTraceAsString() . '</pre>
-                <strong>Router</strong>
-                <pre>' . print_r($this->router->getStatus(), true) . '</pre>';
+            case $this->public:
+                $html .= $this->getHeadline();
+                $html .= $this->getMessage();
+                $html .= $this->getFileinfo();
+                $html .= $this->getTrace();
 
                 break;
 
             default:
-                $this->error_html .= '
+                $html .= '
                 <h3 class="no-top-margin">Error</h3>
                 <p>Sorry for that! Webmaster has been informed. Please try again later.</p>';
         }
 
-        $this->error_html .= '
+        $html .= '
         </div>';
 
-        return $this->error_html;
+        return $html;
     }
 
     /**
