@@ -11,6 +11,7 @@ use Core\Toolbox\IO\Sendfile;
 use Psr\Log\LoggerInterface;
 use Core\Message\MessageHandler;
 use Core\Framework\Notification\MessageFacade;
+use Core\Framework\Error\ErrorHandler;
 
 /**
  * Core.php
@@ -159,15 +160,25 @@ final class Core
             $this->di->mapValue('core.di', $this->di);
 
             $this->initLogger();
-            $this->initRouter();
-            $this->initHttp();
-            $this->initDatabase();
+
+            // Init error handling system
             $this->initErrorHandler();
         }
         catch (\Throwable $t) {
-            error_log($t->getMessage() . ' (File: ' . $t->getFile() . ':' . $t->getLine());
-            http_response_code(500);
-            die('An error occured. The admin is informed. Sorry for this. :/');
+
+            $error = new ErrorHandler($t);
+            $error->setLevel(0);
+            $error->setFatal(true);
+            $error->setHttpResponseCode(500);
+            $error->setAjax(isset($_REQUEST['ajax']));
+            $error->setPublic(ini_get('display_errors') ? true : false);
+
+            if (isset($this->logger)) {
+                $error->setLogger($this->logger);
+            }
+
+            $error->handle();
+
         }
 
         // Init result var
@@ -177,11 +188,15 @@ final class Core
         try {
 
             // Run inits
-            $this->initDependencies();
-            $this->initSession();
+            $this->initDatabase();
             $this->initMessageHandler();
+            $this->initDependencies();
+            $this->initHttp();
+            $this->initSession();
             $this->initConfig();
             $this->initMailer();
+            $this->initRouter();
+
 
             // Get an instance of Core app
             $this->getAppInstance('Core');
@@ -196,7 +211,7 @@ final class Core
                 $this->autodiscoverApps();
 
                 // Match request against the generic routes to get the ajax request flag and to match a fallback result.
-                #$this->router->match();
+                $this->router->match();
 
                 // Initiate apps
                 $this->initApps();
@@ -619,8 +634,6 @@ final class Core
         foreach ($routes as $name => $route) {
             $this->router->map($route['method'] ?? 'GET|POST', $route['route'], $route['target'] ?? [], 'generic.' . $name);
         }
-
-        $this->router->match();
     }
 
     /**
@@ -679,9 +692,6 @@ final class Core
      */
     private function initErrorHandler()
     {
-
-
-
         $this->di->mapService('core.error', '\Core\Framework\Error\ErrorHandler');
 
         $this->error = $this->di->get('core.error');

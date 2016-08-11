@@ -2,6 +2,7 @@
 namespace Core\Framework\Error;
 
 use Core\Framework\Core;
+use Psr\Log\LoggerInterface;
 
 /**
  * ErrorHandler.php
@@ -38,13 +39,49 @@ class ErrorHandler
     private $log_to = [];
 
     /**
+     *
+     * @var bool
+     */
+    private $ajax = false;
+
+    /**
+     *
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     *
+     * @var bool
+     */
+    private $public = false;
+
+    /**
+     *
+     * @var int
+     */
+    private $http_response_code = 500;
+
+    /**
+     *
+     * @var bool
+     */
+    private $fatal = false;
+
+    /**
+     *
+     * @var int
+     */
+    private $level = 0;
+
+    /**
      * Constructor
      *
      * @param Core $core
      */
-    public function __construct(Core $core)
+    public function __construct(\Throwable $throwable)
     {
-        $this->core;
+        $this->throwable = $throwable;
     }
 
     /**
@@ -57,9 +94,68 @@ class ErrorHandler
         $this->throwable = $throwable;
     }
 
-    public function handle(int $level)
+    /**
+     *
+     * @param LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger)
     {
-        switch ($level) {
+        $this->logger = $logger;
+    }
+
+    /**
+     *
+     * @param bool $ajax
+     */
+    public function setAjax(bool $ajax)
+    {
+        $this->ajax = $ajax;
+    }
+
+    /**
+     *
+     * @param bool $public
+     */
+    public function setPublic(bool $public)
+    {
+        $this->public = $public;
+    }
+
+    /**
+     *
+     * @param int $http_response_code
+     */
+    public function setHttpResponseCode(int $http_response_code)
+    {
+        $this->http_response_code = $http_response_code;
+    }
+
+    /**
+     *
+     * @param int $level
+     */
+    public function setLevel(int $level)
+    {
+        $this->level = $level;
+    }
+
+    /**
+     *
+     * @param bool $fatal
+     */
+    public function setFatal(bool $fatal)
+    {
+        $this->fatal = $fatal;
+    }
+
+    /**
+     *
+     * @param int $level
+     */
+    public function handle()
+    {
+        switch ($this->level) {
+
             case 1:
                 $this->result = $this->high();
 
@@ -68,12 +164,62 @@ class ErrorHandler
                 $this->result = $this->low();
         }
 
-        if ($this->core->router->isAjax()) {
+        if (isset($this->logger)) {
+            $this->logger->error($this->throwable->getMessage() . ' (File: ' . $this->throwable->getFile() . ':' . $this->throwable->getLine(). ')');
+        }
 
+        http_response_code($this->http_response_code);
+
+        if ($this->fatal) {
+            die($this->result);
         }
     }
 
-    public function run(\Throwable $t)
+    private function low()
+    {
+        if (!$this->ajax) {
+
+            $html = '
+            <html>
+                <head>
+                    <title>Error</title>
+                    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+                    <style type="text/css">
+                       * { margin: 0; padding: 0; }
+                        body { background-color: #aaa; color: #eee; font-family: Sans-Serif; }
+                        h1 { margin: 3px 0 7px; }
+                        p, pre { margin-bottom: 7px; }
+                        pre { padding: 5px; border: 1px solid #333; max-height: 400px; overflow-y: scroll; background-color: #fff; display: block; }
+                    </style>
+                </head>
+                <body>' . $html . '</body>
+            </html>';
+        }
+
+        return $html;
+    }
+
+    private function getHeadline(): string
+    {
+        return '<h1>Error occured (' . $this->throwable->getCode() . ')</h1>';
+    }
+
+    private function getMessage(): string
+    {
+        return '<p><strong>' . $this->throwable->getMessage() . '</strong></p>';
+    }
+
+    private function getFileinfo(): string
+    {
+        return '<p>in ' . $this->getFile() . ' (Line: ' . $this->throwable->getLine() . ')</p>';
+    }
+
+    private function getTrace(): string
+    {
+        return '<pre>' . $this->throwable->getTrace() . '</pre>';
+    }
+
+    public function high()
     {
 
         // The basic data of exception
