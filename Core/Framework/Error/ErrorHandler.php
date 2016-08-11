@@ -214,7 +214,7 @@ class ErrorHandler
 
     private function getFileinfo(): string
     {
-        return '<p>in ' . $this->getFile() . ' (Line: ' . $this->throwable->getLine() . ')</p>';
+        return '<p>in ' . $this->throwable->getFile() . ' (Line: ' . $this->throwable->getLine() . ')</p>';
     }
 
     private function getTrace(): string
