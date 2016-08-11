@@ -219,7 +219,7 @@ class ErrorHandler
 
     private function getTrace(): string
     {
-        return '<pre>' . $this->throwable->getTrace() . '</pre>';
+        return '<pre>' . $this->throwable->getTraceAsString() . '</pre>';
     }
 
     public function high()
