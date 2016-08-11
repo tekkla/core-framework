@@ -160,8 +160,13 @@ class ErrorHandler
             </html>';
         }
 
+        $raw = $this->throwable->getMessage() . ' (File: ' . $this->throwable->getFile() . ':' . $this->throwable->getLine() . ')';
+
         if (isset($this->logger)) {
-            $this->logger->error($this->throwable->getMessage() . ' (File: ' . $this->throwable->getFile() . ':' . $this->throwable->getLine() . ')');
+            $this->logger->error($raw);
+        }
+        else {
+            error_log($raw);
         }
 
         if ($this->fatal) {
