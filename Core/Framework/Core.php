@@ -23,7 +23,7 @@ use Core\Framework\Error\ErrorHandler;
 
 // Do not show errors by default!
 // @see loadSettings()
-ini_set('display_errors', 0);
+ini_set('display_errors', 1);
 
 final class Core
 {
