@@ -192,7 +192,7 @@ class ErrorHandler
                         pre { padding: 5px; border: 1px solid #333; max-height: 400px; overflow-y: scroll; background-color: #fff; display: block; }
                     </style>
                 </head>
-                <body>' . $html . '</body>
+                <body>' . $this->createErrorHtml(false) . '</body>
             </html>';
         }
 
