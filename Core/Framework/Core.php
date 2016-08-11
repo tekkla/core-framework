@@ -345,8 +345,24 @@ final class Core
         }
     }
 
+    /**
+     * Inits logger service for core.log
+     *
+     * @throws FrameworkException
+     */
     private function initLogger()
     {
+
+        // Check logir exists
+        if (!file_exists(LOGDIR)) {
+            Throw new FrameworkException(sprintf('Logdir does not exist. Please create "%s" and make sure it is writabvle.', LOGDIR));
+        }
+
+        // Check logdir to be writable
+        if (!is_writable(LOGDIR)) {
+            Throw new FrameworkException(sprintf('Logdir "%s" is not writable. Please proper accessrights', LOGDIR));
+        }
+
         $this->di->mapFactory('core.logger', '\Core\Logger\Logger');
 
         /* @var $logger \Core\Logger\Logger */
