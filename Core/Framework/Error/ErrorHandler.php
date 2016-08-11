@@ -177,6 +177,8 @@ class ErrorHandler
 
     private function low()
     {
+        $html = $this->createErrorHtml(false);
+
         if (!$this->ajax) {
 
             $html = '
@@ -192,7 +194,7 @@ class ErrorHandler
                         pre { padding: 5px; border: 1px solid #333; max-height: 400px; overflow-y: scroll; background-color: #fff; display: block; }
                     </style>
                 </head>
-                <body>' . $this->createErrorHtml(false) . '</body>
+                <body>' . $html . '</body>
             </html>';
         }
 
