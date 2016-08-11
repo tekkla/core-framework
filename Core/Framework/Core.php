@@ -153,8 +153,6 @@ final class Core
             // Registe PSR classloader
             $this->registerClassloader();
 
-            $ajax = new Ajax();
-
             // Create core DI container instance and map the instance to comntainer
             $this->di = \Core\DI\DI::getInstance();
             $this->di->mapValue('core.di', $this->di);
@@ -179,37 +177,19 @@ final class Core
             $this->initAssetManager();
 
             // Run highlevel system
-            try {
+            $this->autodiscoverApps();
 
-                $this->autodiscoverApps();
+            // Match request against the generic routes to get the ajax request flag and to match a fallback result.
+            $this->router->match();
 
-                // Match request against the generic routes to get the ajax request flag and to match a fallback result.
-                $this->router->match();
+            // Initiate apps
+            $this->initApps();
 
-                // Initiate apps
-                $this->initApps();
+            // Match routes again as now possible app routes are available
+            $this->router->match();
 
-                // Match routes again as now possible app routes are available
-                $this->router->match();
-
-                // Run dispatcher
-                $result = $this->dispatch();
-            }
-            catch (\Throwable $t) {
-
-                $error = new ErrorHandler($t);
-                $error->setLevel(0);
-                $error->setFatal(false);
-                $error->setHttpResponseCode(200);
-                $error->setAjax(isset($_REQUEST['ajax']));
-                $error->setPublic(ini_get('display_errors') ? true : false);
-
-                if (isset($this->logger)) {
-                    $error->setLogger($this->logger);
-                }
-
-                $result = $error->handle();
-            }
+            // Run dispatcher
+            $result = $this->dispatch();
 
             // Send mails
             $this->mailer->send();
@@ -235,8 +215,7 @@ final class Core
             switch ($this->router->getFormat()) {
 
                 case 'file':
-                        /* @var $sendfile \Core\Toolbox\IO\Sendfile */
-                        $sendfile = new Sendfile($result);
+                    $sendfile = new Sendfile($result);
                     $sendfile->send();
 
                     break;
@@ -282,9 +261,6 @@ final class Core
         catch (\Throwable $t) {
 
             $error = new ErrorHandler($t);
-            $error->setLevel(0);
-            $error->setFatal(true);
-            $error->setHttpResponseCode(500);
             $error->setAjax(isset($_REQUEST['ajax']));
             $error->setPublic(ini_get('display_errors') ? true : false);
 
@@ -292,7 +268,9 @@ final class Core
                 $error->setLogger($this->logger);
             }
 
-            $error->handle();
+            http_response_code(500);
+
+            $result = $error->handle();
         }
 
         echo $result;

@@ -135,33 +135,9 @@ class ErrorHandler
 
     /**
      *
-     * @param int $level
+     * @return string
      */
     public function handle()
-    {
-        switch ($this->level) {
-
-            case 1:
-                $this->result = $this->high();
-
-            default:
-            case 0:
-                $this->result = $this->low();
-        }
-
-        if (isset($this->logger)) {
-            $this->logger->error($this->throwable->getMessage() . ' (File: ' . $this->throwable->getFile() . ':' . $this->throwable->getLine() . ')');
-        }
-
-        if ($this->fatal) {
-            http_response_code(500);
-            die($this->result);
-        }
-
-        return $this->result;
-    }
-
-    private function low()
     {
         $html = $this->createErrorHtml(false);
 
@@ -182,6 +158,14 @@ class ErrorHandler
                 </head>
                 <body>' . $html . '</body>
             </html>';
+        }
+
+        if (isset($this->logger)) {
+            $this->logger->error($this->throwable->getMessage() . ' (File: ' . $this->throwable->getFile() . ':' . $this->throwable->getLine() . ')');
+        }
+
+        if ($this->fatal) {
+            die($html);
         }
 
         return $html;
@@ -240,39 +224,5 @@ class ErrorHandler
         </div>';
 
         return $html;
-    }
-
-    /**
-     * Fatal error!
-     */
-    private function fatal()
-    {
-        // Clean buffer with all output done so far
-        ob_clean();
-
-        // Send 500 http status
-        http_response_code(500);
-
-        return '
-        <html>
-            <head>
-                <title>Error</title>
-                <link href="' . BASEURL . '/Cache/combined.css" rel="stylesheet">
-                <style type="text/css">
-                    * { margin: 0; padding: 0; }
-                    body { background-color: #aaa; color: #eee; font-family: Sans-Serif; }
-                    h1 { margin: 3px 0 7px; }
-                    p, pre { margin-bottom: 7px; }
-                    pre { padding: 5px; border: 1px solid #333; max-height: 400px; overflow-y: scroll; background-color: #fff; display: block; }
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div class="row">
-                        <div class="col-sm-12">' . $this->createErrorHtml(false) . '</div>
-                    </div>
-                </div>
-            </body>
-        </html>';
     }
 }
