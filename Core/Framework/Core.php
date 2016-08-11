@@ -160,29 +160,6 @@ final class Core
             $this->di->mapValue('core.di', $this->di);
 
             $this->initLogger();
-        }
-        catch (\Throwable $t) {
-
-            $error = new ErrorHandler($t);
-            $error->setLevel(0);
-            $error->setFatal(true);
-            $error->setHttpResponseCode(500);
-            $error->setAjax(isset($_REQUEST['ajax']));
-            $error->setPublic(ini_get('display_errors') ? true : false);
-
-            if (isset($this->logger)) {
-                $error->setLogger($this->logger);
-            }
-
-            $error->handle();
-
-        }
-
-        // Init result var
-        $result = '';
-
-        // Run lowlevel system
-        try {
 
             // Run inits
             $this->initDatabase();
@@ -193,7 +170,6 @@ final class Core
             $this->initConfig();
             $this->initMailer();
             $this->initRouter();
-
 
             // Get an instance of Core app
             $this->getAppInstance('Core');
@@ -220,83 +196,103 @@ final class Core
                 $result = $this->dispatch();
             }
             catch (\Throwable $t) {
-                // $result = $this->error->handle('Core', 1, $t);
-                $result = $t->getMessage() . '(' . $t->getFile() . ':' . $t->getLine() . ')' . '<hr><pre>' . $t->getTraceAsString() . '</pre>';
-            }
-            finally {
 
-                // Send mails
-                $this->mailer->send();
+                $error = new ErrorHandler($t);
+                $error->setLevel(0);
+                $error->setFatal(false);
+                $error->setHttpResponseCode(200);
+                $error->setAjax(isset($_REQUEST['ajax']));
+                $error->setPublic(ini_get('display_errors') ? true : false);
 
-                // Process all assets
-                $this->processAssets();
-
-                // Send cookies
-                $this->http->cookies->send();
-
-                // Redirect requested?
-                if (!empty($_SESSION['Core']['redirect'])) {
-
-                    $this->http->header->location($_SESSION['Core']['redirect']['location'], $_SESSION['Core']['redirect']['permanent']);
-                    $this->http->header->send();
-
-                    // Important: Clear redirect from session!
-                    unset($_SESSION['Core']['redirect']);
-
-                    return;
+                if (isset($this->logger)) {
+                    $error->setLogger($this->logger);
                 }
 
-                switch ($this->router->getFormat()) {
+                $result = $error->handle();
+            }
 
-                    case 'file':
+            // Send mails
+            $this->mailer->send();
+
+            // Process all assets
+            $this->processAssets();
+
+            // Send cookies
+            $this->http->cookies->send();
+
+            // Redirect requested?
+            if (!empty($_SESSION['Core']['redirect'])) {
+
+                $this->http->header->location($_SESSION['Core']['redirect']['location'], $_SESSION['Core']['redirect']['permanent']);
+                $this->http->header->send();
+
+                // Important: Clear redirect from session!
+                unset($_SESSION['Core']['redirect']);
+
+                return;
+            }
+
+            switch ($this->router->getFormat()) {
+
+                case 'file':
                         /* @var $sendfile \Core\Toolbox\IO\Sendfile */
                         $sendfile = new Sendfile($result);
-                        $sendfile->send();
+                    $sendfile->send();
 
-                        break;
+                    break;
 
-                    case 'html':
+                case 'html':
 
-                        $this->http->header->contentType('text/html', 'utf-8');
+                    $this->http->header->contentType('text/html', 'utf-8');
 
-                        $language = $this->getAppInstance('Core')->language;
+                    $language = $this->getAppInstance('Core')->language;
 
-                        // Add logoff button for logged in users
-                        if ($this->user->isGuest()) {
-                            $this->page->menu->createItem('register', $language->get('menu.register'), $this->router->generate('core.register'));
-                            $this->page->menu->createItem('login', $language->get('menu.login'), $this->router->generate('core.login', [
-                                'action' => 'login'
-                            ]));
+                    // Add logoff button for logged in users
+                    if ($this->user->isGuest()) {
+                        $this->page->menu->createItem('register', $language->get('menu.register'), $this->router->generate('core.register'));
+                        $this->page->menu->createItem('login', $language->get('menu.login'), $this->router->generate('core.login', [
+                            'action' => 'login'
+                        ]));
+                    }
+
+                    // or add login and register buttons. But not when current user is currently on banlist
+                    else {
+
+                        $usermenu = $this->page->menu->createItem('login', $this->user->getDisplayname());
+
+                        // Show admin menu?
+                        if ($this->user->getAdmin()) {
+                            $usermenu->createItem('admin', $language->get('menu.admin'), $this->router->generate('core.admin'));
                         }
 
-                        // or add login and register buttons. But not when current user is currently on banlist
-                        else {
+                        $usermenu->createItem('logout', $language->get('menu.logout'), $this->router->generate('core.login', [
+                            'action' => 'logout'
+                        ]));
+                    }
 
-                            $usermenu = $this->page->menu->createItem('login', $this->user->getDisplayname());
+                    $this->page->setHome($this->config->get('Core', 'url.home'));
+                    $this->page->setContent($result);
 
-                            // Show admin menu?
-                            if ($this->user->getAdmin()) {
-                                $usermenu->createItem('admin', $language->get('menu.admin'), $this->router->generate('core.admin'));
-                            }
-
-                            $usermenu->createItem('logout', $language->get('menu.logout'), $this->router->generate('core.login', [
-                                'action' => 'logout'
-                            ]));
-                        }
-
-                        $this->page->setHome($this->config->get('Core', 'url.home'));
-                        $this->page->setContent($result);
-
-                        $result = $this->page->render();
-                }
-
-                // Send headers so far
-                $this->http->header->send();
+                    $result = $this->page->render();
             }
+
+            // Send headers so far
+            $this->http->header->send();
         }
         catch (\Throwable $t) {
-            // $result = $this->error->handle('Core', 0, $t);
-            $result = $t->getMessage() . '(' . $t->getFile() . ':' . $t->getLine() . ')' . '<hr><pre>' . $t->getTraceAsString() . '</pre>';
+
+            $error = new ErrorHandler($t);
+            $error->setLevel(0);
+            $error->setFatal(true);
+            $error->setHttpResponseCode(500);
+            $error->setAjax(isset($_REQUEST['ajax']));
+            $error->setPublic(ini_get('display_errors') ? true : false);
+
+            if (isset($this->logger)) {
+                $error->setLogger($this->logger);
+            }
+
+            $error->handle();
         }
 
         echo $result;
