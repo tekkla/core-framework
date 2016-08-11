@@ -23,7 +23,7 @@ use Core\Framework\Error\ErrorHandler;
 
 // Do not show errors by default!
 // @see loadSettings()
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 
 final class Core
 {
@@ -125,6 +125,7 @@ final class Core
     public function __construct(string $basedir)
     {
         // Define path constants to the common framwork dirs
+        define('BASEDIR', $basedir);
         define('COREDIR', $basedir . '/Core');
         define('LOGDIR', $basedir . '/Logs');
         define('APPSDIR', $basedir . '/Apps');
@@ -262,7 +263,7 @@ final class Core
 
             $error = new ErrorHandler($t);
             $error->setAjax(isset($_REQUEST['ajax']));
-            $error->setPublic(ini_get('display_errors') ? true : false);
+            $error->setPublic(isset($this->user) && $this->user->getAdmin());
 
             if (isset($this->logger)) {
                 $error->setLogger($this->logger);
@@ -278,24 +279,31 @@ final class Core
         ob_end_flush();
     }
 
+    /**
+     * Loads setting file
+     *
+     * @throws FrameworkException
+     */
     private function loadSettings()
     {
         $filename = $this->basedir . '/Settings.php';
 
         // Check for settings file
         if (!file_exists($filename) || !is_readable($filename)) {
-            error_log('Settings file could not be loaded.');
-            die('An error occured. Sorry for that! :(');
+            Throw new FrameworkException('Settings file could not be loaded. Make sure Settings.php exits in projects root dir and is readable.');
         }
 
         // Load basic config from Settings.php
         $this->settings = include ($filename);
 
         if (!empty($this->settings['display_errors'])) {
-            ini_set('display_errors', 1);
+            ini_set('display_errors', 0);
         }
     }
 
+    /**
+     * Registers SPL classloader
+     */
     private function registerClassloader()
     {
         // Register core classloader
@@ -348,11 +356,6 @@ final class Core
      */
     private function initDependencies()
     {
-        // == IO ===========================================================
-        $this->di->mapService('core.toolbox.io.download', '\Core\Toolbox\IO\Download');
-        $this->di->mapService('core.toolbox.io.file', '\Core\Toolbox\IO\File');
-        $this->di->mapFactory('core.toolbox.io.sendfile', '\Core\Toolbox\IO\Sendfile');
-
         // == HTML ==========================================================
         $this->di->mapService('core.html.factory', '\Core\Html\HtmlFactory');
 
@@ -387,12 +390,12 @@ final class Core
 
         if (empty($this->settings['db'])) {
             error_log('No DB data set in Settings.php');
-            Throw new \Exception('Error on DB access');
+            Throw new FrameworkException('Error on DB access');
         }
 
         if (empty($this->settings['db']['default'])) {
             error_log('No DB "default" data set in Settings.php');
-            Throw new \Exception('Error on DB access');
+            Throw new FrameworkException('Error on DB access');
         }
 
         foreach ($this->settings['db'] as $name => &$settings) {
@@ -459,7 +462,8 @@ final class Core
     private function initConfig()
     {
         // Admin users can request to load config from db instead out of cache
-        $refresh_cache = !empty($_SESSION['Core']['user']['is_admin']) && isset($_REQUEST['refresh_config_cache']);
+        // @TODO Cache not implemented for now
+        #$refresh_cache = isset($this->user) && $this->user->getAdmin() && isset($_REQUEST['refresh_config_cache']);
 
         $repository = new \Core\Config\Repository\DbRepository();
         $repository->setPdo($this->di->get('db.default.conn'));
@@ -474,7 +478,7 @@ final class Core
         }
 
         if (empty($this->settings['baseurl'])) {
-            Throw new \Exception('Baseurl not set in Settings.php');
+            Throw new FrameworkException('Baseurl not set in Settings.php');
         }
 
         // Define some basic url constants
@@ -486,7 +490,7 @@ final class Core
 
         // Check and set basic cookiename to config
         if (empty($this->settings['cookie'])) {
-            Throw new \Exception('Cookiename not set in Settings.php');
+            Throw new FrameworkException('Cookiename not set in Settings.php');
         }
 
         $this->config->set('Core', 'cookie.name', $this->settings['cookie']);
@@ -533,7 +537,6 @@ final class Core
 
         /* @var $db \Core\Data\Connectors\Db\Db */
         $db = $this->di->get('db.default');
-
         $db->qb([
             'table' => 'core_mtas'
         ]);
