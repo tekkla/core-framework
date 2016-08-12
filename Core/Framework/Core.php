@@ -468,13 +468,19 @@ final class Core
         $repository->setTable('tekfw_core_configs');
 
         $this->config = new \Core\Config\Config($repository);
+
+        // Create the Core config storage
+        $core_storage = $this->config->createStorage('Core');
+
+        // Load config from repository
         $this->config->load();
 
-        // Set baseurl to config
+        // Make sure sites protocol is set
         if (empty($this->settings['protcol'])) {
             $this->settings['protocol'] = 'http';
         }
 
+        // Check for baseurl or stop here
         if (empty($this->settings['baseurl'])) {
             Throw new FrameworkException('Baseurl not set in Settings.php');
         }
@@ -483,15 +489,15 @@ final class Core
         define('BASEURL', $this->settings['protocol'] . '://' . $this->settings['baseurl']);
         define('THEMESURL', BASEURL . '/Themes');
 
-        $this->config->set('Core', 'site.protocol', $this->settings['protocol']);
-        $this->config->set('Core', 'site.baseurl', $this->settings['baseurl']);
+        $core_storage->set('site.protocol', $this->settings['protocol']);
+        $core_storage->set('site.baseurl', $this->settings['baseurl']);
 
         // Check and set basic cookiename to config
         if (empty($this->settings['cookie'])) {
             Throw new FrameworkException('Cookiename not set in Settings.php');
         }
 
-        $this->config->set('Core', 'cookie.name', $this->settings['cookie']);
+        $core_storage->set('cookie.name', $this->settings['cookie']);
 
         // Add dirs to config
         $dirs = [
@@ -508,7 +514,7 @@ final class Core
             'apps' => $this->basedir . '/Apps'
         ];
 
-        $this->config->Core->addPaths($dirs);
+        $core_storage->addPaths($dirs);
 
         // Add urls to config
         $urls = [
@@ -518,7 +524,7 @@ final class Core
             'vendor_tekkla' => BASEURL . '/vendor/tekkla',
         ];
 
-        $this->config->Core->addUrls($urls);
+        $core_storage->addUrls($urls);
 
         $this->di->mapValue('core.config', $this->config);
     }
@@ -717,6 +723,7 @@ final class Core
         $this->page = $this->di->get('core.page');
 
         $configs = [
+            'dir.assets',
             'url.vendor_tekkla',
             'style.theme.name',
             'style.bootstrap.version',
@@ -1058,6 +1065,11 @@ final class Core
         $this->assetmanager->process();
     }
 
+    /**
+     * @TODO Bad code. :/
+     *
+     * @param string $stage
+     */
     private function send404($stage = 'not set')
     {
         $msg = $stage . ' - Page not found';
@@ -1110,7 +1122,7 @@ final class Core
             // Default arguments for each app instance
             $args = [
                 $name,
-                $this->config->getStorage($name),
+                $this->config->createStorage($name),
                 $this
             ];
 
@@ -1201,12 +1213,15 @@ final class Core
 
             switch ($app->getName()) {
                 case 'Core':
+
+                    $config = $this->config->getStorage('Core');
+
                     // Create home url
                     $type = $this->user->isGuest() ? 'guest' : 'user';
-                    $route = $this->config->get('Core', 'home.' . $type . '.route');
-                    $params = parse_ini_string($this->config->get('Core', 'home.' . $type . '.params'));
+                    $route = $config->get('home.' . $type . '.route');
+                    $params = parse_ini_string($config->get('home.' . $type . '.params'));
 
-                    $this->config->set('Core', 'url.home', $app->url($route, $params));
+                    $config->set('url.home', $app->url($route, $params));
 
                     break;
             }
