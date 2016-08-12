@@ -717,8 +717,6 @@ final class Core
         $this->page = $this->di->get('core.page');
 
         $configs = [
-            'url.assets',
-            'dir.assets',
             'url.vendor_tekkla',
             'style.theme.name',
             'style.bootstrap.version',
