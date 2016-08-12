@@ -126,12 +126,10 @@ final class Core
     {
         // Define path constants to the common framwork dirs
         define('BASEDIR', $basedir);
-        define('COREDIR', $basedir . '/Core');
         define('LOGDIR', $basedir . '/Logs');
         define('APPSDIR', $basedir . '/Apps');
         define('THEMESDIR', $basedir . '/Themes');
         define('CACHEDIR', $basedir . '/Cache');
-        define('APPSSECDIR', $basedir . '/AppsSec');
 
         $this->basedir = $basedir;
     }
@@ -515,10 +513,9 @@ final class Core
         // Add urls to config
         $urls = [
             'apps' => BASEURL . '/Apps',
-            'assets' => BASEURL . '/Assets',
             'cache' => BASEURL . '/Cache',
             'vendor' => BASEURL . '/vendor',
-            'vendor_tekkla' => BASEURL . '/vendor/tekkla'
+            'vendor_tekkla' => BASEURL . '/vendor/tekkla',
         ];
 
         $this->config->Core->addUrls($urls);
