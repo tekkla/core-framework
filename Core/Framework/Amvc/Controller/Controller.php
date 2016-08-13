@@ -404,9 +404,6 @@ class Controller extends AbstractMvc
 
         // Check the permissions against the current user
         if ($perm) {
-
-            var_dump($perm);
-
             return $this->checkAccess($perm);
         }
 
