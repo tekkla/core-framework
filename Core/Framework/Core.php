@@ -262,6 +262,7 @@ final class Core
             $error = new ErrorHandler($t);
             $error->setAjax(isset($_REQUEST['ajax']));
             $error->setPublic(isset($this->user) && $this->user->getAdmin());
+            $error->setPublic(true);
 
             if (isset($this->logger)) {
                 $error->setLogger($this->logger);
@@ -983,7 +984,7 @@ final class Core
         }
         else {
 
-            $result = $controller->run($action, $this->router->getParams());
+            $result = $controller->run();
             $this->router->setFormat($controller->getFormat());
         }
 
@@ -1095,7 +1096,7 @@ final class Core
      * @param string $name
      *            Name of app instance to get
      *
-     * @return \Core\Amvc\App\AbstractApp
+     * @return \Core\Framework\Amvc\App\AbstractApp
      */
     public function &getAppInstance(string $name)
     {

@@ -10,7 +10,6 @@ use Core\Ajax\Dom;
 use Core\Ajax\Commands\Dom\DomCommand;
 use Core\Toolbox\Strings\CamelCase;
 
-
 /**
  * Controller.php
  *
@@ -146,11 +145,6 @@ class Controller extends AbstractMvc
      * used to get a partial result when using a controller from within a controller.
      * In this case you should provide the action an parameters needed to get the
      * wanted result.
-     *
-     * @param string $action
-     *            Action method to call
-     * @param array $params
-     *            Optional parametername => $value based array to be used as action method parameter
      *
      * @throws ControllerException
      *
@@ -369,7 +363,7 @@ class Controller extends AbstractMvc
      *
      * @return boolean
      */
-    protected function checkControllerAccess($force = false)
+    protected function checkControllerAccess($force = false): bool
     {
         // Is there an global access method in the app main class to call?
         if (method_exists($this->app, 'Access') && $this->app->Access() === false) {
@@ -391,6 +385,13 @@ class Controller extends AbstractMvc
 
             $perm += $this->access['*'];
         }
+        else {
+
+            // ACL exists but action not in it? This means to grant access.
+            if (!array_key_exists($this->action, $this->access)) {
+                return true;
+            }
+        }
 
         // Actions access set?
         if (isset($this->access[$this->action])) {
@@ -403,12 +404,14 @@ class Controller extends AbstractMvc
 
         // Check the permissions against the current user
         if ($perm) {
+
+            var_dump($perm);
+
             return $this->checkAccess($perm);
         }
 
         return false;
     }
-
 
     /**
      * Publish a value to the view
