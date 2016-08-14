@@ -180,12 +180,12 @@ class ErrorHandler
     {
         $code = !empty($this->throwable->getCode()) ? ' (' . $this->throwable->getCode() . ')' : '';
 
-        return '<h1>Error occured' . $code . '</h1>';
+        return '<h1 class="no-v-margin">Error occured' . $code . '</h1>';
     }
 
     private function getMessage(): string
     {
-        return '<p><strong>' . $this->throwable->getMessage() . '</strong></p>';
+        return '<p>' . $this->throwable->getMessage() . '</p>';
     }
 
     private function getFileinfo(): string
