@@ -787,16 +787,22 @@ final class Core
         // Create the current user object
         $this->user = $this->di->get('core.security.user.current');
 
+        // Get salt from config
+        $salt = $this->config->get('Core', 'security.encrypt.salt');
+
         // Handle login
         $this->di->mapService('core.security.login', '\Core\Security\Login\Login', 'db.default');
 
         /* @var $login \Core\Security\Login\Login */
         $login = $this->di->get('core.security.login');
         $login->setBan((bool) $this->config->get('Core', 'security.ban.active'));
-        $login->setSalt($this->config->get('Core', 'security.encrypt.salt'));
         $login->setCookieName($this->config->get('Core', 'cookie.name'));
         $login->setRemember($this->config->get('Core', 'security.login.autologin.active'));
         $login->setLogger($logger);
+
+        if (!empty($salt)) {
+            $login->setSalt($salt);
+        }
 
         // Not logged in and active autologin?
         if ($login->loggedIn()) {
@@ -818,6 +824,10 @@ final class Core
         /* @var $userhandler \Core\Security\User\UserHandler */
         $userhandler = $this->di->get('core.security.user.handler');
         $userhandler->setLogger($logger);
+
+        if (!empty($salt)) {
+            $userhandler->setSalt($salt);
+        }
 
         // Userdata to load?
         if (!empty($id)) {
