@@ -192,7 +192,7 @@ final class Core
             $this->router->match();
 
             // Run dispatcher
-            $dispatcher = new Dispatcher($this->http->header);
+            $dispatcher = new Dispatcher($this);
             $dispatcher->setParams($this->router->getParams());
             $dispatcher->setAjax($this->router->isAjax());
 
