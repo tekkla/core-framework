@@ -54,18 +54,18 @@ class Dispatcher
 
     /**
      *
-     * @var HeaderHandler
+     * @var Core
      */
-    private $header;
+    private $core;
 
     /**
      * Constructor
      *
      * @param HeaderHandler $header
      */
-    public function __construct(HeaderHandler $header)
+    public function __construct(Core $core)
     {
-        $this->header = $header;
+        $this->core = $core;
     }
 
     /**
@@ -221,7 +221,7 @@ class Dispatcher
         $app_name = $string->camelize();
 
         // Get app instance from app handler
-        $app = $this->core->getAppInstance($app_name);
+        $app = $this->core->apps->getAppInstance($app_name);
 
         // Send 404 error when there is no app instance
         if (empty($app)) {
@@ -269,8 +269,8 @@ class Dispatcher
             // Controller needs to know the output format
             $this->format = 'json';
 
-            $this->header->contentType('application/json', 'utf-8');
-            $this->header->noCache();
+            $this->core->http->header->contentType('application/json', 'utf-8');
+            $this->core->http->header->noCache();
 
             // Run the controller action as ajax command and get the result
             $result = $controller->ajax();
@@ -285,10 +285,10 @@ class Dispatcher
             // No redirect, so we are going to process all ajax commands and return the processed JSON as result
 
             /* @var $ajax \Core\Ajax\Ajax */
-            $ajax = $this->di->get('core.ajax');
+            $ajax = $this->core->di->get('core.ajax');
 
             // Handle messages
-            $messages = $this->di->get('core.message.default')->getAll();
+            $messages = $this->core->di->get('core.message.default')->getAll();
 
             if (!empty($messages)) {
 
@@ -298,12 +298,12 @@ class Dispatcher
                     // Each message gets its own alert
 
                     /* @var $alert \Core\Html\Bootstrap\Alert\Alert */
-                    $alert = $this->di->get('core.html.factory')->create('Bootstrap\Alert\Alert');
+                    $alert = $this->core->di->get('core.html.factory')->create('Bootstrap\Alert\Alert');
                     $alert->setContext($msg->getType());
                     $alert->setDismissable($msg->getDismissable());
 
                     // Fadeout message?
-                    if ($this->config->get('Core', 'js.style.fadeout_time') > 0 && $msg->getFadeout()) {
+                    if ($this->core->config->get('Core', 'js.style.fadeout_time') > 0 && $msg->getFadeout()) {
                         $alert->html->addCss('fadeout');
                     }
 
@@ -320,7 +320,7 @@ class Dispatcher
             }
 
             // @TODO Process possible asset js files to load!
-            $js_objects = $this->di->get('core.asset')
+            $js_objects = $this->core->di->get('core.asset')
                 ->getAssetHandler('js')
                 ->getObjects();
 
@@ -347,7 +347,7 @@ class Dispatcher
             }
         }
 
-        $this->router->setFormat($controller->getFormat());
+        $this->core->router->setFormat($controller->getFormat());
 
         return $result;
     }
@@ -396,7 +396,7 @@ class Dispatcher
             return $result;
         }
 
-        $this->header->sendHttpError(404);
+        $this->core->http->header->sendHttpError(404);
 
         return $msg;
     }
