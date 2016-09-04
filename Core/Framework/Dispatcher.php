@@ -14,32 +14,8 @@ use Core\Framework\Amvc\App\AbstractApp;
  * @copyright 2016
  * @license MIT
  */
-class Dispatcher
+class Dispatcher extends AbstractAcap
 {
-
-    /**
-     *
-     * @var string
-     */
-    private $app;
-
-    /**
-     *
-     * @var string
-     */
-    private $controller;
-
-    /**
-     *
-     * @var string
-     */
-    private $action;
-
-    /**
-     *
-     * @var array
-     */
-    private $params;
 
     /**
      *
@@ -71,109 +47,6 @@ class Dispatcher
 
     /**
      *
-     * @param string $app
-     *
-     * @throws FrameworkException
-     */
-    public function setApp(string $app)
-    {
-        if (empty($app)) {
-            Throw new FrameworkException('App parameter is empty.');
-        }
-
-        $this->app = $app;
-    }
-
-    /**
-     *
-     * @return string
-     */
-    public function getApp(): string
-    {
-        return $this->app ?? '';
-    }
-
-    /**
-     *
-     * @param string $controller
-     *
-     * @throws FrameworkException
-     */
-    public function setController(string $controller)
-    {
-        if (empty($controller)) {
-            Throw new FrameworkException('Controller parameter is empty.');
-        }
-
-        $this->controller = $controller;
-    }
-
-    /**
-     *
-     * @return string
-     */
-    public function getController(): string
-    {
-        return $this->controller ?? '';
-    }
-
-    /**
-     *
-     * @param string $action
-     *
-     * @throws FrameworkException
-     */
-    public function setAction(string $action)
-    {
-        if (empty($action)) {
-            Throw new FrameworkException('Action parameter is empty.');
-        }
-
-        $this->action = $action;
-    }
-
-    /**
-     *
-     * @return string
-     */
-    public function getAction(): string
-    {
-        return $this->action ?? '';
-    }
-
-    /**
-     * Sets dispatcher params and looks for app, controller and action keys and sets dispatcher properties when found.
-     *
-     * @param array $params
-     */
-    public function setParams(array $params)
-    {
-        $this->params = $params;
-
-        $aca = [
-            'app',
-            'controller',
-            'action'
-        ];
-
-        foreach ($aca as $key) {
-            if (isset($params[$key])) {
-                $this->{$key} = $params[$key];
-            }
-        }
-    }
-
-    /**
-     *
-     * @return array
-     */
-    public function getParams(): array
-    {
-        return $this->params ?? [];
-    }
-
-    /**
-     *
      * @param bool $ajax
      */
     public function setAjax(bool $ajax)
@@ -195,7 +68,8 @@ class Dispatcher
      *
      * @return string
      */
-    public function getFormat(): string {
+    public function getFormat(): string
+    {
         return $this->format ?? 'html';
     }
 
@@ -209,7 +83,6 @@ class Dispatcher
      */
     public function dispatch()
     {
-
         $this->managePost();
 
         // Send 404 error when no app name is defined in router
@@ -362,8 +235,8 @@ class Dispatcher
      *
      * @return mixed
      */
-    private function handleRedirect(RedirectInterface $redirect) {
-
+    private function handleRedirect(RedirectInterface $redirect)
+    {
         if ($redirect->getClearPost()) {
 
             $_POST = [];
@@ -382,6 +255,9 @@ class Dispatcher
 
         $dispatcher = new Dispatcher($this->core);
         $dispatcher->setApp($app);
+
+        var_dump($controller);
+
         $dispatcher->setController($controller);
         $dispatcher->setAction($action);
         $dispatcher->setParams($params);
