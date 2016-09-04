@@ -1,19 +1,20 @@
 <?php
 namespace Core\Framework;
 
-use Core\Framework\Amvc\App\AbstractApp;
 use Core\DI\DI;
 use Core\Framework\Page\Page;
 use Core\Ajax\Ajax;
 use Core\Security\Token\SessionToken;
-use Core\Toolbox\Strings\CamelCase;
 use Core\Toolbox\IO\Sendfile;
 use Psr\Log\LoggerInterface;
 use Core\Message\MessageHandler;
 use Core\Framework\Notification\MessageFacade;
 use Core\Framework\Error\ErrorHandler;
-use Core\Framework\Amvc\Controller\RedirectInterface;
 use Core\Framework\Amvc\App\AppHandler;
+
+// Do not show errors by default!
+// @see loadSettings()
+ini_set('display_errors', 0);
 
 /**
  * Core.php
@@ -22,11 +23,6 @@ use Core\Framework\Amvc\App\AppHandler;
  * @copyright 2016
  * @license MIT
  */
-
-// Do not show errors by default!
-// @see loadSettings()
-ini_set('display_errors', 0);
-
 final class Core
 {
 
@@ -862,203 +858,6 @@ final class Core
 
         $this->di->mapValue('core.security.form.token', $token->getToken());
         $this->di->mapValue('core.security.form.token.name', $this->config->get('Core', 'security.form.token'));
-    }
-
-    /**
-     * Calls an existing event method of an app
-     *
-     * @param AbstractApp $app
-     * @param string $event
-     */
-    private function callAppEvent(AbstractApp $app, string $event)
-    {
-        if (method_exists($app, $event)) {
-            return call_user_func([
-                $app,
-                $event
-            ]);
-        }
-    }
-
-    /**
-     * General dispatcher
-     *
-     * @param boolean $match_url
-     *            Optional boolean flag to supress route matching. This is important for situations where the Run()
-     *            method of an app, maybe altered the values for app, controller and/or action, has been called.
-     *            (Default: true)
-     */
-    private function dispatch()
-    {
-
-        // Handle possible posted data
-        $this->managePost();
-
-        // Send 404 error when no app name is defined in router
-        if (empty($this->router['target']['app'])) {
-            return $this->send404('No appname to call.');
-        }
-
-        // We need this toll for some following string conversions
-        $string = new CamelCase($this->router['target']['app']);
-
-        // The apps classname is camelcased so the name from router match need to be converted.
-        $app_name = $string->camelize();
-
-        // Get app instance from app handler
-        $app = $this->getAppInstance($app_name);
-
-        // Send 404 error when there is no app instance
-        if (empty($app)) {
-            return $this->send404('app.object');
-        }
-
-        // Call app event: Run()
-        $event_result = $this->callAppEvent($app, 'Run');
-
-        // Redirect from event?
-        if (!empty($event_result) && $event_result != $app_name) {
-            $this->router->setParam('app', $event_result);
-            $this->router->match();
-            $this->dispatch();
-            return;
-        }
-
-        // Load controller object
-        $string->setString($this->router['target']['controller'] ?? 'Index');
-        $controller_name = $string->camelize();
-
-        $controller = $app->getController($controller_name);
-
-        // Send 404 when controller could not be loaded
-        if ($controller == false) {
-            return $this->send404('Controller::' . $controller_name);
-        }
-
-        // Handle controller action
-        $string->setString($this->router['target']['action'] ?? 'Index');
-        $action = $string->camelize();
-
-        if (!method_exists($controller, $action)) {
-            return $this->send404('Action::' . $action);
-        }
-
-        // Prepare controller object
-        $controller->setAction($action);
-        $controller->setParams($this->router->getParams());
-        $controller->setRoute($this->router->getCurrentRoute());
-
-        if ($this->router->isAjax()) {
-
-            // Controller needs to know the output format
-            $this->router->setFormat('json');
-
-            $this->http->header->contentType('application/json', 'utf-8');
-            $this->http->header->noCache();
-
-            // Result will be processed as ajax command list
-            $controller->ajax();
-
-            /* @var $ajax \Core\Ajax\Ajax */
-            $ajax = $this->di->get('core.ajax');
-
-            // Handle messages
-            $messages = $this->di->get('core.message.default')->getAll();
-
-            if (!empty($messages)) {
-
-                /* @var $msg \Core\Message\Message */
-                foreach ($messages as $msg) {
-
-                    // Each message gets its own alert
-
-                    /* @var $alert \Core\Html\Bootstrap\Alert\Alert */
-                    $alert = $this->di->get('core.html.factory')->create('Bootstrap\Alert\Alert');
-                    $alert->setContext($msg->getType());
-                    $alert->setDismissable($msg->getDismissable());
-
-                    // Fadeout message?
-                    if ($this->config->get('Core', 'js.style.fadeout_time') > 0 && $msg->getFadeout()) {
-                        $alert->html->addCss('fadeout');
-                    }
-
-                    // Has this message an id which we can use as id for the alerts html element?
-                    if (!empty($msg->getId())) {
-                        $alert->html->setId($msg->getId());
-                    }
-
-                    // At least append the message content
-                    $alert->setContent($msg->getMessage());
-
-                    $ajax->addCommand(new \Core\Ajax\Commands\Dom\DomCommand($msg->getTarget(), $msg->getDisplayFunction(), $alert->build()));
-                }
-            }
-
-            // @TODO Process possible asset js files to load!
-            $js_objects = $this->di->get('core.asset')
-                ->getAssetHandler('js')
-                ->getObjects();
-
-            if (!empty($js_objects)) {
-                foreach ($js_objects as $js) {
-                    if ($js->getType() == 'file') {
-                        $ajax->addCommand(new \Core\Ajax\Commands\Act\JQueryGetScriptCommand($js->getContent()));
-                    }
-                }
-            }
-
-            // Run ajax processor
-            $result = $ajax->process();
-        }
-        else {
-
-            $result = $controller->run();
-            $this->router->setFormat($controller->getFormat());
-        }
-
-        $redirect = $controller->getRedirect();
-
-        if ($redirect instanceof RedirectInterface) {
-
-            $result .= $this->dispatch();
-        }
-
-        return $result;
-    }
-
-    /**
-     * Mangaes and handles $_POST data by checking $_POST for sent session token and apply
-     */
-    private function managePost()
-    {
-        // Do only react on POST requests
-        if ($_SERVER['REQUEST_METHOD'] != 'POST' || empty($_POST)) {
-            return;
-        }
-
-        /* @var $post \Core\Http\Post\Post */
-        $this->di->mapService('core.http.post', '\Core\Http\Post\Post');
-
-        $post = $this->di->get('core.http.post');
-
-        // Setting the name of the session token that has to/gets sent with a form
-        $post->setTokenName($this->config->get('Core', 'security.form.token'));
-
-        // Validate posted token with session token
-        if (!$post->validateCompareWithPostToken($this->di->get('core.security.form.token'))) {
-            return;
-        }
-
-        // Some data cleanup
-        $post->trimData();
-
-        // Assingn app related post data to the corresponding app
-        $post_data = $post->get();
-
-        foreach ($post_data as $name => $data) {
-            $app = $this->getAppInstance($name);
-            $app->post->set($data);
-        }
     }
 
     /**

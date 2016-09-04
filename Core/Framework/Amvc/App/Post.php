@@ -67,7 +67,12 @@ class Post
     public function clean()
     {
         $this->data = [];
-        unset($_POST[$this->app->getName(true)]);
+
+        $app = $this->app->getName(true);
+
+        if (isset($_POST[$app])) {
+            unset($_POST[$app]);
+        }
     }
 }
 

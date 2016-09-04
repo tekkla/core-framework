@@ -5,6 +5,7 @@ use Core\Framework\Amvc\Controller\Redirect;
 use Core\Framework\Amvc\Controller\RedirectInterface;
 use Core\Http\Header\HeaderHandler;
 use Core\Toolbox\Strings\CamelCase;
+use Core\Framework\Amvc\App\AbstractApp;
 
 /**
  * Dispatcher.php
@@ -209,6 +210,8 @@ class Dispatcher
     public function dispatch()
     {
 
+        $this->managePost();
+
         // Send 404 error when no app name is defined in router
         if (empty($this->app)) {
             return $this->send404('AppName');
@@ -362,7 +365,14 @@ class Dispatcher
     private function handleRedirect(RedirectInterface $redirect) {
 
         if ($redirect->getClearPost()) {
+
             $_POST = [];
+
+            $apps = $this->core->apps->getLoadedApps();
+
+            foreach ($apps as $app) {
+                $app->post->clean();
+            }
         }
 
         $app = $redirect->getApp() ?? $this->app;
@@ -399,6 +409,61 @@ class Dispatcher
         $this->core->http->header->sendHttpError(404);
 
         return $msg;
+    }
+
+    /**
+     * Calls an existing event method of an app
+     *
+     * @param AbstractApp $app
+     * @param string $event
+     */
+    private function callAppEvent(AbstractApp $app, string $event)
+    {
+        if (method_exists($app, $event)) {
+            return call_user_func([
+                $app,
+                $event
+            ]);
+        }
+    }
+
+    /**
+     * Mangaes and handles $_POST data by checking $_POST for sent session token and apply
+     *
+     * @todo Should emptied $_POST from redirect cause a reset of
+     */
+    private function managePost()
+    {
+        // Do only react on POST requests
+        if ($_SERVER['REQUEST_METHOD'] != 'POST' || empty($_POST)) {
+            return;
+        }
+
+        if (!$this->core->di->exists('core.http.post')) {
+            $this->core->di->mapService('core.http.post', '\Core\Http\Post\Post');
+        }
+
+        /* @var $post \Core\Http\Post\Post */
+        $post = $this->core->di->get('core.http.post');
+
+        // Setting the name of the session token that has to/gets sent with a form
+        $post->setTokenName($this->core->config->get('Core', 'security.form.token'));
+
+        // Validate posted token with session token
+        if (!$post->validateCompareWithPostToken($this->core->di->get('core.security.form.token'))) {
+            return;
+        }
+
+        // Some data cleanup
+        $post->trimData();
+
+        // Assingn app related post data to the corresponding app
+        $post_data = $post->get();
+
+        foreach ($post_data as $name => $data) {
+            $app = $this->core->apps->getAppInstance($name);
+            $app->post->set($data);
+        }
     }
 }
 
