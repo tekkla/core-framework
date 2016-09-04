@@ -12,6 +12,8 @@ use Psr\Log\LoggerInterface;
 use Core\Message\MessageHandler;
 use Core\Framework\Notification\MessageFacade;
 use Core\Framework\Error\ErrorHandler;
+use Core\Framework\Amvc\Controller\RedirectInterface;
+use Core\Framework\Amvc\App\AppHandler;
 
 /**
  * Core.php
@@ -36,9 +38,9 @@ final class Core
 
     /**
      *
-     * @var array
+     * @var AppHandler
      */
-    private $apps = [];
+    public $apps;
 
     /**
      *
@@ -154,6 +156,7 @@ final class Core
 
             // Create core DI container instance and map the instance to comntainer
             $this->di = \Core\DI\DI::getInstance();
+            $this->di->mapValue('core.core', $this);
             $this->di->mapValue('core.di', $this->di);
 
             $this->initLogger();
@@ -167,28 +170,33 @@ final class Core
             $this->initConfig();
             $this->initMailer();
             $this->initRouter();
+            $this->initAppHandler();
 
             // Get an instance of Core app
-            $this->getAppInstance('Core');
+            $this->apps->getAppInstance('Core');
 
             $this->initSecurity();
             $this->initPage();
             $this->initAssetManager();
 
             // Run highlevel system
-            $this->autodiscoverApps();
+            $this->apps->autodiscover(APPSDIR);
 
             // Match request against the generic routes to get the ajax request flag and to match a fallback result.
             $this->router->match();
 
             // Initiate apps
-            $this->initApps();
+            $this->apps->init();
 
             // Match routes again as now possible app routes are available
             $this->router->match();
 
             // Run dispatcher
-            $result = $this->dispatch();
+            $dispatcher = new Dispatcher($this->http->header);
+            $dispatcher->setParams($this->router->getParams());
+            $dispatcher->setAjax($this->router->isAjax());
+
+            $result = $dispatcher->dispatch();
 
             // Send mails
             $this->mailer->send();
@@ -211,7 +219,7 @@ final class Core
                 return;
             }
 
-            switch ($this->router->getFormat()) {
+            switch ($dispatcher->getFormat()) {
 
                 case 'file':
                     $sendfile = new Sendfile($result);
@@ -223,7 +231,7 @@ final class Core
 
                     $this->http->header->contentType('text/html', 'utf-8');
 
-                    $language = $this->getAppInstance('Core')->language;
+                    $language = $this->apps->getAppInstance('Core')->language;
 
                     // Add logoff button for logged in users
                     if ($this->user->isGuest()) {
@@ -462,8 +470,7 @@ final class Core
     {
         // Admin users can request to load config from db instead out of cache
         // @TODO Cache not implemented for now
-        #$refresh_cache = isset($this->user) && $this->user->getAdmin() && isset($_REQUEST['refresh_config_cache']);
-
+        // $refresh_cache = isset($this->user) && $this->user->getAdmin() && isset($_REQUEST['refresh_config_cache']);
         $repository = new \Core\Config\Repository\DbRepository();
         $repository->setPdo($this->di->get('db.default.conn'));
         $repository->setTable('tekfw_core_configs');
@@ -522,7 +529,7 @@ final class Core
             'apps' => BASEURL . '/Apps',
             'cache' => BASEURL . '/Cache',
             'vendor' => BASEURL . '/vendor',
-            'vendor_tekkla' => BASEURL . '/vendor/tekkla',
+            'vendor_tekkla' => BASEURL . '/vendor/tekkla'
         ];
 
         $core_storage->addUrls($urls);
@@ -628,6 +635,17 @@ final class Core
         foreach ($routes as $name => $route) {
             $this->router->map($route['method'] ?? 'GET|POST', $route['route'], $route['target'] ?? [], 'generic.' . $name);
         }
+    }
+
+    private function initAppHandler()
+    {
+        $this->di->mapService('core.apps', '\Core\Framework\Amvc\App\AppHandler', 'core.core');
+
+        /* @var $apps \Core\Framework\Amvc\App\AppHandler */
+        $apps = $this->di->get('core.apps');
+        $apps->addAppToSkipOnAutodiscover('Core');
+
+        $this->apps = $apps;
     }
 
     /**
@@ -750,7 +768,7 @@ final class Core
      * Runs autologin procedure and loads user data on success.
      * Creates random session token which must be sent with each form or all posted data will be dropped.
      *
-     * @TODO Create BanHandler!!!
+     * @todo Create BanHandler!!!
      */
     private function initSecurity()
     {
@@ -998,6 +1016,13 @@ final class Core
             $this->router->setFormat($controller->getFormat());
         }
 
+        $redirect = $controller->getRedirect();
+
+        if ($redirect instanceof RedirectInterface) {
+
+            $result .= $this->dispatch();
+        }
+
         return $result;
     }
 
@@ -1077,7 +1102,8 @@ final class Core
     }
 
     /**
-     * @TODO Bad code. :/
+     *
+     * @todo Bad code. :/
      *
      * @param string $stage
      */
@@ -1098,144 +1124,5 @@ final class Core
         $this->http->header->sendHttpError(404);
 
         return $msg;
-    }
-
-    /**
-     * Get a singleton app object
-     *
-     * @param string $name
-     *            Name of app instance to get
-     *
-     * @return \Core\Framework\Amvc\App\AbstractApp
-     */
-    public function &getAppInstance(string $name)
-    {
-        if (empty($name)) {
-            Throw new FrameworkException('Core::getAppInstance() needs an app name');
-        }
-
-        $string = new CamelCase($name);
-        $name = $string->camelize();
-
-        // App instances are singletons!
-        if (!array_key_exists($name, $this->apps)) {
-
-            // Create class name
-            $class = '\Apps\\' . $name . '\\' . $name;
-
-            //
-            $filename = $this->basedir . str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
-
-            if (!file_exists($filename)) {
-                Throw new FrameworkException(sprintf('Apps could not find an app classfile "%s" for app "%s"', $name, $filename));
-            }
-
-            // Default arguments for each app instance
-            $args = [
-                $name,
-                $this->config->createStorage($name),
-                $this
-            ];
-
-            $instance = $this->di->instance($class, $args);
-
-            if (!$instance instanceof AbstractApp) {
-                Throw new FrameworkException('Apps must be an instance of AbstractApp class!');
-            }
-
-            $instance->setName($name);
-            $instance->language->setCode($this->config->get('Core', 'site.language.default'));
-
-            $this->apps[$name] = $instance;
-        }
-
-        return $this->apps[$name];
-    }
-
-    /**
-     * Autodiscovers installed apps in the given path
-     *
-     * When an app is found an instance of it will be created.
-     *
-     * @param string|array $path
-     *            Path to check for apps. Can be an array of paths
-     */
-    private function autodiscoverApps()
-    {
-        $path = APPSDIR;
-
-        if (!is_array($path)) {
-            $path = (array) $path;
-        }
-
-        foreach ($path as $apps_dir) {
-
-            if (is_dir($apps_dir)) {
-
-                if (($dh = opendir($apps_dir)) !== false) {
-
-                    while (($name = readdir($dh)) !== false) {
-
-                        if ($name{0} == '.' || $name == 'Core' || is_file($apps_dir . '/' . $name)) {
-                            continue;
-                        }
-
-                        $app = $this->getAppInstance($name);
-                    }
-
-                    closedir($dh);
-                }
-            }
-        }
-    }
-
-    /**
-     * Returns a list of loaded app names
-     *
-     * @param bool $only_names
-     *            Optional flag to switch the return value to be only an array of app names or instances (Default: true)
-     *
-     * @return array
-     */
-    public function getLoadedApps(bool $only_names = true)
-    {
-        if ($only_names) {
-            return array_keys($this->apps);
-        }
-
-        return $this->apps;
-    }
-
-    /**
-     * Inits all loaded apps, calls core specific actions and maps
-     */
-    private function initApps()
-    {
-
-        // Run app specfic functions
-
-        /* @var $app \Core\Amvc\App\Abstractapp */
-        foreach ($this->apps as $app) {
-
-            // Call additional Init() methods in apps
-            if (method_exists($app, 'Init')) {
-                $app->Init();
-            }
-
-            switch ($app->getName()) {
-                case 'Core':
-
-                    $config = $this->config->getStorage('Core');
-
-                    // Create home url
-                    $type = $this->user->isGuest() ? 'guest' : 'user';
-                    $route = $config->get('home.' . $type . '.route');
-                    $params = parse_ini_string($config->get('home.' . $type . '.params'));
-
-                    $config->set('url.home', $app->url($route, $params));
-
-                    break;
-            }
-        }
     }
 }

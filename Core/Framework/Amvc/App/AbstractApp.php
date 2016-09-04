@@ -12,7 +12,6 @@ use Core\Framework\Page\Page;
 use Core\Config\ConfigStorage;
 use Core\Framework\Amvc\Controller\Controller;
 use Core\Framework\Amvc\View\View;
-use Core\DI\DIInterface;
 use Core\Framework\Core;
 
 /**
@@ -246,7 +245,6 @@ abstract class AbstractApp
      */
     protected function initPaths(array $exclude_dirs = [])
     {
-        $apps_dir = $this->core->config->get('Core', 'dir.apps');
         $apps_url = $this->core->config->get('Core', 'url.apps');
 
         // Set path property which can be used on including additional app files like settings, routes, config etc
@@ -289,10 +287,6 @@ abstract class AbstractApp
         if (isset($this->settings) && $this->settings->exists('routes') || !self::$init_stages[$this->name]['routes']) {
 
             $routes = $this->settings->get('routes');
-
-            // Get uncamelized app name
-            $string = new CamelCase($this->name);
-            $app = $string->uncamelize();
 
             // Add always a missing index route!
             if (!array_key_exists('index', $routes)) {
@@ -449,7 +443,7 @@ abstract class AbstractApp
 
             // Set Core language as fallback language to all app that are nor Core
             if ($this->name != 'Core') {
-                $this->language->setFallbackLanguage($this->core->getAppInstance('Core')->language);
+                $this->language->setFallbackLanguage($this->core->apps->getAppInstance('Core')->language);
             }
 
             self::$init_stages[$this->name]['language'] = true;

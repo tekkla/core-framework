@@ -1,7 +1,7 @@
 <?php
 namespace Core\Framework\Amvc\App;
 
-use Core\Config\Config;
+use Core\Framework\Core;
 
 /**
  * AppHandlerInterface.php
@@ -12,31 +12,20 @@ use Core\Config\Config;
  */
 interface AppHandlerInterface extends \IteratorAggregate
 {
+
     /**
      * Constructor
+     *
+     * @param Core $core
      */
-    public function __construct(Config $config);
+    public function __construct(Core $core);
 
     /**
-     * Sets ajax flag that tells requested apps that they are running in ajax context
+     * Adds an app name to skip on app autodiscover
      *
-     * @param bool $ajax
+     * @param string $app
      */
-    public function setAjax(bool $ajax);
-
-    public function getAjax(): bool;
-
-    /**
-     *
-     * @param string $language
-     */
-    public function setLanguage(string $language);
-
-    /**
-     *
-     * @return string
-     */
-    public function getLanguage(): string;
+    public function addAppToSkipOnAutodiscover(string $app);
 
     /**
      * Get a singleton app object
@@ -44,19 +33,14 @@ interface AppHandlerInterface extends \IteratorAggregate
      * @param string $name
      *            Name of app instance to get
      *
-     * @return \Core\Framework\Amvc\App\AbstractApp
+     * @return AbstractApp
      */
-    public function &getAppInstance(string $name);
+    public function &getAppInstance(string $name): AbstractApp;
 
     /**
-     * Autodiscovers installed apps in the given path
-     *
-     * When an app is found an instance of it will be created.
-     *
-     * @param string|array $path
-     *            Path to check for apps. Can be an array of paths
+     * Autodiscovers installed apps in the set apps path
      */
-    public function autodiscover($path);
+    public function autodiscover();
 
     /**
      * Returns a list of loaded app names
@@ -66,18 +50,18 @@ interface AppHandlerInterface extends \IteratorAggregate
      *
      * @return array
      */
-    public function getLoadedApps(bool $only_names = true);
-
-    /**
-     * Returns instances stack
-     *
-     * @return array
-     */
-    public function getInstances(): array;
+    public function getLoadedApps(bool $only_names = true): array;
 
     /**
      *
      * @param string $key
      */
-    public function &__get(string $key);
+    public function &__get(string $key): AbstractApp;
+
+    /**
+     * Inits all loaded apps, calls core specific actions and maps
+     *
+     * @todo Add way to register and call init methods via closure
+     */
+    public function init();
 }

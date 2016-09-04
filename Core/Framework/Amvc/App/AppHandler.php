@@ -5,6 +5,7 @@ use Core\Config\Config;
 use Core\Toolbox\Strings\CamelCase;
 use Core\Framework\Amvc\App\Paths;
 use Core\Framework\Amvc\App\AppHandlerInterface;
+use Core\Framework\Core;
 
 /**
  * AppHandler.php
@@ -23,71 +24,35 @@ class AppHandler implements AppHandlerInterface
     private $instances = [];
 
     /**
-     * Ajax flag witch will be set
      *
-     * @var bool
+     * @var Core
      */
-    private $ajax = false;
-
-    /**
-     * Which language do we use?
-     *
-     * @var string
-     */
-    private $language = 'en';
+    private $core;
 
     /**
      *
-     * @var Config
+     * @var array
      */
-    private $config;
+    private $skip_app_autodiscover = [];
 
     /**
      *
-     * @var Paths
+     * @param Core $core
      */
-    public $paths;
-
-    /**
-     * Constructor
-     */
-    public function __construct(Config $config)
+    public function __construct(Core $core)
     {
-        $this->paths = new Paths();
-        $this->config = $config;
-    }
-
-    /**
-     * Sets ajax flag that tells requested apps that they are running in ajax context
-     *
-     * @param bool $ajax
-     */
-    public function setAjax(bool $ajax)
-    {
-        $this->ajax = $ajax;
-    }
-
-    public function getAjax(): bool
-    {
-        return $this->ajax;
+        $this->core = $core;
     }
 
     /**
      *
-     * @param string $language
-     */
-    public function setLanguage(string $language)
-    {
-        $this->language = $language;
-    }
-
-    /**
+     * {@inheritdoc}
      *
-     * @return string
+     * @see \Core\Framework\Amvc\App\AppHandlerInterface::addAppToSkipOnAutodiscover()
      */
-    public function getLanguage(): string
+    public function addAppToSkipOnAutodiscover(string $app)
     {
-        return $this->language;
+        $this->skip_app_autodiscover[] = $app;
     }
 
     /**
@@ -96,9 +61,9 @@ class AppHandler implements AppHandlerInterface
      * @param string $name
      *            Name of app instance to get
      *
-     * @return \Core\Framework\Amvc\App\AbstractApp
+     * @return AbstractApp
      */
-    public function &getAppInstance(string $name)
+    public function &getAppInstance(string $name): AbstractApp
     {
         if (empty($name)) {
             Throw new AppHandlerException('AppHandler::getAppInstance() method needs a camelized appname.');
@@ -111,7 +76,7 @@ class AppHandler implements AppHandlerInterface
         if (!array_key_exists($name, $this->instances)) {
 
             // Create class name
-            $class = '\AppHandler\\' . $name . '\\' . $name;
+            $class = '\Apps\\' . $name . '\\' . $name;
 
             //
             $filename = BASEDIR . str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
@@ -123,19 +88,18 @@ class AppHandler implements AppHandlerInterface
             // Default arguments for each app instance
             $args = [
                 $name,
-                $this,
-                $this->config->getStorage($name),
-                'core.page',
-                'core.di'
+                $this->core->config->createStorage($name),
+                $this->core
             ];
 
-            $instance = $this->di->instance($class, $args);
+            $instance = $this->core->di->instance($class, $args);
 
             if (!$instance instanceof AbstractApp) {
                 Throw new AppHandlerException('AppHandler must be an instance of AbstractApp class!');
             }
 
             $instance->setName($name);
+            $instance->language->setCode($this->core->config->get('Core', 'site.language.default') ?? 'en');
 
             $this->instances[$name] = $instance;
         }
@@ -151,56 +115,39 @@ class AppHandler implements AppHandlerInterface
      * @param string|array $path
      *            Path to check for apps. Can be an array of paths
      */
-    public function autodiscover($path)
+    public function autodiscover()
     {
-        if (!is_array($path)) {
-            $path = (array) $path;
-        }
+        $path = $this->core->config->get('Core', 'dir.apps');
 
-        foreach ($path as $apps_dir) {
+        if (($dh = opendir($path)) !== false) {
 
-            if (is_dir($apps_dir)) {
+            while (($name = readdir($dh)) !== false) {
 
-                if (($dh = opendir($apps_dir)) !== false) {
-
-                    while (($name = readdir($dh)) !== false) {
-
-                        if ($name{0} == '.' || $name == 'Core' || is_file($apps_dir . '/' . $name)) {
-                            continue;
-                        }
-
-                        $app = $this->getAppInstance($name);
-                    }
-
-                    closedir($dh);
+                if ($name{0} == '.' || in_array($name, $this->skip_app_autodiscover) || is_file($path . '/' . $name)) {
+                    continue;
                 }
+
+                $this->getAppInstance($name);
             }
+
+            closedir($dh);
         }
     }
 
     /**
-     * Returns a list of loaded app names
+     * Returns all app instances or a list of instanciated apps
      *
      * @param bool $only_names
      *            Optional flag to switch the return value to be only an array of app names or instances (Default: true)
      *
      * @return array
      */
-    public function getLoadedApps(bool $only_names = true)
+    public function getLoadedApps(bool $only_names = true): array
     {
         if ($only_names) {
             return array_keys($this->instances);
         }
 
-        return $this->instances;
-    }
-
-
-    /**
-     * @return array
-     */
-    public function getInstances():array
-    {
         return $this->instances;
     }
 
@@ -219,8 +166,42 @@ class AppHandler implements AppHandlerInterface
      *
      * @param string $key
      */
-    public function &__get(string $key)
+    public function &__get(string $key): AbstractApp
     {
         return $this->getAppInstance($key);
+    }
+
+    /**
+     * Inits all loaded apps, calls core specific actions and maps
+     *
+     * @todo Add way to register and call init methods via closure
+     */
+    public function init()
+    {
+
+        // Run app specfic functions
+
+        /* @var $app \Core\Framework\Amvc\App\AbstractApp */
+        foreach ($this->instances as $app) {
+
+            // Call additional Init() methods in apps
+            if (method_exists($app, 'Init')) {
+                $app->Init();
+            }
+
+            switch ($app->getName()) {
+
+                case 'Core':
+
+                    // Create home url
+                    $type = $this->core->user->isGuest() ? 'guest' : 'user';
+                    $route = $app->config->get('home.' . $type . '.route');
+                    $params = parse_ini_string($app->config->get('home.' . $type . '.params'));
+
+                    $app->config->set('url.home', $app->url($route, $params));
+
+                    break;
+            }
+        }
     }
 }

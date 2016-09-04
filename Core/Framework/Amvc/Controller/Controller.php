@@ -6,7 +6,6 @@ use Core\Framework\Amvc\View\View;
 use Core\Message\Message;
 use Core\Html\FormDesigner\FormDesigner;
 use Core\Ajax\Ajax;
-use Core\Ajax\Dom;
 use Core\Ajax\Commands\Dom\DomCommand;
 use Core\Toolbox\Strings\CamelCase;
 
@@ -170,6 +169,8 @@ class Controller extends AbstractMvc
         // Redirect initiated from within the called action?
         if (!empty($this->redirect)) {
 
+            \FB::log($this->redirect);
+
             // Clean post data wanted?
             if ($this->redirect[2] == true) {
                 $this->app->post->clean();
@@ -305,6 +306,18 @@ class Controller extends AbstractMvc
     }
 
     /**
+     * Returns current redirect data.
+     *
+     * Is empty when no redirect has been started.
+     *
+     * @return array
+     */
+    public function getRedirect(): array
+    {
+        return $this->redirect;
+    }
+
+    /**
      * Redirects from one action to another
      *
      * @param string|array $target
@@ -315,19 +328,33 @@ class Controller extends AbstractMvc
      * @param bool $clear_post
      *            Optional flag to control emptying posted data (Default: true)
      */
-    protected function redirect(string $target, array $params = [], bool $clear_post = true)
+    protected function redirect($app = null, $controller = null, $action = null, array $params = [], bool $clear_post = true)
     {
         if (empty($params)) {
             $params = $this->params;
         }
 
-        $this->redirect = [
-            $target,
-            $params,
-            $clear_post
-        ];
+        $redirect = new Redirect();
 
-        return $this;
+        if (!empty($app)) {
+            $redirect->setApp($app);
+        }
+
+        if (!empty($controller)) {
+            $redirect->setController($controller);
+        }
+
+        if (!empty($action)) {
+            $redirect->setAction($action);
+        }
+
+        if (!empty($params)) {
+            $redirect->setParams($params);
+        }
+
+        $redirect->setClearPost($clear_post);
+
+        $this->redirect = $redirect;
     }
 
     /**
