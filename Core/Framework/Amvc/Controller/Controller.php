@@ -168,58 +168,7 @@ class Controller extends AbstractMvc
 
         // Redirect initiated from within the called action?
         if (!empty($this->redirect)) {
-
-            \FB::log($this->redirect);
-
-            // Clean post data wanted?
-            if ($this->redirect[2] == true) {
-                $this->app->post->clean();
-            }
-
-            // Target is an array and will be analyzed and used as app, controller and actionnames
-            if (is_array($this->redirect[0])) {
-
-                // Make sure we have all essential data before calling ACA
-                $require = [
-                    'app',
-                    'controller',
-                    'action'
-                ];
-
-                foreach ($require as $check) {
-                    if (empty($this->redirect[0][$check])) {
-                        Throw new ControllerException(sprintf('Redirects by arrayed $target need a set "%s" element.', $check));
-                    }
-                }
-
-                $app = $this->app->handler->getAppInstance($this->redirect[0]['app']);
-
-                $controller = $app->getController($this->redirect[0]['controller']);
-                $controller->setAction($this->redirect[0]['action']);
-                $controller->setParams($this->redirect[1]);
-
-                $return = $controller->run();
-
-                // Prevent rendering of this controllers view because rendering results
-                // are coming from the redirected ACA
-                $this->render = false;
-
-                // Reset redirection settings
-                $this->redirect = [];
-            }
-
-            // Target is a string and is treated as action name
-            else {
-
-                // It is important to clean the redirection property before calling the redirection action in this
-                // controller. Without cleaning it an endless redirect recursion occurs.
-                $this->action = $this->redirect[0];
-                $this->params = $this->redirect[1];
-
-                $this->redirect = [];
-
-                $return = $this->run();
-            }
+            return $this->redirect;
         }
 
         // Do we have a result?

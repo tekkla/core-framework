@@ -187,6 +187,8 @@ final class Core
             // Match routes again as now possible app routes are available
             $this->router->match();
 
+            var_dump($this->router->getParams());
+
             // Run dispatcher
             $dispatcher = new Dispatcher($this);
             $dispatcher->setParams($this->router->getParams());

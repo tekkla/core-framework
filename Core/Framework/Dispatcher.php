@@ -6,6 +6,7 @@ use Core\Framework\Amvc\Controller\RedirectInterface;
 use Core\Http\Header\HeaderHandler;
 use Core\Toolbox\Strings\CamelCase;
 use Core\Framework\Amvc\App\AbstractApp;
+use Core\Framework\Amvc\App\Post;
 
 /**
  * Dispatcher.php
@@ -244,7 +245,9 @@ class Dispatcher extends AbstractAcap
             $apps = $this->core->apps->getLoadedApps();
 
             foreach ($apps as $app) {
-                $app->post->clean();
+                if ($app->post instanceof Post) {
+                    $app->post->clean();
+                }
             }
         }
 

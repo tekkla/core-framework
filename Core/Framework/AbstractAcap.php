@@ -130,9 +130,7 @@ abstract class AbstractAcap implements AcapInterface
         ];
 
         foreach ($aca as $key) {
-            if (isset($params[$key])) {
-                $this->{$key} = $params[$key];
-            }
+            $this->{$key} = $params[$key] ?? 'Index';
         }
     }
 
