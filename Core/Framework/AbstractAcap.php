@@ -58,7 +58,7 @@ abstract class AbstractAcap implements AcapInterface
      */
     public function getApp(): string
     {
-        return $this->app ?? '';
+        return $this->app ?? 'Core';
     }
 
     /**
@@ -84,7 +84,7 @@ abstract class AbstractAcap implements AcapInterface
      */
     public function getController(): string
     {
-        return $this->controller ?? '';
+        return $this->controller ?? 'Index';
     }
 
     /**
@@ -110,7 +110,7 @@ abstract class AbstractAcap implements AcapInterface
      */
     public function getAction(): string
     {
-        return $this->action ?? '';
+        return $this->action ?? 'Index';
     }
 
     /**
@@ -130,7 +130,9 @@ abstract class AbstractAcap implements AcapInterface
         ];
 
         foreach ($aca as $key) {
-            $this->{$key} = $params[$key] ?? 'Index';
+            if (isset($params[$key])) {
+                $this->{$key} = $params[$key];
+            }
         }
     }
 

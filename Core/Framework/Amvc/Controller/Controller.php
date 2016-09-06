@@ -63,9 +63,9 @@ class Controller extends AbstractMvc
     /**
      * Redirection definition
      *
-     * @var array
+     * @var Redirect
      */
-    protected $redirect = [];
+    protected $redirect;
 
     /**
      * Controls the output format
@@ -135,6 +135,19 @@ class Controller extends AbstractMvc
         return $this->format;
     }
 
+    public function getRedirect()
+    {
+        return $this->redirect;
+    }
+
+    /**
+     * Deletes a set RedirectObject
+     */
+    public function clearRedirect()
+    {
+        unset($this->redirect);
+    }
+
     /**
      * Runs the requested controller action
      *
@@ -165,11 +178,6 @@ class Controller extends AbstractMvc
 
         // a little bit of reflection magic to pass request param into controller func
         $return = $this->di->invokeMethod($this, $this->action, $this->params);
-
-        // Redirect initiated from within the called action?
-        if (!empty($this->redirect)) {
-            return $this->redirect;
-        }
 
         // Do we have a result?
         if (isset($return)) {
@@ -255,18 +263,6 @@ class Controller extends AbstractMvc
     }
 
     /**
-     * Returns current redirect data.
-     *
-     * Is empty when no redirect has been started.
-     *
-     * @return array
-     */
-    public function getRedirect(): array
-    {
-        return $this->redirect;
-    }
-
-    /**
      * Redirects from one action to another
      *
      * @param string|array $target
@@ -285,22 +281,10 @@ class Controller extends AbstractMvc
 
         $redirect = new Redirect();
 
-        if (!empty($app)) {
-            $redirect->setApp($app);
-        }
-
-        if (!empty($controller)) {
-            $redirect->setController($controller);
-        }
-
-        if (!empty($action)) {
-            $redirect->setAction($action);
-        }
-
-        if (!empty($params)) {
-            $redirect->setParams($params);
-        }
-
+        $redirect->setApp(empty($app) ? $this->app->getName() : $app);
+        $redirect->setController(empty($controller) ? $this->getName() : $controller);
+        $redirect->setAction(empty($action) ? $this->getAction() : $action);
+        $redirect->setParams($params);
         $redirect->setClearPost($clear_post);
 
         $this->redirect = $redirect;

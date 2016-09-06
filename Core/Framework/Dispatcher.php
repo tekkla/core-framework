@@ -95,10 +95,10 @@ class Dispatcher extends AbstractAcap
         $string = new CamelCase($this->app);
 
         // The apps classname is camelcased so the name from router match need to be converted.
-        $app_name = $string->camelize();
+        $this->app = $string->camelize();
 
         // Get app instance from app handler
-        $app = $this->core->apps->getAppInstance($app_name);
+        $app = $this->core->apps->getAppInstance($this->app);
 
         // Send 404 error when there is no app instance
         if (empty($app)) {
@@ -109,7 +109,7 @@ class Dispatcher extends AbstractAcap
         $event_result = $this->callAppEvent($app, 'Run');
 
         // Redirect from event?
-        if (!empty($event_result) && $event_result != $app_name) {
+        if (!empty($event_result) && $event_result != $this->app) {
 
             $redirect = new Redirect();
             $redirect->setApp($event_result);
@@ -117,27 +117,37 @@ class Dispatcher extends AbstractAcap
             return $this->handleRedirect($redirect);
         }
 
+        // Send 404 error when no app name is defined in router
+        if (empty($this->controller)) {
+            return $this->send404('ControllerName');
+        }
+
         // Load controller object
         $string->setString($this->controller);
-        $controller_name = $string->camelize();
+        $this->controller = $string->camelize();
 
-        $controller = $app->getController($controller_name);
+        $controller = $app->getController($this->controller);
 
         // Send 404 when controller could not be loaded
         if ($controller == false) {
-            return $this->send404('Controller::' . $controller_name);
+            return $this->send404('Controller::' . $this->controller);
+        }
+
+        // Send 404 error when no app name is defined in router
+        if (empty($this->action)) {
+            return $this->send404('ActionName');
         }
 
         // Handle controller action
         $string->setString($this->action);
-        $action = $string->camelize();
+        $this->action = $string->camelize();
 
-        if (!method_exists($controller, $action)) {
-            return $this->send404('Action::' . $action);
+        if (!method_exists($controller, $this->action)) {
+            return $this->send404('Action::' . $this->action);
         }
 
         // Prepare controller object
-        $controller->setAction($action);
+        $controller->setAction($this->action);
         $controller->setParams($this->params);
         $controller->setRoute($this->core->router->getCurrentRoute());
 
@@ -150,13 +160,17 @@ class Dispatcher extends AbstractAcap
             $this->core->http->header->noCache();
 
             // Run the controller action as ajax command and get the result
-            $result = $controller->ajax();
+            $controller->ajax();
 
-            // is the result an redirect?
-            if ($result instanceof RedirectInterface) {
+            // Controller flagged as redirect?
+            $redirect = $controller->getRedirect();
+
+            if (isset($redirect) && $redirect instanceof RedirectInterface) {
+
+                $controller->clearRedirect();
 
                 // Returns the redirect
-                return $this->handleRedirect($result);
+                $this->handleRedirect($redirect);
             }
 
             // No redirect, so we are going to process all ajax commands and return the processed JSON as result
@@ -216,11 +230,15 @@ class Dispatcher extends AbstractAcap
 
             $result = $controller->run();
 
+            $redirect = $controller->getRedirect();
+
             // is the result an redirect?
-            if ($result instanceof RedirectInterface) {
+            if (isset($redirect) && $redirect instanceof RedirectInterface) {
+
+                $controller->clearRedirect();
 
                 // Returns the redirect
-                return $this->handleRedirect($result);
+                $result = $this->handleRedirect($redirect);
             }
         }
 
@@ -245,7 +263,7 @@ class Dispatcher extends AbstractAcap
             $apps = $this->core->apps->getLoadedApps();
 
             foreach ($apps as $app) {
-                if ($app->post instanceof Post) {
+                if (isset($app->post)) {
                     $app->post->clean();
                 }
             }
@@ -257,13 +275,12 @@ class Dispatcher extends AbstractAcap
         $params = array_merge($redirect->getParams(), $this->params);
 
         $dispatcher = new Dispatcher($this->core);
+
+        $dispatcher->setParams($params);
         $dispatcher->setApp($app);
-
-        var_dump($controller);
-
         $dispatcher->setController($controller);
         $dispatcher->setAction($action);
-        $dispatcher->setParams($params);
+
         $dispatcher->setAjax($this->ajax);
 
         return $dispatcher->dispatch();
