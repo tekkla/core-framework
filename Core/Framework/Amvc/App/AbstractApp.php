@@ -13,6 +13,8 @@ use Core\Config\ConfigStorage;
 use Core\Framework\Amvc\Controller\Controller;
 use Core\Framework\Amvc\View\View;
 use Core\Framework\Core;
+use Core\Framework\Amvc\Controller\Redirect;
+use Core\Framework\Amvc\Controller\RedirectInterface;
 
 /**
  * AbstractApp.php
@@ -718,5 +720,26 @@ abstract class AbstractApp
     public function url(string $name, array $params = []): string
     {
         return $this->core->router->generate($name, $params);
+    }
+
+    /**
+     *
+     * @return null|RedirectInterface
+     */
+    public function forceLogin()
+    {
+        $login = $this->core->di->get('core.security.login');
+
+        if (!$login->loggedIn()) {
+
+            $redirect = new Redirect();
+
+            $redirect->setApp('Core');
+            $redirect->setController('Login');
+            $redirect->setAction('Login');
+            $redirect->setClearPost(true);
+
+            return $redirect;
+        }
     }
 }

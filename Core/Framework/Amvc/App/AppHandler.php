@@ -95,7 +95,7 @@ class AppHandler implements AppHandlerInterface
             $instance = $this->core->di->instance($class, $args);
 
             if (!$instance instanceof AbstractApp) {
-                Throw new AppHandlerException('AppHandler must be an instance of AbstractApp class!');
+                Throw new AppHandlerException('App must be an instance of AbstractApp class!');
             }
 
             $instance->setName($name);

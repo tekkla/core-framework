@@ -239,7 +239,7 @@ class Controller extends AbstractMvc
      */
     public function ajax($selector = '#content')
     {
-        $this->ajax = $this->di->get('core.ajax');
+        $this->ajax = $this->app->core->di->get('core.ajax');
 
         $cmd = new DomCommand($selector, 'html', '--empty--');
 
@@ -275,16 +275,22 @@ class Controller extends AbstractMvc
      */
     protected function redirect($app = null, $controller = null, $action = null, array $params = [], bool $clear_post = true)
     {
+        // No params mean to use the current
         if (empty($params)) {
             $params = $this->params;
         }
 
         $redirect = new Redirect();
 
+        // Set params at first because the params gets scanned for ACA data which would override manually set ACA data
+        $redirect->setParams($params);
+
+        // Now set manual ACA data
         $redirect->setApp(empty($app) ? $this->app->getName() : $app);
         $redirect->setController(empty($controller) ? $this->getName() : $controller);
         $redirect->setAction(empty($action) ? $this->getAction() : $action);
-        $redirect->setParams($params);
+
+        // Clear $_POST data before redirect?
         $redirect->setClearPost($clear_post);
 
         $this->redirect = $redirect;

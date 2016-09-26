@@ -109,12 +109,20 @@ class Dispatcher extends AbstractAcap
         $event_result = $this->callAppEvent($app, 'Run');
 
         // Redirect from event?
-        if (!empty($event_result) && $event_result != $this->app) {
+        if (!empty($event_result)) {
 
-            $redirect = new Redirect();
-            $redirect->setApp($event_result);
+            switch (true) {
 
-            return $this->handleRedirect($redirect);
+                case ($event_result instanceof RedirectInterface):
+                    return $this->handleRedirect($event_result);
+
+                case ($event_result != $this->app):
+
+                    $redirect = new Redirect();
+                    $redirect->setApp($event_result);
+
+                    return $this->handleRedirect($redirect);
+            }
         }
 
         // Send 404 error when no app name is defined in router
@@ -183,7 +191,7 @@ class Dispatcher extends AbstractAcap
 
             if (!empty($messages)) {
 
-                /* @var $msg \Core\Message\Message */
+                /* @var $msg \Core\Framework\Notification\Notification */
                 foreach ($messages as $msg) {
 
                     // Each message gets its own alert
@@ -208,6 +216,9 @@ class Dispatcher extends AbstractAcap
 
                     $ajax->addCommand(new \Core\Ajax\Commands\Dom\DomCommand($msg->getTarget(), $msg->getDisplayFunction(), $alert->build()));
                 }
+
+                // Reset messages stack because the got handled by the ajax processor
+                $this->core->message->reset();
             }
 
             // @TODO Process possible asset js files to load!
@@ -240,9 +251,9 @@ class Dispatcher extends AbstractAcap
                 // Returns the redirect
                 $result = $this->handleRedirect($redirect);
             }
-        }
 
-        $this->core->router->setFormat($controller->getFormat());
+            $this->format = $controller->getFormat();
+        }
 
         return $result;
     }
