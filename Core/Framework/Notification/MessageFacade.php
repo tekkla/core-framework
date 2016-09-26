@@ -123,12 +123,21 @@ class MessageFacade
     }
 
     /**
+     * Adds a message to the messages stack
      *
      * @param MessageInterface $msg
      */
     public function add(MessageInterface $msg)
     {
         $this->handler->add($msg);
+    }
+
+    /**
+     * Resets the message stack
+     */
+    public function reset()
+    {
+        $this->handler->clear();
     }
 }
 
