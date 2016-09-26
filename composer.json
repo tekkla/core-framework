@@ -8,7 +8,7 @@
     "tekkla/core-logger" : ">=1.0.0",
     "tekkla/core-language" : ">=1.1.1.2",
     "tekkla/core-ajax" : ">=0.1.9",
-    "tekkla/core-router" : ">=1.1.0",
+    "tekkla/core-router" : ">=1.2.0",
     "tekkla/core-message" : ">=0.0.2",
     "tekkla/core-mailer" : ">=0.0.2",
     "tekkla/core-toolbox" : ">=0.0.7.0",
