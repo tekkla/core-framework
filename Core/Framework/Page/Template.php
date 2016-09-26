@@ -59,7 +59,7 @@ class Template
     {
         foreach ($this->layers as $layer) {
 
-            if (! method_exists($this, $layer)) {
+            if (!method_exists($this, $layer)) {
                 Throw new PageException('Template Error: The requested layer "' . $layer . '" does not exist.');
             }
 
@@ -269,9 +269,9 @@ class Template
             <div class="alert alert-', $msg->getType(), $msg->getDismissable() ? ' alert-dismissable' : '';
 
             // Fadeout message?
-            #if ($this->config->get('Core', 'js.style.fadeout_time') > 0 && $msg->getFadeout()) {
-            #    echo ' fadeout';
-            #}
+            if ($this->config->get('Core', 'js.style.fadeout_time') > 0 && $msg->getFadeout()) {
+                echo ' fadeout';
+            }
 
             echo '">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
