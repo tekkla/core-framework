@@ -545,6 +545,7 @@ final class Core
         /* @var $mailer \Core\Mailer\Mailer */
         $this->mailer = $this->di->get('core.mailer');
         $this->mailer->setLogger($this->di->get('core.logger.default'));
+        $this->mailer->setDebugLevel($this->config->get('Core', 'mail.general.smtpdebug'));
 
         /* @var $db \Core\Data\Connectors\Db\Db */
         $db = $this->di->get('db.default');
