@@ -243,7 +243,7 @@ class Dispatcher extends AbstractAcap
 
             $redirect = $controller->getRedirect();
 
-            \FB::log($redirect);
+            \FB::log('Redirect: ' . (bool) $redirect);
 
             // is the result an redirect?
             if (isset($redirect) && $redirect instanceof RedirectInterface) {
@@ -261,7 +261,7 @@ class Dispatcher extends AbstractAcap
     }
 
     /**
-     * Handles a redirect by checking the redirects settings, runs an own Dispatcher with them and returns it's result.
+     * Handles a redirect by checking the redirect settings, runs an own Dispatcher with them and returns it's result.
      *
      * @param RedirectInterface $redirect
      *
@@ -269,24 +269,30 @@ class Dispatcher extends AbstractAcap
      */
     private function handleRedirect(RedirectInterface $redirect)
     {
+        // Do we have to clear POST data?
         if ($redirect->getClearPost()) {
 
-            $_POST = [];
+            unset($_POST);
 
             $apps = $this->core->apps->getLoadedApps();
 
             foreach ($apps as $app) {
-                if (isset($app->post)) {
-                    $app->post->clean();
+
+                $instance = $this->core->apps->getAppInstance($app);
+
+                if (isset($instance->post)) {
+                    $instance->post->clean();
                 }
             }
         }
 
+        // Preparing the redirect settings with default values when not set
         $app = $redirect->getApp() ?? $this->app;
         $controller = $redirect->getController() ?? $this->controller;
         $action = $redirect->getAction() ?? $this->action;
         $params = array_merge($redirect->getParams(), $this->params);
 
+        // Redirecting dispatcher run
         $dispatcher = new Dispatcher($this->core);
 
         $dispatcher->setParams($params);
