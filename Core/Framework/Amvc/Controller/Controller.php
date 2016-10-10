@@ -135,6 +135,11 @@ class Controller extends AbstractMvc
         return $this->format;
     }
 
+    /**
+     * Returns a set Redirect object
+     *
+     * @return \Core\Framework\Amvc\Controller\Redirect
+     */
     public function getRedirect()
     {
         return $this->redirect;
