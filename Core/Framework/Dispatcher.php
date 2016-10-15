@@ -243,8 +243,6 @@ class Dispatcher extends AbstractAcap
 
             $redirect = $controller->getRedirect();
 
-            \FB::log('Redirect: ' . (bool) $redirect);
-
             // is the result an redirect?
             if (isset($redirect) && $redirect instanceof RedirectInterface) {
 
