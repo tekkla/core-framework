@@ -26,10 +26,12 @@
   "license" : "MIT",
   "keywords" : [ "core", "framework", "alpha" ],
   "autoload" : {
-    "psr-4" : {
+    "psr-0" : {
       "Core\\Framework\\" : "",
       "Apps\\" : "Apps/",
-      "Themes\\" : "Themes/"
+      "Themes\\" : "Themes/",
+      "Themes\\Core\\" : "",      
+      "Apps\\Core\\" : ""      
     }
   },
   "type" : "framework",
