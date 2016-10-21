@@ -635,16 +635,14 @@ abstract class AbstractApp
     protected function initCss()
     {
         // Init css only once
-        if ($this->paths->exists('dir.assets') && !self::$init_stages[$this->name]['css']) {
+        if (!self::$init_stages[$this->name]['css'] && $this->paths->exists('dir.assets')) {
 
             // Check for existance of apps css file
             $filename = $this->paths->get('dir.assets') . DIRECTORY_SEPARATOR . $this->name . '.css';
 
-            if (!file_exists($filename)) {
-                Throw new AppException(sprintf('AbstractApp "%s.css" file does not exist. Either create the js file or remove the css flag in your app settings.', $this->name));
+            if (file_exists($filename)) {
+                $this->css->link($this->paths->get('url.assets') . DIRECTORY_SEPARATOR . $this->name . '.css');
             }
-
-            $this->css->link($this->paths->get('url.assets') . DIRECTORY_SEPARATOR . $this->name . '.css');
 
             // Set flag for initiated css
             self::$init_stages[$this->name]['css'] = true;
@@ -665,15 +663,13 @@ abstract class AbstractApp
      */
     protected function initJs()
     {
-        if ($this->paths->exists('dir.assets') && !self::$init_stages[$this->name]['js']) {
+        if (!self::$init_stages[$this->name]['js'] && $this->paths->exists('dir.assets')) {
 
             $filename = $this->paths->get('dir.assets') . DIRECTORY_SEPARATOR . $this->name . '.js';
 
-            if (!file_exists($filename)) {
-                Throw new AppException(sprintf('Apps "%s.js" file does not exist. Either create the js file or remove the js flag in your app mainclass.', $this->name));
+            if (file_exists($filename)) {
+                $this->javascript->file($this->paths->get('url.assets') . DIRECTORY_SEPARATOR . $this->name . '.js');
             }
-
-            $this->javascript->file($this->paths->get('url.assets') . DIRECTORY_SEPARATOR . $this->name . '.js');
 
             // Set flag for initated js
             self::$init_stages[$this->name]['js'] = true;
