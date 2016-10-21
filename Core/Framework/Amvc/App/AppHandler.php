@@ -79,11 +79,11 @@ class AppHandler implements AppHandlerInterface
             $class = '\Apps\\' . $name . '\\' . $name;
 
             //
-            $filename = BASEDIR . str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
+            #$filename = BASEDIR . str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
 
-            if (!file_exists($filename)) {
-                Throw new AppHandlerException(sprintf('AppHandler could not find an app classfile "%s" for app "%s"', $name, $filename));
-            }
+            #if (!file_exists($filename)) {
+            #    Throw new AppHandlerException(sprintf('AppHandler could not find an app classfile "%s" for app "%s"', $name, $filename));
+            #}
 
             // Default arguments for each app instance
             $args = [
