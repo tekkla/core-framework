@@ -27,10 +27,10 @@
   "keywords" : [ "core", "framework", "alpha" ],
   "autoload" : {
     "psr-4" : {
-      "Core\\Framework" : "",
-      "Apps\\Core" : "",
+      "Core\\Framework\\" : "",
+      "Apps\\Core\\" : "",
       "Apps\\" : "Apps/",
-      "Themes\\Core" : "",
+      "Themes\\Core\\" : "",
       "Themes\\" : "Themes/"
     }
   },
