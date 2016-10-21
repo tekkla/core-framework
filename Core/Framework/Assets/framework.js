@@ -39,7 +39,7 @@ CORE.createNS = function(namespace) {
     return parent;
 };
 
-// Create the APPS root namespace and making sure we're not overwriting it
+// Create the APPS root namespace
 var APPS = APPS || {};
 
 APPS.createNS = function(namespace) {
