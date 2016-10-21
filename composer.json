@@ -27,7 +27,9 @@
   "keywords" : [ "core", "framework", "alpha" ],
   "autoload" : {
     "psr-0" : {
-      "Core\\Framework" : ""
+      "Core\\Framework" : "",
+      "Apps\\Core" : "",
+      "Themes\\Core" : ""
     }
   },
   "type" : "framework",
