@@ -29,7 +29,9 @@
     "psr-0" : {
       "Core\\Framework" : "",
       "Apps\\Core" : "",
-      "Themes\\Core" : ""
+      "Apps" : "../Apps/",
+      "Themes\\Core" : "",
+      "Themes" : "../Themes/"
     }
   },
   "type" : "framework",

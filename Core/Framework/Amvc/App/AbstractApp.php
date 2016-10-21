@@ -37,14 +37,14 @@ abstract class AbstractApp
      *
      * @var array
      */
-    private static $init_done = [];
+    protected static $init_done = [];
 
     /**
      * Storage for init stages
      *
      * @var array
      */
-    private static $init_stages = [];
+    protected static $init_stages = [];
 
     /**
      * Holds the apps name
