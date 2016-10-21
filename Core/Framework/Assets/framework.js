@@ -39,6 +39,30 @@ CORE.createNS = function(namespace) {
     return parent;
 };
 
+// Create the APPS root namespace and making sure we're not overwriting it
+var APPS = APPS || {};
+
+APPS.createNS = function(namespace) {
+
+    var nsparts = namespace.split(".");
+    var parent = APPS;
+
+    if (nsparts[0] === "APPS") {
+        nsparts = nsparts.slice(1);
+    }
+
+    for (var i = 0; i < nsparts.length; i++) {
+        var partname = nsparts[i];
+
+        if (typeof parent[partname] === "undefined") {
+            parent[partname] = {};
+        }
+        parent = parent[partname];
+    }
+
+    return parent;
+};
+
 // ----------------------------------------------------------------------------
 // Function with commands to use on "ready" and after ajax requests
 // ----------------------------------------------------------------------------
@@ -62,25 +86,6 @@ CORE.readyAndAjax = function() {
     // Fade out elements
     $('.fadeout').delay(fadeout_time).slideUp(800, function() {
         $(this).remove();
-    });
-
-    $(".sortable tbody").sortable({
-        axis : 'y',
-        update : function(event, ui) {
-            if ($(this).data('url') !== undefined) {
-
-                var ajaxOptions = {
-                    data : $(this).sortable('serialize'),
-                    type : 'POST',
-                    url : $(this).data('url')
-                };
-
-                if (CORE.AJAX.handler !== undefined) {
-                    var ajax = new CORE.AJAX.handler();
-                    ajax.process(ajaxOptions);
-                }
-            }
-        }
     });
 };
 
