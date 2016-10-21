@@ -695,8 +695,6 @@ final class Core
         // Add minify processor on config demand
         if ($this->config->get('Core', 'asset.general.minify_css')) {
             $ah->addProcessor(new \Core\Asset\Processor\CssMinProcessor());
-            $ah->addProcessor(new \Core\Asset\Processor\ReplaceProcessor('../fonts/', '../Themes/Core/fonts/'));
-            $ah->addProcessor(new \Core\Asset\Processor\ReplaceProcessor('../img/', '../Themes/Core/img/'));
         }
     }
 
