@@ -28,9 +28,7 @@
   "autoload" : {
     "psr-4" : {
       "Core\\Framework\\" : "",
-      "Apps\\Core\\" : "",
       "Apps\\" : "Apps/",
-      "Themes\\Core\\" : "",
       "Themes\\" : "Themes/"
     }
   },
