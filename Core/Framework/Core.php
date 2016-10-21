@@ -880,10 +880,12 @@ final class Core
 
         $css = $this->assetmanager->getAssetHandler('css');
 
+        // Add processor to replace relative font and image paths according to the used theme
         $theme = $this->config->get('Core', 'style.theme.name');
+        $replacement = $theme == 'Core' ? $this->config->get('Core', 'url.vendor_tekkla') . '/core-framework/Themes/Core' : '../Themes/' . $theme;
 
-        $css->addProcessor(new \Core\Asset\Processor\ReplaceProcessor('../fonts/', '../Themes/' . $theme . '/fonts/'));
-        $css->addProcessor(new \Core\Asset\Processor\ReplaceProcessor('../img/', '../Themes/' . $theme . '/img/'));
+        $css->addProcessor(new \Core\Asset\Processor\ReplaceProcessor('../fonts/', $replacement . '/fonts/'));
+        $css->addProcessor(new \Core\Asset\Processor\ReplaceProcessor('../img/', $replacement  . '/img/'));
 
         $afh = new \Core\Asset\AssetFileHandler();
         $afh->setFilename($this->config->get('Core', 'dir.cache') . '/style.css');
