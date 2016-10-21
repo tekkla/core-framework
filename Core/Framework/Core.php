@@ -513,13 +513,10 @@ final class Core
             'fw' => $this->basedir . '/Core',
 
             // Framwork subdirectories
-            'assets' => $this->basedir . '/Assets',
-            'lib' => $this->basedir . '/Core',
-            'html' => $this->basedir . '/Core/Html',
             'cache' => $this->basedir . '/Cache',
-
-            // Public application dir
-            'apps' => $this->basedir . '/Apps'
+            'log' => $this->basedir . '/Logs',
+            'apps' => $this->basedir . '/Apps',
+            'vendor_tekkla' => $this->basedir . '/vendor/tekkla'
         ];
 
         $core_storage->addPaths($dirs);
@@ -741,7 +738,7 @@ final class Core
         $this->page = $this->di->get('core.page');
 
         $configs = [
-            'dir.assets',
+            'dir.vendor_tekkla',
             'url.vendor_tekkla',
             'style.theme.name',
             'style.bootstrap.version',
