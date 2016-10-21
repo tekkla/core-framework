@@ -247,7 +247,12 @@ abstract class AbstractApp
      */
     protected function initPaths(array $exclude_dirs = [])
     {
-        $apps_url = $this->core->config->get('Core', 'url.apps');
+        // Beware of special path of Core app
+        if ($this->name == 'Core') {
+            $apps_url = $this->config->get('url.vendor_tekkla') . '/core-framework/Apps';
+        } else {
+            $apps_url = $this->core->config->get('Core', 'url.apps');
+        }
 
         // Set path property which can be used on including additional app files like settings, routes, config etc
         $dir = $this->getDir();
