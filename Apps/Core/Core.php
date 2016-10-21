@@ -13,6 +13,11 @@ use Core\Framework\Amvc\App\AbstractApp;
 final class Core extends AbstractApp
 {
 
+    public function Load() {
+        self::$init_stages[$this->name]['css'] = true;
+        self::$init_stages[$this->name]['js'] = true;
+    }
+
     public function Init()
     {
         if (!$this->core->router->isAjax()) {
