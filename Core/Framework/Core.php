@@ -120,7 +120,7 @@ final class Core
      *
      * @param string $basedir
      */
-    public function __construct(string $basedir)
+    public function __construct(string $basedir, ClassLoader $class_loader)
     {
         // Define path constants to the common framwork dirs
         define('BASEDIR', $basedir);
@@ -130,6 +130,11 @@ final class Core
         define('CACHEDIR', $basedir . '/Cache');
 
         $this->basedir = $basedir;
+
+        $class_loader->add('Apps', APPSDIR);
+        $class_loader->add('Themes', THEMESDIR);
+
+        $this->class_loader = $class_loader;
     }
 
     /**
