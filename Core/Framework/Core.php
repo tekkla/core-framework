@@ -147,9 +147,6 @@ final class Core
             // From here starts output buffering
             ob_start();
 
-            // Registe PSR classloader
-            $this->registerClassloader();
-
             // Create core DI container instance and map the instance to comntainer
             $this->di = \Core\DI\DI::getInstance();
             $this->di->mapValue('core.core', $this);
@@ -305,29 +302,6 @@ final class Core
 
         if (!empty($this->settings['display_errors'])) {
             ini_set('display_errors', 0);
-        }
-    }
-
-    /**
-     * Registers SPL classloader
-     */
-    private function registerClassloader()
-    {
-        // Register core classloader
-        require_once ('SplClassLoader.php');
-
-        // Classloader to register
-        $register = [
-            'Core' => $this->basedir,
-            'Apps' => $this->basedir,
-            'AppsSec' => $this->basedir,
-            'Themes' => $this->basedir
-        ];
-
-        // Register classloader
-        foreach ($register as $key => $path) {
-            $loader = new \SplClassLoader($key, $path);
-            $loader->register();
         }
     }
 
