@@ -11,6 +11,7 @@ use Core\Message\MessageHandler;
 use Core\Framework\Notification\MessageFacade;
 use Core\Framework\Error\ErrorHandler;
 use Core\Framework\Amvc\App\AppHandler;
+use Composer\Autoload\ClassLoader;
 
 // Do not show errors by default!
 // @see loadSettings()
@@ -131,10 +132,8 @@ final class Core
 
         $this->basedir = $basedir;
 
-        $class_loader->add('Apps', APPSDIR);
-        $class_loader->add('Themes', THEMESDIR);
-
-        $this->class_loader = $class_loader;
+        $class_loader->addPsr4('Apps\\', APPSDIR);
+        $class_loader->addPsr4('Themes\\', THEMESDIR);
     }
 
     /**
