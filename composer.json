@@ -32,8 +32,8 @@
       "Apps\\Core" : ""
     },
     "psr-4" : {
-      "Apps\\" : "Apps/",
-      "Themes\\" : "Themes/"
+      "Apps\\" : "./",
+      "Themes\\" : "./"
     }
   },
   "type" : "framework",
