@@ -28,10 +28,12 @@
   "autoload" : {
     "psr-0" : {
       "Core\\Framework" : "",
-      "Apps" : "Apps/",
-      "Themes" : "Themes/",
       "Themes\\Core" : "",
       "Apps\\Core" : ""
+    },
+    "psr-4" : {
+      "Apps\\" : "Apps/",
+      "Themes" : "Themes/"
     }
   },
   "type" : "framework",
