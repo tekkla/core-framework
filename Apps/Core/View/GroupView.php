@@ -1,8 +1,6 @@
 <?php
 namespace Apps\Core\View;
 
-use Core\Framework\Amvc\View\View;
-
 /**
  * GroupView.php
  *
@@ -10,7 +8,7 @@ use Core\Framework\Amvc\View\View;
  * @copyright 2016
  * @license MIT
  */
-class GroupView extends View
+class GroupView extends AbstractCoreView
 {
 
     public function Index()

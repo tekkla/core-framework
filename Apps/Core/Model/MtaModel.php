@@ -1,9 +1,7 @@
 <?php
 namespace Apps\Core\Model;
 
-use Core\Framework\Amvc\Model\Model;
-
-class MtaModel extends Model
+class MtaModel extends AbstractCoreModel
 {
 
     protected $scheme = [
@@ -114,15 +112,15 @@ class MtaModel extends Model
             ],
             'order' => 'is_default DESC'
         ]);
-
+        
         $mtalist = $db->fetchAll();
-
+        
         $out = [];
-
+        
         foreach ($mtalist as $mta) {
             $out[$mta['title']] = $mta['is_default'] == 1 ? $mta['title'] . ' (' . $this->app->language->get('default') . ')' : $mta['title'];
         }
-
+        
         return $out;
     }
 }

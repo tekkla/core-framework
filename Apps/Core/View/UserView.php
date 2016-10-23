@@ -1,8 +1,6 @@
 <?php
 namespace Apps\Core\View;
 
-use Core\Framework\Amvc\View\View;
-
 /**
  * UserView.php
  *
@@ -10,7 +8,7 @@ use Core\Framework\Amvc\View\View;
  * @copyright 2016
  * @license MIT
  */
-class UserView extends View
+class UserView extends AbstractCoreView
 {
 
     public function Userlist()
@@ -25,16 +23,16 @@ class UserView extends View
                 <tr>
             </thead>
             <tbody>';
-
+        
         foreach ($this->userlist as $user) {
-
+            
             echo '
                 <tr data-ajax data-url="', $user['link'], '">
                     <td>', $user['username'], '<td>
                     <td>', $user['display_name'], '<td>
                 </tr>';
         }
-
+        
         echo '
             </tbody>
         <table>';

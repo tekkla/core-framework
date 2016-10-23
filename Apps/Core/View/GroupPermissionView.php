@@ -1,8 +1,6 @@
 <?php
 namespace Apps\Core\View;
 
-use Core\Framework\Amvc\View\View;
-
 /**
  * GroupPermissionView.php
  *
@@ -10,7 +8,7 @@ use Core\Framework\Amvc\View\View;
  * @copyright 2016
  * @license MIT
  */
-class GroupPermissionView extends View
+class GroupPermissionView extends AbstractCoreView
 {
 
     public function PermissionsByGroup()
@@ -34,7 +32,7 @@ class GroupPermissionView extends View
                     <h4 class="list-group-item-heading"><i class="fa fa-', $perm['icon'], '"></i> ', $perm['display_name'], '</h4>
                     <p class="list-group-item-text">', $perm['description'], '</p>';
                 
-                if (! empty($perm['notes'])) {
+                if (!empty($perm['notes'])) {
                     echo '<p class="list-group-item-text"><small>', $perm['notes'], '</small></p>';
                 }
                 

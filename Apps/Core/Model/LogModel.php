@@ -1,9 +1,7 @@
 <?php
 namespace Apps\Core\Model;
 
-use Core\Framework\Amvc\Model\Model;
-
-class LogModel extends Model
+class LogModel extends AbstractCoreModel
 {
 
     public function getLogs($entries = 20)

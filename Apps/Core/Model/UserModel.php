@@ -1,7 +1,6 @@
 <?php
 namespace Apps\Core\Model;
 
-use Core\Framework\Amvc\Model\Model;
 use Core\Security\User;
 
 /**
@@ -11,7 +10,7 @@ use Core\Security\User;
  * @copyright 2016
  * @license MIT
  */
-class UserModel extends Model
+class UserModel extends AbstractCoreModel
 {
 
     protected $scheme = [
@@ -67,7 +66,7 @@ class UserModel extends Model
             $display_name = '';
             $groups = [];
         }
-
+        
         return [
             'id_user' => $id_user,
             'username' => $username,
@@ -85,31 +84,31 @@ class UserModel extends Model
                 ':' . $field => $needle
             ]
         ];
-
+        
         if ($limit) {
             $qb['limit'] = 100;
         }
-
+        
         $db = $this->getDbConnector();
-
+        
         if ($callbacks) {
             $db->addCallbacks($callbacks);
         }
-
+        
         $db->qb($qb);
-
+        
         return $db->all();
     }
 
     /**
      * Loads users baes on their group id
      *
-     * @param int $id_group
+     * @param int $id_group            
      */
     public function loadUsersByGroupId(int $id_group): array
     {
         $db = $this->getDbConnector();
-
+        
         $db->qb([
             'table' => $this->scheme['table'],
             'alias' => 'u',
@@ -132,7 +131,7 @@ class UserModel extends Model
             ],
             'order' => 'display_name'
         ]);
-
+        
         return $db->all();
     }
 
@@ -148,43 +147,43 @@ class UserModel extends Model
      *            The userdata which MUST contain at least 'username' and 'password'
      * @param bool $activate
      *            Flag to control the activation state of the new user
-     *
+     *            
      * @return void|number
      */
     public function createUser($data)
     {
         // Add content checks from config to schemes validate rules for username and password
         $this->addUsernameAndPasswordChecksFromConfig();
-
+        
         if (!password_verify($data['password'], password_hash($data['password_compare'], PASSWORD_DEFAULT))) {
             $this->addError('password', $this->app->language->get('user.error.password.mismatch'));
             $this->addError('password_compare', $this->app->language->get('user.error.password.mismatch'));
         }
-
+        
         $this->validate($data);
-
+        
         if ($this->hasErrors()) {
             return;
         }
-
+        
         try {
-
+            
             /* @var $user \Core\Security\User\User */
             $user = $this->di->get('core.security.user');
             $user->setUsername($data['username']);
             $user->setPassword($data['password']);
             $user->setState($data['state']);
-
+            
             /* @var $handler \Core\Security\User\UserHandler */
             $handler = $this->di->get('core.security.user.handler');
             $handler->createUser($user);
-
+            
             return $user->getId();
         }
         catch (\Throwable $t) {
-
+            
             $message = $t->getMessage();
-
+            
             if (strpos($message, '::') === false) {
                 $field = '@';
             }
@@ -192,7 +191,7 @@ class UserModel extends Model
                 list ($field, $text) = explode('::', $message);
                 $message = $this->app->language->get($text);
             }
-
+            
             $this->addError($field, $message);
         }
     }
@@ -200,32 +199,32 @@ class UserModel extends Model
     /**
      * Activates an account
      *
-     * @param string $key
+     * @param string $key            
      *
      * @return bool
      */
     public function activateUser(string $key): bool
     {
-
+        
         /* @var $handler \Core\Security\User\UserHandler */
         $handler = $this->di->get('core.security.user.handler');
-
+        
         return $handler->activateUser($key);
     }
 
     /**
      * Denies account activation
      *
-     * @param string $key
+     * @param string $key            
      *
      * @return bool
      */
     public function denyActivation(string $key): bool
     {
-
+        
         /* @var $handler \Core\Security\User\UserHandler */
         $handler = $this->di->get('core.security.user.handler');
-
+        
         return $handler->denyActivation($key);
     }
 
@@ -241,10 +240,10 @@ class UserModel extends Model
             $min_length,
             sprintf($this->app->language->get('user.error.username.length'), $min_length)
         ];
-
+        
         // Regexp check für username set in config?
         $regexp = $this->app->config->get('user.username.regexp');
-
+        
         if (!empty($regexp)) {
             $this->scheme['fields']['username']['validate'][] = [
                 'CustomRegexp',
@@ -252,11 +251,11 @@ class UserModel extends Model
                 sprintf($this->app->language->get('user.error.username.regexp'), $regexp)
             ];
         }
-
+        
         // Password min and/or maxlength set in config?
         $min_length = $this->app->config->get('user.password.min_length');
         $max_length = $this->app->config->get('user.password.max_length');
-
+        
         if (!empty($max_length)) {
             $this->scheme['fields']['password']['validate'][] = [
                 'TxtLengthBetween',
@@ -274,10 +273,10 @@ class UserModel extends Model
                 sprintf($this->app->language->get('user.error.password.min_length'), $min_length)
             ];
         }
-
+        
         // Password regex check wanted by config?
         $regexp = $this->app->config->get('user.password.regexp');
-
+        
         if (!empty($regexp)) {
             $this->scheme['fields']['password']['validate'][] = [
                 'CustomRegexp',

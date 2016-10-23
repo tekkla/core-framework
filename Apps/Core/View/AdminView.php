@@ -1,8 +1,6 @@
 <?php
 namespace Apps\Core\View;
 
-use Core\Framework\Amvc\View\View;
-
 /**
  * AdminView.php
  *
@@ -10,7 +8,7 @@ use Core\Framework\Amvc\View\View;
  * @copyright 2015
  * @license MIT
  */
-class AdminView extends View
+class AdminView extends AbstractCoreView
 {
 
     public function Admin()
@@ -25,7 +23,7 @@ class AdminView extends View
         
         foreach ($this->loaded_apps as $app_name => $link) {
             
-            if (! $link) {
+            if (!$link) {
                 continue;
             }
             

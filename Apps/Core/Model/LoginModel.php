@@ -1,9 +1,7 @@
 <?php
 namespace Apps\Core\Model;
 
-use Core\Framework\Amvc\Model\Model;
-
-class LoginModel extends Model
+class LoginModel extends AbstractCoreModel
 {
 
     protected $scheme = [

@@ -1,8 +1,6 @@
 <?php
 namespace Apps\Core\View;
 
-use Core\Framework\Amvc\View\View;
-
 /**
  * LoginView.php
  *
@@ -10,7 +8,7 @@ use Core\Framework\Amvc\View\View;
  * @copyright 2016
  * @license MIT
  */
-final class LoginView extends View
+final class LoginView extends AbstractCoreView
 {
 
     public function Login()

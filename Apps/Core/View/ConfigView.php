@@ -1,8 +1,6 @@
 <?php
 namespace Apps\Core\View;
 
-use Core\Framework\Amvc\View\View;
-
 /**
  * ConfigView.php
  *
@@ -10,7 +8,7 @@ use Core\Framework\Amvc\View\View;
  * @copyright 2015
  * @license MIT
  */
-final class ConfigView extends View
+final class ConfigView extends AbstractCoreView
 {
 
     public function Config()
@@ -18,11 +16,11 @@ final class ConfigView extends View
         echo '
         <h1>' . $this->icon . '&nbsp;' . $this->headline . '</h1>
         <div class="panel-group" id="core-config" role="tablist" aria-multiselectable="true">';
-
+        
         foreach ($this->groups as $group_name) {
             echo '<div id="config-', $group_name, '">', $this->forms[$group_name], '</div>';
         }
-
+        
         echo '
         </div>';
     }

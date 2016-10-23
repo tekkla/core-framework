@@ -1,15 +1,13 @@
 <?php
 namespace Apps\Core\View;
 
-use Core\Framework\Amvc\View\View;
-
-class LogView extends View
+class LogView extends AbstractCoreView
 {
 
     public function Index()
     {
         echo '<h2>Logentries</h2>';
-
+        
         echo $this->logs;
     }
 
@@ -27,9 +25,9 @@ class LogView extends View
                 <th>', $this->code, '</th>
             </thead>
             <tbody>';
-
+        
         foreach ($this->logs as $entry) {
-
+            
             echo '
                 <tr>
                     <td>', $entry['logdate'], '</td>
@@ -41,7 +39,7 @@ class LogView extends View
                     <td>', $entry['code'], '</td>
                 </tr>';
         }
-
+        
         echo '
             </tbody>
         </table>';

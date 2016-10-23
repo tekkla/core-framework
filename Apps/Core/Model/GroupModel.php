@@ -1,7 +1,6 @@
 <?php
 namespace Apps\Core\Model;
 
-use Core\Framework\Amvc\Model\Model;
 use Core\Security\Group;
 
 /**
@@ -11,7 +10,7 @@ use Core\Security\Group;
  * @copyright 2016
  * @license MIT
  */
-class GroupModel extends Model
+class GroupModel extends AbstractCoreModel
 {
 
     protected $scheme = [
@@ -49,33 +48,33 @@ class GroupModel extends Model
             'User' => [],
             'GroupPermissions' => []
         ];
-
+        
         if ($id_group) {
             $group = $this->security->group->getGroupById($id_group);
             $group['User'] = $this->app->getModel('User')->loadUsersByGroupId($id_group);
         }
-
+        
         return $group;
     }
 
     public function getGroups($skip_guest = false)
     {
         $data = $this->security->group->getGroups(false, $skip_guest);
-
+        
         foreach ($data as &$app_groups) {
-
+            
             foreach ($app_groups as $id_group => &$group) {
-
+                
                 $group['link'] = $this->app->url('generic.action', [
                     'controller' => 'Group',
                     'action' => 'Detail',
                     'id' => $group['id_group']
                 ]);
-
+                
                 $group['User'] = $this->app->getModel('User')->loadUsersByGroupId($id_group);
             }
         }
-
+        
         return $data;
     }
 

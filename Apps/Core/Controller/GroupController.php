@@ -1,7 +1,6 @@
 <?php
 namespace Apps\Core\Controller;
 
-use Core\Framework\Amvc\Controller\AbstractController;
 use Core\Html\Form\Input;
 
 /**
@@ -11,7 +10,7 @@ use Core\Html\Form\Input;
  * @copyright 2016
  * @license MIT
  */
-class GroupController extends AbstractController
+class GroupController extends AbstractCoreController
 {
 
     protected $access = [
@@ -27,7 +26,7 @@ class GroupController extends AbstractController
     public function Index()
     {
         $data = $this->model->getGroups();
-
+        
         $this->setVar([
             'headline' => $this->app->language->get('group.list'),
             'id_group' => $this->app->language->get('group.field.id_group'),
@@ -35,7 +34,7 @@ class GroupController extends AbstractController
             'members' => $this->app->language->get('group.members'),
             'grouplist' => $data
         ]);
-
+        
         $this->setAjaxTarget('#core-admin');
     }
 
@@ -61,59 +60,58 @@ class GroupController extends AbstractController
     public function Edit($id = null)
     {
         $data = $this->app->post->get();
-
+        
         if ($data) {
-
+            
             $this->model->save($data);
             // $this->redirectExit($this->url($this->router->getCurrentRoute(), ['id' => $id]));
         }
         else {
             $data = $this->model->getGroup($id);
         }
-
+        
         $fd = $this->getFormDesigner();
-
+        
         $fd->mapData($data);
         $fd->mapErrors($this->model->getErrors());
-
+        
         $group = $fd->addGroup();
-
-
+        
         // Add hidden field with project id on edits
-        if (! empty($id)) {
+        if (!empty($id)) {
             $group->addControl('hidden', 'id_group');
         }
-
+        
         $controls = [
             'title' => 'text',
             'display_name' => 'text',
             'description' => 'textarea'
         ];
-
+        
         foreach ($controls as $name => $type) {
-
+            
             $control = $group->addControl($type, $name);
-
+            
             if (method_exists($control, 'setLabel')) {
-
+                
                 $text = $this->app->language->get('group.field.' . str_replace('id_', '', $name));
                 $control->setLabel($text);
-
+                
                 if ($control instanceof Input) {
                     $control->setPlaceholder($text);
                 }
             }
         }
-
+        
         /* @var $editbox \Core\Html\Controls\Editbox */
         $editbox = $this->html->create('Controls\Editbox');
         $editbox->setForm($fd);
-
+        
         // Editbox caption and texts
         $editbox->setCaption($this->app->language->get('group.action.edit.text'));
         $editbox->setSaveText($this->app->language->get('action.save.text'));
         $editbox->setCancelText($this->app->language->get('action.cancel.text'));
-
+        
         // Publish to view
         $this->setVar([
             'form' => $editbox,

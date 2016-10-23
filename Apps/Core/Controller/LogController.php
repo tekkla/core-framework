@@ -1,9 +1,7 @@
 <?php
 namespace Apps\Core\Controller;
 
-use Core\Framework\Amvc\Controller\AbstractController;
-
-class LogController extends AbstractController
+class LogController extends AbstractCoreController
 {
 
     protected $access = [
@@ -25,7 +23,7 @@ class LogController extends AbstractController
 
     public function Logs($entries = null)
     {
-        if (! $entries) {
+        if (!$entries) {
             $entries = $this->app->config->get('log.display.entries');
             $entries = 20;
         }
