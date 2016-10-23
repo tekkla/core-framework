@@ -1,11 +1,11 @@
 <?php
 namespace Apps\Core\Controller;
 
-use Core\Framework\Amvc\Controller\Controller;
+use Core\Framework\Amvc\Controller\AbstractController;
 use Core\Security\Users;
 use Core\Security\Token\ActivationToken;
 
-class UserController extends Controller
+class UserController extends AbstractController
 {
 
     protected $access = [

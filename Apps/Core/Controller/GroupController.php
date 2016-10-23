@@ -1,7 +1,7 @@
 <?php
 namespace Apps\Core\Controller;
 
-use Core\Framework\Amvc\Controller\Controller;
+use Core\Framework\Amvc\Controller\AbstractController;
 use Core\Html\Form\Input;
 
 /**
@@ -11,7 +11,7 @@ use Core\Html\Form\Input;
  * @copyright 2016
  * @license MIT
  */
-class GroupController extends Controller
+class GroupController extends AbstractController
 {
 
     protected $access = [

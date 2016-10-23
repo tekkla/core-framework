@@ -1,7 +1,7 @@
 <?php
 namespace Apps\Core\Controller;
 
-use Core\Framework\Amvc\Controller\Controller;
+use Core\Framework\Amvc\Controller\AbstractController;
 use Apps\Core\Model\ConfigModel;
 use Core\Html\FormDesigner\FormGroup;
 use Core\Security\SecurityException;
@@ -14,7 +14,7 @@ use Core\Toolbox\Strings\CamelCase;
  * @copyright 2015
  * @license MIT
  */
-class ConfigController extends Controller
+class ConfigController extends AbstractController
 {
 
     protected $access = [

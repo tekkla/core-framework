@@ -1,7 +1,7 @@
 <?php
 namespace Apps\Core\Controller;
 
-use Core\Framework\Amvc\Controller\Controller;
+use Core\Framework\Amvc\Controller\AbstractController;
 use Core\Security\Login\Login;
 
 /**
@@ -11,7 +11,7 @@ use Core\Security\Login\Login;
  * @copyright 2015
  * @license MIT
  */
-class LoginController extends Controller
+class LoginController extends AbstractController
 {
 
     protected $access = [];

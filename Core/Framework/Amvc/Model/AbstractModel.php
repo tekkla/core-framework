@@ -7,20 +7,20 @@ use Core\Framework\Amvc\ModelException;
 use Core\Framework\Amvc\AbstractMvc;
 
 /**
- * Model.php
+ * AbstractModel.php
  *
  * @author Michael "Tekkla" Zorn <tekkla@tekkla.de>
  * @copyright 2016
  * @license MIT
  */
-class Model extends AbstractMvc
+abstract class AbstractModel extends AbstractMvc
 {
 
     /**
      *
      * @var string
      */
-    protected $type = 'Model';
+    protected $type = 'AbstractModel';
 
     /**
      *
@@ -67,7 +67,7 @@ class Model extends AbstractMvc
      * @param string $model_name
      *            Optional: When not set the name of the current model will be used
      *
-     * @return Model
+     * @return AbstractModel
      */
     final public function getModel($model_name = '')
     {
@@ -291,7 +291,7 @@ class Model extends AbstractMvc
      * @param string $error
      *            The error text to add
      *
-     * @return \Core\Framework\Amvc\Model
+     * @return \Core\Framework\Amvc\AbstractModel
      */
     final public function addError($key, $error)
     {

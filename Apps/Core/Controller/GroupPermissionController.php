@@ -1,7 +1,7 @@
 <?php
 namespace Apps\Core\Controller;
 
-use Core\Framework\Amvc\Controller\Controller;
+use Core\Framework\Amvc\Controller\AbstractController;
 
 /**
  * GroupPermissionController.php
@@ -10,7 +10,7 @@ use Core\Framework\Amvc\Controller\Controller;
  * @copyright 2016
  * @license MIT
  */
-class GroupPermissionController extends Controller
+class GroupPermissionController extends AbstractController
 {
 
     public $access = [

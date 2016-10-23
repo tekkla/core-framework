@@ -10,7 +10,7 @@ use Core\Framework\Amvc\AbstractMvc;
  * @copyright 2016
  * @license MIT
  */
-class View extends AbstractMvc
+abstract class AbstractView extends AbstractMvc
 {
 
     /**

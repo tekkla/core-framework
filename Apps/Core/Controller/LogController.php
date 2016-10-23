@@ -1,9 +1,9 @@
 <?php
 namespace Apps\Core\Controller;
 
-use Core\Framework\Amvc\Controller\Controller;
+use Core\Framework\Amvc\Controller\AbstractController;
 
-class LogController extends Controller
+class LogController extends AbstractController
 {
 
     protected $access = [

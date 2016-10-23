@@ -1,7 +1,7 @@
 <?php
 namespace Apps\Core\Controller;
 
-use Core\Framework\Amvc\Controller\Controller;
+use Core\Framework\Amvc\Controller\AbstractController;
 
 /**
  * AdminController.php
@@ -10,7 +10,7 @@ use Core\Framework\Amvc\Controller\Controller;
  * @copyright 2015
  * @license MIT
  */
-final class AdminController extends Controller
+final class AdminController extends AbstractController
 {
 
     protected $access = [

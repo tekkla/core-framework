@@ -9,11 +9,12 @@ use Core\Framework\Amvc\App\Css\CssHandlerInterface;
 use Core\Framework\Amvc\App\Javascript\JavascriptHandlerInterface;
 use Core\Framework\Page\Page;
 use Core\Config\ConfigStorage;
-use Core\Framework\Amvc\Controller\Controller;
-use Core\Framework\Amvc\View\View;
+use Core\Framework\Amvc\Controller\AbstractController;
+use Core\Framework\Amvc\View\AbstractView;
 use Core\Framework\Core;
 use Core\Framework\Amvc\Controller\Redirect;
 use Core\Framework\Amvc\Controller\RedirectInterface;
+use Core\Framework\Amvc\Model\AbstractModel;
 
 /**
  * AbstractApp.php
@@ -466,7 +467,7 @@ abstract class AbstractApp
      * @param mixed $arguments
      *            Optional arguments to be passed into the object to create
      *
-     * @return Model|View|Controller
+     * @return AbstractModel|AbstractView|AbstractController
      */
     private function MVCFactory(string $name, string $type, $arguments = null)
     {

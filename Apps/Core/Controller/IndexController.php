@@ -1,7 +1,7 @@
 <?php
 namespace Apps\Core\Controller;
 
-use Core\Framework\Amvc\Controller\Controller;
+use Core\Framework\Amvc\Controller\AbstractController;
 
 /**
  * IndexController.php
@@ -10,7 +10,7 @@ use Core\Framework\Amvc\Controller\Controller;
  * @copyright 2015
  * @license MIT
  */
-final class IndexController extends Controller
+final class IndexController extends AbstractController
 {
     // This controller has no model
     public $model = false;

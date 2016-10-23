@@ -10,13 +10,13 @@ use Core\Ajax\Commands\Dom\DomCommand;
 use Core\Toolbox\Strings\CamelCase;
 
 /**
- * Controller.php
+ * AbstractController.php
  *
  * @author Michael "Tekkla" Zorn <tekkla@tekkla.de>
  * @copyright 2016
  * @license MIT
  */
-class Controller extends AbstractMvc
+abstract class AbstractController extends AbstractMvc
 {
 
     /**
@@ -37,7 +37,7 @@ class Controller extends AbstractMvc
      *
      * @var String
      */
-    protected $type = 'Controller';
+    protected $type = 'AbstractController';
 
     /**
      * Signals that the corresponding view will be rendered
@@ -138,7 +138,7 @@ class Controller extends AbstractMvc
     /**
      * Returns a set Redirect object
      *
-     * @return \Core\Framework\Amvc\Controller\Redirect
+     * @return \Core\Framework\Amvc\AbstractController\Redirect
      */
     public function getRedirect()
     {
@@ -251,7 +251,7 @@ class Controller extends AbstractMvc
         // Prepare a fresh ajax command object
         $this->ajax_cmd = $cmd;
 
-        // Get content from Controller::run()
+        // Get content from AbstractController::run()
         $content = $this->run();
 
         if ($content !== false) {
@@ -327,7 +327,7 @@ class Controller extends AbstractMvc
      * This accesscheck works on serveral levels.
      *
      * Level 0 - App: Tries to check access on possible app wide access function.
-     * Level 1 - Controller: Tries to check access by looking for access setting in the controller itself.
+     * Level 1 - AbstractController: Tries to check access by looking for access setting in the controller itself.
      *
      * @param bool $force
      *            Set this to true if you want to force a brutal stop
@@ -391,7 +391,7 @@ class Controller extends AbstractMvc
      *
      * @throws ControllerException
      *
-     * @return Controller
+     * @return AbstractController
      */
     protected function setVar($arg1, $arg2 = null)
     {
@@ -485,7 +485,7 @@ class Controller extends AbstractMvc
      *
      * @param string $target
      *
-     * @return \Core\Framework\Amvc\Controller
+     * @return \Core\Framework\Amvc\AbstractController
      */
     protected function setAjaxTarget($target)
     {
@@ -501,7 +501,7 @@ class Controller extends AbstractMvc
      *
      * @param string $function
      *
-     * @return \Core\Framework\Amvc\Controller
+     * @return \Core\Framework\Amvc\AbstractController
      */
     protected function setAjaxFunction($function)
     {
