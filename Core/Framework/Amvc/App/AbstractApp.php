@@ -3,7 +3,6 @@ namespace Core\Framework\Amvc\App;
 
 use Core\DI\DI;
 use Core\Toolbox\Strings\CamelCase;
-use Core\Toolbox\IO\Classfile;
 use Core\Framework\Amvc\App\Css\CssHandler;
 use Core\Framework\Amvc\App\Javascript\JavascriptHandler;
 use Core\Framework\Amvc\App\Css\CssHandlerInterface;
@@ -507,17 +506,14 @@ abstract class AbstractApp
             }
         }
 
-        $classfile = new Classfile($class);
-
-        if (!$classfile->exists()) {
-            return false;
-        }
-
         $object = $this->core->di->instance($class, $args);
 
         switch ($type) {
             case 'Controller':
-                $object->model = $this->getModel($name);
+
+                if ($object->model !== false) {
+                    $object->model = $this->getModel($name);
+                }
                 break;
         }
 

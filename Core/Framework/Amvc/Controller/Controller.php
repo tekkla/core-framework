@@ -76,11 +76,11 @@ class Controller extends AbstractMvc
 
     /**
      * Stores the controller bound Model object.
-     * Is false when controller has no model.
+     * Set to false when controller has no model.
      *
      * @var Model
      */
-    public $model = false;
+    public $model;
 
     /**
      * Sets the name of the route that lead to this controller
