@@ -4,7 +4,7 @@ namespace Core\Framework\Amvc\View;
 use Core\Framework\Amvc\AbstractMvc;
 
 /**
- * View.php
+ * AbstractView.php
  *
  * @author Michael "Tekkla" Zorn <tekkla@tekkla.de>
  * @copyright 2016
@@ -132,7 +132,7 @@ abstract class AbstractView extends AbstractMvc
                 return $this->htmlS($val);
         }
 
-        Throw new ViewException(sprintf('Mode "%s" is a not supported View::html() output mode.', $mode));
+        Throw new ViewException(sprintf('Mode "%s" is a not supported AbstractView::html() output mode.', $mode));
     }
 
     /**
