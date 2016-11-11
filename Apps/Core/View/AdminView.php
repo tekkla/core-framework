@@ -14,22 +14,22 @@ class AdminView extends AbstractCoreView
     public function Admin()
     {
         echo '
-        <h1>Admincenter</h1>
+        <h2 class="no-top-margin">Admincenter</h2>
         <ul class="nav nav-pills ">
-            <li role="presentation"><a href="#">Admin</a></li>
+            <li role="presentation"><a href="#">Home</a></li>
             <li role="presentation" class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Applications <span class="caret"></span> </a>
                 <ul class="dropdown-menu">';
-        
+
         foreach ($this->loaded_apps as $app_name => $link) {
-            
+
             if (!$link) {
                 continue;
             }
-            
+
             echo '<li><a data-ajax href="', $link, '">', $app_name, '</a></li>';
         }
-        
+
         echo '
                 </ul>
             </li>
@@ -43,9 +43,9 @@ class AdminView extends AbstractCoreView
             <li role="presentation"><a href="#">Log</a></li>
         </ul>
         <div id="core-admin">';
-        
+
         $this->Admincenter();
-        
+
         echo '
         </div>';
     }

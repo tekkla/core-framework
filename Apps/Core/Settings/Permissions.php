@@ -7,7 +7,6 @@
  * @license MIT
  */
 return [
-    'admin.groups',
+    'admin.group',
     'admin.user',
-    'admin.log'
 ];

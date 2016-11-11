@@ -14,7 +14,7 @@ class GroupView extends AbstractCoreView
     public function Index()
     {
         echo '
-        <h1>', $this->headline, '</h1>
+        <h2>', $this->headline, '<a class="btn btn-info btn-sm pull-right" data-ajax href="', $this->actions['new']['url'] ,'">+ ', $this->actions['new']['text'] , '<a></h2>
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
@@ -23,7 +23,7 @@ class GroupView extends AbstractCoreView
                     <th>', $this->members, '</th>
                 </tr>
             </thead>';
-        
+
         foreach ($this->grouplist as $app => $groups) {
             echo '
             <thead>
@@ -32,26 +32,26 @@ class GroupView extends AbstractCoreView
                 </tr>
             </thead>
             <tbody>';
-            
+
             foreach ($groups as $id_group => $group) {
-                
+
                 echo '
                 <tr data-ajax data-url="', $group['link'], '">
                     <td>', $id_group, '</td>
                     <td>', $group['display_name'], '</td>
                     <td>';
-                
+
                 echo $this->generateuserlist($group['users']);
-                
+
                 echo '
                     </td>
                 </tr>';
             }
-            
+
             echo '
             </tbody>';
         }
-        
+
         echo '
         </table>';
     }
@@ -59,31 +59,31 @@ class GroupView extends AbstractCoreView
     private function generateuserlist($users)
     {
         $pieces = [];
-        
+
         foreach ($users as $user) {
             $pieces[] = '<a data-ajax href="' . $user['link'] . '">' . $this->html($user['display_name']) . '</a>';
         }
-        
+
         return implode(' ', $pieces);
     }
 
     public function Detail()
     {
         echo '<h2>', $this->headline, '</h2>';
-        
+
         echo '
         <div class="row">
             <div class="col-sm-4" data-ajax data-url="', $this->url, '">';
-        
+
         $fields = [
             'title',
             'display_name',
             'description',
             'deny'
         ];
-        
+
         foreach ($fields as $field) {
-            
+
             echo '
                 <div class="bottom-buffer">
                     <small>', $this->$field, '</small>
@@ -91,11 +91,17 @@ class GroupView extends AbstractCoreView
                     <strong>', $this->html($this->group[$field]), '</strong>
                 </div>';
         }
-        
+
         echo '
             </div>
             <div class="col-sm-8">', $this->permissions, '</div>
         </div>';
+    }
+
+    public function NotEditable() {
+        echo '
+        <h2>', $this->headline, '</h2>
+        <p>', $this->text, '</p>';
     }
 }
 

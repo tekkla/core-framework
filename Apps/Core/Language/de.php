@@ -598,7 +598,9 @@ Das tut uns selbstverständlich leid. Wenn sie nicht aktiv werden, dann wird der
         'field' => [
             'id_group' => 'Gruppen ID',
             'title' => 'Name',
-            'display_name' => 'Anzeigename'
+            'display_name' => 'Anzeigename',
+            'storage' => 'Zugehörige App',
+            'description' => 'Notizen / Beschreibung'
         ]
     ],
 
@@ -632,12 +634,18 @@ Das tut uns selbstverständlich leid. Wenn sie nicht aktiv werden, dann wird der
         'plural' => 'Zugriffsrechte',
         'admin' => [
             'text' => 'Administrator',
-            'desc' => 'Gewährt administrativen Zugriff auf alle (!) Bereiche der Seite. Das Betrifft auch alle Apps.'
+            'desc' => 'Gewährt administrativen Zugriff auf alle (!) Bereiche der Seite. Das Betrifft auch alle Apps.',
+            'config' => [
+                'text' => 'Konfiguration',
+                'desc' => 'Gewährt Zugriff auf alle (!) Konfigurationsbereiche der Seite. Das Betrifft auch alle Apps.'
+            ],
+            'group' => [
+                'text' => 'Benutzgruppen',
+            ],
+            'user' => [
+                'text' => 'Benutzer',
+            ],
         ],
-        'config' => [
-            'text' => 'Konfiguration',
-            'desc' => 'Gewährt Zugriff auf alle (!) Konfigurationsbereiche der Seite. Das Betrifft auch alle Apps.'
-        ]
     ],
 
     /**

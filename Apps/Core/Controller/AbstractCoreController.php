@@ -2,6 +2,7 @@
 namespace Apps\Core\Controller;
 
 use Core\Framework\Amvc\Controller\AbstractController;
+use Apps\Service\Controller\CreateEditboxTrait;
 
 /**
  * AbstractCoreController.php
@@ -11,5 +12,7 @@ use Core\Framework\Amvc\Controller\AbstractController;
  * @license MIT
  */
 abstract class AbstractCoreController extends AbstractController
-{}
+{
+    use CreateEditboxTrait;
+}
 
