@@ -113,13 +113,11 @@ $(document).ready(function() {
 // Ajax eventhandler
 // ----------------------------------------------------------------------------
 $(document).ajaxStart(function() {
-    // Show loading circle on ajax loads
-    // $('body').addClass("loading");
+    $('body').addClass("loading");
 });
 
 $(document).ajaxStop(function(event) {
-    // Hide loading circle
-    // $('body').removeClass("loading");
+    $('body').removeClass("loading");
 });
 
 $(document).ajaxComplete(function() {
@@ -166,22 +164,6 @@ $(document).on('click', '#core-scrolltotop', function(event) {
     }
 
     return false;
-});
-
-// ----------------------------------------------------------------------------
-// ClickHandler for back button
-// ----------------------------------------------------------------------------
-$(document).on('click', '.btn-back', function(event) {
-    document.history.go(-1);
-});
-
-// ----------------------------------------------------------------------------
-// WIP: Backbutton on ajax requests
-// ----------------------------------------------------------------------------
-$(window).on("popstate", function(e) {
-    if (e.originalEvent.state !== null) {
-        location.href = location.href;
-    }
 });
 
 // ----------------------------------------------------------------------------
