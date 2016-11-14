@@ -168,7 +168,7 @@ class Dispatcher extends AbstractAcap
             $this->core->http->header->noCache();
 
             // Run the controller action as ajax command and get the result
-            $controller->ajax();
+            $controller->run(false);
 
             // Controller flagged as redirect?
             $redirect = $controller->getRedirect();
@@ -379,4 +379,3 @@ class Dispatcher extends AbstractAcap
         }
     }
 }
-
