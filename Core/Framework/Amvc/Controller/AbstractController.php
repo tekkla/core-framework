@@ -169,6 +169,8 @@ abstract class AbstractController extends AbstractMvc
      */
     public function run()
     {
+        \FB::log(__METHOD__);
+
         // If accesscheck failed => stop here and return false!
         if ($this->checkControllerAccess() === false) {
             $this->app->core->logger->warning(sprintf('Missing permission for ressource %s.%s.%s', $this->app->getName(), $this->getName(), $this->action));
@@ -228,42 +230,6 @@ abstract class AbstractController extends AbstractMvc
 
             // Without view rendering we return the return value send from called controller action
             return $return;
-        }
-    }
-
-    /**
-     * Ajax method to send the result of an action as ajax html command
-     *
-     * This works similiar to the run() method and even uses it. The difference is that the renderesult is wrapped by an
-     * ajax command object. This ajax command can be controlled by setting the wanted parameters via $this->ajax->...
-     *
-     * @param string $selector
-     *            Optional jQuery selector to html() the result.
-     *            Can be overridden by setAjaxTarget() method.
-     *            Default: '#content'
-     */
-    public function ajax($selector = '#content')
-    {
-        $this->ajax = $this->app->core->di->get('core.ajax');
-
-        $cmd = new DomCommand($selector, 'html', '--empty--');
-
-        // Prepare a fresh ajax command object
-        $this->ajax_cmd = $cmd;
-
-        // Get content from AbstractController::run()
-        $content = $this->run();
-
-        if ($content !== false) {
-
-            $this->ajax_cmd->setArgs($content);
-            $this->ajax_cmd->setId(get_called_class() . '::' . $this->action);
-
-            if (empty($this->ajax_cmd->getSelector()) && !empty($selector)) {
-                $this->ajax_cmd->setSelector($selector);
-            }
-
-            $this->ajax->addCommand($this->ajax_cmd);
         }
     }
 
@@ -405,7 +371,7 @@ abstract class AbstractController extends AbstractMvc
             $this->vars[$arg1] = $this->varHandleObject($arg2);
         }
         else {
-            Throw new ControllerException('The vars to set are not correct.', 1001);
+            Throw new ControllerException(sprintf('The var "%s" to set are not correct.', $arg1));
         }
 
         return $this;
@@ -478,51 +444,6 @@ abstract class AbstractController extends AbstractMvc
         $fd->setToken($this->di->get('core.security.form.token.name'), $this->di->get('core.security.form.token'));
 
         return $fd;
-    }
-
-    /**
-     * Sets the selector name to where the result is ajaxed.
-     *
-     * @param string $target
-     *
-     * @return \Core\Framework\Amvc\AbstractController
-     */
-    protected function setAjaxTarget($target)
-    {
-        if (!empty($this->ajax_cmd)) {
-            $this->ajax_cmd->setSelector($target);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Sets the function to use when result is returned.
-     *
-     * @param string $function
-     *
-     * @return \Core\Framework\Amvc\AbstractController
-     */
-    protected function setAjaxFunction($function)
-    {
-        if (!empty($this->ajax_cmd)) {
-            $this->ajax_cmd->setFunction($function);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Returns an empty ajax command object
-     *
-     * @param string $command_name
-     *            Name of command to get. Default: Dom\Html
-     *
-     * @return \Core\Ajax\AjaxCommand
-     */
-    public function getAjaxCommand($command_name = 'Dom\Html')
-    {
-        return $this->ajax->createCommand($command_name);
     }
 
     /**
