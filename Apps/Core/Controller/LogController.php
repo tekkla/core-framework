@@ -18,7 +18,7 @@ class LogController extends AbstractCoreController
                 ->run('Logs')
         ]);
         
-        $this->setAjaxTarget('#core-admin');
+        $this->ajax->setSelector('#core-admin');
     }
 
     public function Logs($entries = null)
@@ -34,7 +34,7 @@ class LogController extends AbstractCoreController
             'logs' => $data
         ]);
         
-        $this->setAjaxTarget('#core-admin-logs');
+        $this->ajax->setSelector('#core-admin-logs');
     }
 }
 

@@ -1,8 +1,6 @@
 <?php
 namespace Apps\Core\Controller;
 
-use Core\Html\Form\Input;
-
 /**
  * GroupController.php
  *
@@ -45,7 +43,7 @@ class GroupController extends AbstractCoreController
             ]
         ]);
 
-        $this->setAjaxTarget('#core-admin');
+        $this->ajax->setSelector('#core-admin');
     }
 
     public function Detail($id)
@@ -201,7 +199,7 @@ class GroupController extends AbstractCoreController
             ]
         ]));
 
-        $this->setAjaxTarget('#core-admin');
+        $this->ajax->setSelector('#core-admin');
     }
 
     public function NotEditable() {
@@ -210,7 +208,7 @@ class GroupController extends AbstractCoreController
             'text' => $this->app->language->get('group.noedit.text')
         ]);
 
-        $this->setAjaxTarget('#core-admin');
+        $this->ajax->setSelector('#core-admin');
     }
 }
 

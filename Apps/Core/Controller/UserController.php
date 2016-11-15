@@ -1,7 +1,6 @@
 <?php
 namespace Apps\Core\Controller;
 
-use Core\Security\Users;
 use Core\Security\Token\ActivationToken;
 
 class UserController extends AbstractCoreController
@@ -57,7 +56,7 @@ class UserController extends AbstractCoreController
             ]
         ]);
 
-        $this->setAjaxTarget('#core-admin');
+        $this->ajax->setSelector('#core-admin');
     }
 
     public function Edit($id = null)
@@ -163,7 +162,7 @@ class UserController extends AbstractCoreController
             'form' => $editbox
         ]);
 
-        $this->setAjaxTarget('#core-admin');
+        $this->ajax->setSelector('#core-admin');
     }
 
     public function Register()
