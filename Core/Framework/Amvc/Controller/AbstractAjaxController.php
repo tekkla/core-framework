@@ -32,18 +32,6 @@ abstract class AbstractAjaxController extends AbstractController
     private $selector = '#content';
 
     /**
-     *
-     * @var array
-     */
-    private $before_commands = [];
-
-    /**
-     *
-     * @var array
-     */
-    private $after_commands = [];
-
-    /**
      * Sets default selector
      *
      * @param string $selector
@@ -71,27 +59,13 @@ abstract class AbstractAjaxController extends AbstractController
     }
 
     /**
-     * Adds a new before ajax command
-     *
-     * Before will be added to the ajax command stack before the content of the controller function is added.
+     * Adds a ajax command to the ajax handler commandstack
      *
      * @param CommandInterface $command
      */
-    protected function addBeforeCommand(CommandInterface $command)
+    protected function addCommand(CommandInterface $command)
     {
-        $this->before_commands[] = $command;
-    }
-
-    /**
-     * Adds a new after ajax command
-     *
-     * After commands will be added to the ajax command stack after the content of the controller function is added.
-     *
-     * @param CommandInterface $command
-     */
-    protected function addAfterCommand(CommandInterface $command)
-    {
-        $this->after_commands[] = $command;
+        $this->app->core->di->get('core.ajax')->addCommand($command);
     }
 
     /**
@@ -102,12 +76,9 @@ abstract class AbstractAjaxController extends AbstractController
      */
     public function run(bool $only_content = true)
     {
-        $ajax = $this->app->core->di->get('core.ajax');
-
-        $cmd = new DomCommand($this->selector, 'html', '--empty--');
 
         // Prepare a fresh ajax command object
-        $this->ajax = $cmd;
+        $this->ajax = new DomCommand($this->selector, 'html', '--empty--');
 
         $content = parent::run();
 
@@ -118,17 +89,8 @@ abstract class AbstractAjaxController extends AbstractController
         if ($content !== false) {
 
             $this->ajax->setArgs($content);
-            $this->ajax->setId(get_called_class() . '::' . $this->action);
-
-            $this->before_commands[] = $this->ajax;
         }
 
-        $commands = array_merge($this->before_commands, $this->after_commands);
-
-        // Add all other controller created commanda to ajax command stack
-        foreach ($commands as $cmd) {
-            $ajax->addCommand($cmd);
-        }
+        $this->addCommand($this->ajax);
     }
 }
-
