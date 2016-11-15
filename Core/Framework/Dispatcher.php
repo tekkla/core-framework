@@ -239,7 +239,7 @@ class Dispatcher extends AbstractAcap
         }
         else {
 
-            $result = $controller->run();
+            $result = $controller->run(false);
 
             $redirect = $controller->getRedirect();
 
