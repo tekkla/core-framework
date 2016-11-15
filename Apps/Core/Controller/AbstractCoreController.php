@@ -1,7 +1,7 @@
 <?php
 namespace Apps\Core\Controller;
 
-use Core\Framework\Amvc\Controller\AbstractController;
+use Core\Framework\Amvc\Controller\AbstractAjaxController;
 
 /**
  * AbstractCoreController.php
@@ -10,7 +10,7 @@ use Core\Framework\Amvc\Controller\AbstractController;
  * @copyright 2016
  * @license MIT
  */
-abstract class AbstractCoreController extends AbstractController
+abstract class AbstractCoreController extends AbstractAjaxController
 {
     use CreateEditboxTrait;
 }
