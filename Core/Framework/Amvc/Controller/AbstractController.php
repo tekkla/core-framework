@@ -6,8 +6,8 @@ use Core\Framework\Amvc\View\View;
 use Core\Message\Message;
 use Core\Html\FormDesigner\FormDesigner;
 use Core\Ajax\Ajax;
-use Core\Ajax\Commands\Dom\DomCommand;
 use Core\Toolbox\Strings\CamelCase;
+use Core\Framework\Amvc\View\AbstractView;
 
 /**
  * AbstractController.php
@@ -169,8 +169,6 @@ abstract class AbstractController extends AbstractMvc
      */
     public function run()
     {
-        \FB::log(__METHOD__);
-
         // If accesscheck failed => stop here and return false!
         if ($this->checkControllerAccess() === false) {
             $this->app->core->logger->warning(sprintf('Missing permission for ressource %s.%s.%s', $this->app->getName(), $this->getName(), $this->action));
@@ -183,8 +181,22 @@ abstract class AbstractController extends AbstractMvc
         // action is stopped manually by using return.
         $return = false;
 
+        // Call existing before event
+        $eventAction = 'before' . $this->action;
+
+        if (method_exists($this, $eventAction)) {
+            $this->di->invokeMethod($this, $eventAction, $this->params);
+        }
+
         // a little bit of reflection magic to pass request param into controller func
         $return = $this->di->invokeMethod($this, $this->action, $this->params);
+
+        // Call existing before event
+        $eventAction = 'after' . $this->action;
+
+        if (method_exists($this, $eventAction)) {
+            $this->di->invokeMethod($this, $eventAction, $this->params);
+        }
 
         // Do we have a result?
         if (isset($return)) {
@@ -199,7 +211,7 @@ abstract class AbstractController extends AbstractMvc
         if ($this->render === true) {
 
             // Create view instance if not alredy done
-            if (!$this->view instanceof View) {
+            if (!$this->view instanceof AbstractView) {
                 $this->view = $this->app->getView($this->name);
             }
 
