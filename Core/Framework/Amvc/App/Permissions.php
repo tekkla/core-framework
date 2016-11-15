@@ -18,6 +18,7 @@ class Permissions
     private $permissions = [];
 
     /**
+     * Sets an array of permissions by replacing already existing permissions
      *
      * @param array $permissions
      */
@@ -27,6 +28,7 @@ class Permissions
     }
 
     /**
+     * Adds a permission
      *
      * @param string $permission
      */
@@ -36,6 +38,7 @@ class Permissions
     }
 
     /**
+     * Checks for existing permission
      *
      * @param string $permissiom
      *
@@ -45,5 +48,14 @@ class Permissions
     {
         return isset($this->permissions[$permissiom]);
     }
-}
 
+    /**
+     * Returns all set app permissions
+     *
+     * @return array
+     */
+    public function get(): array
+    {
+        return $this->permissions;
+    }
+}
