@@ -1,8 +1,6 @@
 <?php
 namespace Apps\Core\Model;
 
-use Core\Security\Group;
-
 /**
  * GroupModel.php
  *
