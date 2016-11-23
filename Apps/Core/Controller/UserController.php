@@ -61,7 +61,6 @@ class UserController extends AbstractCoreController
 
     public function Edit($id = null)
     {
-        echo __METHOD__;
 
         if (!$id) {
             $id = $this->app->core->user->getId();
