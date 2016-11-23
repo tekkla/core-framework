@@ -361,7 +361,7 @@ return [
                 'jquery' => [
                     'controls' => [
                         'version' => [
-                            'default' => '2.2.0'
+                            'default' => '3.1.1'
                         ],
                         'local' => [
                             'control' => 'switch',
@@ -398,7 +398,7 @@ return [
                     'controls' => [
                         'version' => [
                             'control' => 'input',
-                            'default' => '3.3.6',
+                            'default' => '3.3.7',
                             'validate' => [
                                 'empty'
                             ]
@@ -412,7 +412,7 @@ return [
                 'fontawesome' => [
                     'controls' => [
                         'version' => [
-                            'default' => '4.5.0',
+                            'default' => '4.7.0',
                             'validate' => [
                                 'empty'
                             ]
