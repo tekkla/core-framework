@@ -71,7 +71,7 @@ class GroupController extends AbstractCoreController
 
         if ($data) {
 
-            if ($data['storage'] == 'Core') {
+            if ($data['id_group'] == 2) {
                 $this->redirect(null, null, 'NotEditable');
                 return;
             }
@@ -81,12 +81,13 @@ class GroupController extends AbstractCoreController
             return;
         }
         else {
-            $data = $this->model->getGroup($id);
 
-            if ($data['storage'] == 'Core') {
+            if ($id == 2) {
                 $this->redirect(null, null, 'NotEditable');
                 return;
             }
+
+            $data = $this->model->getGroup($id);
         }
 
         $fd = $this->getFormDesigner();
@@ -199,10 +200,11 @@ class GroupController extends AbstractCoreController
             ]
         ]));
 
-        $this->ajax->setSelector('#core-admin');
+        $this->ajax->setSelector('#blablub');
     }
 
-    public function NotEditable() {
+    public function NotEditable()
+    {
         $this->setVar([
             'headline' => $this->app->language->get('group.noedit.text'),
             'text' => $this->app->language->get('group.noedit.text')

@@ -14,12 +14,11 @@ class GroupView extends AbstractCoreView
     public function Index()
     {
         echo '
-        <h2>', $this->headline, '<a class="btn btn-info btn-sm pull-right" data-ajax href="', $this->actions['new']['url'] ,'">+ ', $this->actions['new']['text'] , '<a></h2>
+        <h2>', $this->headline, '<a class="btn btn-info btn-sm pull-right" data-ajax href="', $this->actions['new']['url'], '">+ ', $this->actions['new']['text'], '</a></h2>
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
-                    <th class="col-xs-2">', $this->id_group, '</th>
-                    <th class="col-xs-2">', $this->group, '</th>
+                    <th class="col-xs-4">', $this->group, ' (', $this->id_group, ')</th>
                     <th>', $this->members, '</th>
                 </tr>
             </thead>';
@@ -28,7 +27,7 @@ class GroupView extends AbstractCoreView
             echo '
             <thead>
                 <tr>
-                    <th colspan="3">', $app, '</th>
+                    <th colspan="2"><h4 class="no-v-margin">', $app, '</h4></th>
                 </tr>
             </thead>
             <tbody>';
@@ -37,11 +36,12 @@ class GroupView extends AbstractCoreView
 
                 echo '
                 <tr data-ajax data-url="', $group['link'], '">
-                    <td>', $id_group, '</td>
-                    <td>', $group['display_name'], '</td>
+                    <td>', $group['display_name'], ' (', $id_group, ')</td>
                     <td>';
 
-                echo $this->generateuserlist($group['users']);
+                if ($id_group > 2) {
+                    echo $this->generateuserlist($group['users']);
+                }
 
                 echo '
                     </td>
@@ -98,7 +98,8 @@ class GroupView extends AbstractCoreView
         </div>';
     }
 
-    public function NotEditable() {
+    public function NotEditable()
+    {
         echo '
         <h2>', $this->headline, '</h2>
         <p>', $this->text, '</p>';

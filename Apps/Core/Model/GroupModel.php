@@ -85,7 +85,7 @@ class GroupModel extends AbstractCoreModel
         ];
 
         if ($skip_core) {
-            $qb['filter'] = 'storage <> "Core"';
+            $qb['filter'] = 'id_group <> 2';
         }
 
         // Load the groups the user is in

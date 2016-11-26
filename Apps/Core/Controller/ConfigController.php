@@ -74,11 +74,6 @@ class ConfigController extends AbstractCoreController
 
         $app_name = $string->camelize($app_name);
 
-        // check permission
-        if (!$this->checkAccess('config', false, $app_name)) {
-            Throw new SecurityException('No accessrights');
-        }
-
         $data = $this->app->post->get();
 
         // save process
