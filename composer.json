@@ -7,17 +7,17 @@
     "tekkla/core-asset" : ">=1.1.1.1",
     "tekkla/core-logger" : ">=1.0.2",
     "tekkla/core-language" : ">=1.1.1.2",
-    "tekkla/core-ajax" : ">=0.1.10",
+    "tekkla/core-ajax" : ">=1.4",
     "tekkla/core-router" : ">=1.2.0",
     "tekkla/core-message" : ">=0.0.3.1",
     "tekkla/core-mailer" : ">=0.0.5",
     "tekkla/core-toolbox" : ">=0.0.7.0",
     "tekkla/core-di" : ">=0.0.2",
-    "tekkla/core-html" : ">=0.1.4",
+    "tekkla/core-html" : ">=0.2",
     "tekkla/core-data" : ">=0.0.4.1",
     "tekkla/core-http" : ">=0.0.2.1",
-    "tekkla/core-security" : ">=0.0.2.1",
-    "tekkla/core-validator" : ">=0.2.1"
+    "tekkla/core-security" : ">=0.0.4",
+    "tekkla/core-validator" : ">=0.2.2"
   },
   "repositories" : [ {
     "type" : "composer",
