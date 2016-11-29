@@ -15,7 +15,7 @@ class Cache
      */
     public static function cleanCacheFolder() {
 
-        $basedir = dirname(__DIR__);
+        $cachedir = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'Cache';
 
         $files = [
             'script.js',
@@ -26,9 +26,9 @@ class Cache
 
         foreach ($files as $file) {
 
-            echo 'Deleting: ' . $basedir . '/' . $file . PHP_EOL;
+            echo 'Deleting: ' . $cachedir . DIRECTORY_SEPARATOR . $file . PHP_EOL;
 
-            unlink($basedir . '/' . $file);
+            @unlink($cachedir . DIRECTORY_SEPARATOR . $file);
         }
 
         echo 'Cache cleanup done!' . PHP_EOL;
