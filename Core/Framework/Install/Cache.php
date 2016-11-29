@@ -1,6 +1,8 @@
 <?php
 namespace Core\Framework\Install;
 
+use Composer\Script\Event;
+
 /**
  * Cache.php
  *
@@ -10,29 +12,23 @@ namespace Core\Framework\Install;
  */
 class Cache
 {
+
     /**
      * Deletes all js and css files in Cachefolder
      */
-    public static function cleanCacheFolder() {
-
-        $cachedir = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'Cache';
+    public static function cleanCacheFolder(Event $event)
+    {
+        $cachedir = dirname($event->getComposer()
+            ->getConfig()
+            ->get('vendor-dir')) . DIRECTORY_SEPARATOR . 'Cache';
 
         $files = [
             'script.js',
             'style.css'
         ];
 
-        echo 'Cleanup Core\Framework Cache' . PHP_EOL;
-
         foreach ($files as $file) {
-
-            echo 'Deleting: ' . $cachedir . DIRECTORY_SEPARATOR . $file . PHP_EOL;
-
             @unlink($cachedir . DIRECTORY_SEPARATOR . $file);
         }
-
-        echo 'Cache cleanup done!' . PHP_EOL;
     }
 }
-
-
