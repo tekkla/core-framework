@@ -22,9 +22,17 @@ class Cache
             'style.css'
         ];
 
+        echo 'Cleanup Core\Framework Cache' . PHP_EOL;
+
         foreach ($files as $file) {
+
+            echo 'Deleting: ' . $basedir . '/' . $file . PHP_EOL;
+
             unlink($basedir . '/' . $file);
         }
+
+        echo 'Cache cleanup done!' . PHP_EOL;
     }
 }
+
 
