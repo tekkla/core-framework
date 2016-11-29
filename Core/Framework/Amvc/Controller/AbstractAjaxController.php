@@ -87,10 +87,8 @@ abstract class AbstractAjaxController extends AbstractController
         }
 
         if ($content !== false) {
-
             $this->ajax->setArgs($content);
+            $this->addCommand($this->ajax);
         }
-
-        $this->addCommand($this->ajax);
     }
 }
