@@ -15,6 +15,7 @@ use Core\Framework\Core;
 use Core\Framework\Amvc\Controller\Redirect;
 use Core\Framework\Amvc\Controller\RedirectInterface;
 use Core\Framework\Amvc\Model\AbstractModel;
+use Core\DI\DIException;
 
 /**
  * AbstractApp.php
@@ -507,7 +508,13 @@ abstract class AbstractApp
             }
         }
 
-        $object = $this->core->di->instance($class, $args);
+        try {
+            $object = $this->core->di->instance($class, $args);
+        }
+        catch (DIException $e) {
+            $this->core->logger->error(sprintf('Class "%s" could not be found in DI container.', $class));
+            return false;
+        }
 
         switch ($type) {
             case 'Controller':
