@@ -88,7 +88,7 @@ class Dispatcher extends AbstractAcap
 
         // Send 404 error when no app name is defined in router
         if (empty($this->app)) {
-            return $this->send404('AppName');
+            return $this->sendRequestError('AppName');
         }
 
         // We need this toll for some following string conversions
@@ -102,7 +102,7 @@ class Dispatcher extends AbstractAcap
 
         // Send 404 error when there is no app instance
         if (empty($app)) {
-            return $this->send404('AppObject');
+            return $this->sendRequestError('AppObject');
         }
 
         // Call app event: Run()
@@ -127,7 +127,7 @@ class Dispatcher extends AbstractAcap
 
         // Send 404 error when no app name is defined in router
         if (empty($this->controller)) {
-            return $this->send404('ControllerName');
+            return $this->sendRequestError('ControllerName');
         }
 
         // Load controller object
@@ -138,12 +138,12 @@ class Dispatcher extends AbstractAcap
 
         // Send 404 when controller could not be loaded
         if ($controller == false) {
-            return $this->send404('Controller::' . $this->controller);
+            return $this->sendRequestError('Controller::' . $this->controller);
         }
 
         // Send 404 error when no app name is defined in router
         if (empty($this->action)) {
-            return $this->send404('ActionName');
+            return $this->sendRequestError('ActionName');
         }
 
         // Handle controller action
@@ -151,7 +151,7 @@ class Dispatcher extends AbstractAcap
         $this->action = $string->camelize();
 
         if (!method_exists($controller, $this->action)) {
-            return $this->send404('Action::' . $this->action);
+            return $this->sendRequestError('Action::' . $this->action);
         }
 
         // Prepare controller object
@@ -303,9 +303,16 @@ class Dispatcher extends AbstractAcap
         return $dispatcher->dispatch();
     }
 
-    private function send404($stage = 'not set')
+    /**
+     *
+     * @param string $stage
+     * @param int $status_code
+     *
+     * @return string|\Core\Framework\Notification\Notification
+     */
+    private function sendRequestError(string $stage = 'not set', int $status_code = 404)
     {
-        $msg = $stage . ' - Page not found';
+        $msg = $stage . ' - Page not found (' . $status_code . ')';
 
         if ($this->getAjax()) {
 
@@ -319,7 +326,7 @@ class Dispatcher extends AbstractAcap
             return $result;
         }
 
-        $this->core->http->header->sendHttpError(404);
+        $this->core->http->header->sendHttpError($status_code);
 
         return $msg;
     }
