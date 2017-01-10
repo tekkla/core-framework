@@ -8,7 +8,7 @@ use Psr\Log\LoggerInterface;
  * ErrorHandler.php
  *
  * @author Michael "Tekkla" Zorn <tekkla@tekkla.de>
- * @copyright 2016
+ * @copyright 2017
  * @license MIT
  */
 class ErrorHandler
@@ -139,7 +139,7 @@ class ErrorHandler
      */
     public function handle()
     {
-        $html = $this->createErrorHtml(false);
+        $html = $this->createErrorHtml();
 
         if (!$this->ajax) {
 
@@ -201,7 +201,7 @@ class ErrorHandler
     /**
      * Creates html error message
      */
-    private function createErrorHtml(bool $dismissable = false)
+    private function createErrorHtml(bool $dismissable = true)
     {
         $html = '
         <div class="alert alert-danger' . ($dismissable == true ? ' alert-dismissible' : '') . '" role="alert" id="core-error-' . $this->throwable->getCode() . '">';
