@@ -44,6 +44,7 @@ class GroupController extends AbstractCoreController
         ]);
 
         $this->ajax->setSelector('#core-admin');
+
     }
 
     public function Detail($id)
@@ -63,6 +64,8 @@ class GroupController extends AbstractCoreController
                 'id' => $id
             ])
         ]);
+
+        $this->ajax->setSelector('#core-admin');
     }
 
     public function Edit($id = null)
@@ -78,7 +81,7 @@ class GroupController extends AbstractCoreController
 
             $this->model->save($data);
             $this->redirect(null, null, 'Index');
-            return;
+            return false;
         }
         else {
 
@@ -94,6 +97,7 @@ class GroupController extends AbstractCoreController
 
         $fd->mapData($data);
         $fd->mapErrors($this->model->getErrors());
+        $fd->isAjax();
 
         $group = $fd->addGroup();
 
@@ -147,6 +151,7 @@ class GroupController extends AbstractCoreController
         foreach ($apps as $name) {
 
             $app = $this->app->core->apps->getAppInstance($name);
+
             /**
              * First check for existing permissions.
              * If there are no perms the permission object of the app wil be null.
@@ -200,7 +205,7 @@ class GroupController extends AbstractCoreController
             ]
         ]));
 
-        $this->ajax->setSelector('#blablub');
+        $this->ajax->setSelector('#core-admin');
     }
 
     public function NotEditable()
@@ -213,4 +218,3 @@ class GroupController extends AbstractCoreController
         $this->ajax->setSelector('#core-admin');
     }
 }
-
