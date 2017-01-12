@@ -76,19 +76,23 @@ class Dispatcher extends AbstractAcap
 
     /**
      * General dispatcher
-     *
-     * @param boolean $match_url
-     *            Optional boolean flag to supress route matching. This is important for situations where the Run()
-     *            method of an app, maybe altered the values for app, controller and/or action, has been called.
-     *            (Default: true)
      */
     public function dispatch()
     {
         $this->managePost();
 
+        // Make sure there is a route and abort request if not
+        $route = $this->core->router->getCurrentRoute();
+
+        if (empty($route)) {
+            $this->core->logger->warning(sprintf('The requested url "%s" could not be resolved to a route.', $this->core->router->getRequestUrl()));
+            return $this->returnRequestError();
+        }
+
         // Send 404 error when no app name is defined in router
         if (empty($this->app)) {
-            return $this->sendRequestError('AppName');
+            $this->core->logger->warning(sprintf('No app name for "%s" request', $this->core->router->getRequestUrl()));
+            return $this->returnRequestError();
         }
 
         // We need this toll for some following string conversions
@@ -102,7 +106,8 @@ class Dispatcher extends AbstractAcap
 
         // Send 404 error when there is no app instance
         if (empty($app)) {
-            return $this->sendRequestError('AppObject');
+            $this->core->logger->warning(sprintf('No app name for "%s" request', $this->core->router->getRequestUrl()));
+            return $this->returnRequestError();
         }
 
         // Call app event: Run()
@@ -127,7 +132,7 @@ class Dispatcher extends AbstractAcap
 
         // Send 404 error when no app name is defined in router
         if (empty($this->controller)) {
-            return $this->sendRequestError('ControllerName');
+            return $this->returnRequestError('ControllerName');
         }
 
         // Load controller object
@@ -138,12 +143,12 @@ class Dispatcher extends AbstractAcap
 
         // Send 404 when controller could not be loaded
         if ($controller == false) {
-            return $this->sendRequestError('Controller::' . $this->controller);
+            return $this->returnRequestError();
         }
 
         // Send 404 error when no app name is defined in router
         if (empty($this->action)) {
-            return $this->sendRequestError('ActionName');
+            return $this->returnRequestError();
         }
 
         // Handle controller action
@@ -151,16 +156,14 @@ class Dispatcher extends AbstractAcap
         $this->action = $string->camelize();
 
         if (!method_exists($controller, $this->action)) {
-            return $this->sendRequestError('Action::' . $this->action);
+            return $this->returnRequestError();
         }
 
         // Prepare controller object
         $controller->setAction($this->action);
         $controller->setParams($this->params);
 
-
-
-        $controller->setRoute($this->core->router->getCurrentRoute());
+        $controller->setRoute($route);
 
         if ($this->ajax) {
 
@@ -307,15 +310,18 @@ class Dispatcher extends AbstractAcap
     }
 
     /**
+     * Creates a language based error message according to the given status code
      *
-     * @param string $stage
+     * Know about ajax requests and returns JSON encoded error command.
+     * Sends given status code as http header.
+     *
      * @param int $status_code
      *
-     * @return string|\Core\Framework\Notification\Notification
+     * @return string
      */
-    private function sendRequestError(string $stage = 'not set', int $status_code = 404)
+    private function returnRequestError(int $status_code = 404)
     {
-        $msg = $stage . ' - Page not found (' . $status_code . ')';
+        $msg = $this->core->apps->getAppInstance('Core')->language->get('error.' . $status_code). ' (' . $status_code . ')';
 
         if ($this->getAjax()) {
 
