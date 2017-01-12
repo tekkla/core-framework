@@ -163,6 +163,7 @@ class Dispatcher extends AbstractAcap
         $controller->setAction($this->action);
         $controller->setParams($this->params);
 
+        // Set matched route to controller so it can be used for url creation inside controller
         $controller->setRoute($route);
 
         if ($this->ajax) {
