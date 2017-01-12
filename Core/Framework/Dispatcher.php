@@ -157,6 +157,9 @@ class Dispatcher extends AbstractAcap
         // Prepare controller object
         $controller->setAction($this->action);
         $controller->setParams($this->params);
+
+
+
         $controller->setRoute($this->core->router->getCurrentRoute());
 
         if ($this->ajax) {
