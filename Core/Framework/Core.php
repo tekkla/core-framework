@@ -537,8 +537,8 @@ final class Core
 
             foreach ($obj as $prop => $val) {
 
-                if ($prop == 'smtp_options' && !empty($val)) {
-                    $val = parse_ini_string($val, true, INI_SCANNER_TYPED);
+                if ($prop == 'smtp_options') {
+                    $val =  !empty($val) ? parse_ini_string($val, true, INI_SCANNER_TYPED) : [];
                 }
 
                 $mta->{$prop} = $val;
