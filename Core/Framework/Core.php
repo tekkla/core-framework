@@ -3,11 +3,9 @@ namespace Core\Framework;
 
 use Core\DI\DI;
 use Core\Framework\Page\Page;
-use Core\Ajax\Ajax;
 use Core\Security\Token\SessionToken;
 use Core\Toolbox\IO\Sendfile;
 use Psr\Log\LoggerInterface;
-use Core\Message\MessageHandler;
 use Core\Framework\Notification\MessageFacade;
 use Core\Framework\Error\ErrorHandler;
 use Core\Framework\Amvc\App\AppHandler;
