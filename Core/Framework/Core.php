@@ -12,6 +12,7 @@ use Core\Framework\Notification\MessageFacade;
 use Core\Framework\Error\ErrorHandler;
 use Core\Framework\Amvc\App\AppHandler;
 use Composer\Autoload\ClassLoader;
+use Core\Toolbox\IO\FileException;
 
 // Do not show errors by default!
 // @see loadSettings()
@@ -223,9 +224,22 @@ final class Core
             switch ($dispatcher->getFormat()) {
 
                 case 'file':
-                    $sendfile = new Sendfile($result);
-                    $sendfile->send();
-
+                    
+                    // $result can be either a Sendfile object or a string that contains a path to the file to be send.
+                    if (!$result instanceof Sendfile) {
+                        if (is_string($result) && file_exists($result)) {
+                            $result = new Sendfile($result);
+                            $result->setInline(false);
+                        }
+                        else {
+                            Throw new FileException($language->get('error.file.send'));
+                            break;
+                        }
+                    }
+                    
+                    $result->send();
+                    
+                    exit;
                     break;
 
                 case 'html':
