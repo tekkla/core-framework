@@ -136,9 +136,9 @@ abstract class AbstractController extends AbstractMvc
     /**
      * Returns a set Redirect object
      *
-     * @return RedirectInterface
+     * @return RedirectInterface|null
      */
-    public function getRedirect(): RedirectInterface
+    public function getRedirect()
     {
         return $this->redirect;
     }
