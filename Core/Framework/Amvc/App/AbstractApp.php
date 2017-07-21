@@ -185,6 +185,7 @@ abstract class AbstractApp
     }
     
     /**
+     * Sets app name
      *
      * @param string $name
      */
@@ -197,7 +198,7 @@ abstract class AbstractApp
     }
     
     /**
-     * Sets app related $_POST reference
+     * Sets apps related $_POST content as reference
      *
      * @param array $post
      */
@@ -207,7 +208,7 @@ abstract class AbstractApp
     }
     
     /**
-     * Returns reference to set post
+     * Returns apps related $_POST reference
      *
      * @return array
      */
@@ -297,14 +298,21 @@ abstract class AbstractApp
                 $routes['index'] = [];
             }
             
+            // Mapping process
             foreach ($routes as $name => $definition) {
                 
+                // No numbers as routenames!
                 if (is_numeric($name)) {
-                    Throw new AppException(sprintf('AbstractApp "%s" sent a nameless route to be mapped.', $this->name));
+                    Throw new AppException(sprintf('App "%s" sent a nameless eg numeric named route to be mapped. Please set a proper route name.', $this->name));
                 }
                 
-                $definition = $this->parseRouteDefintion($name, $definition);
+                // Place routes name in routes definition for the following parser
+                $definition['name'] = $name;
                 
+                // Magic route parser that allows us to write lazy route definitions ;)
+                $this->parseRouteDefintion($definition);
+                
+                // Finally the router service gets feed with our route
                 $this->core->router->map($definition['method'], $definition['route'], $definition['target'], $definition['name']);
             }
             
@@ -313,43 +321,56 @@ abstract class AbstractApp
     }
     
     /**
+     * Handles all the magic of route definition completion that allows us to write less code when we define a routes array.
      *
-     * @param string $name
-     * @param array $definition
+     * For example:
+     * A route of app 'My' with the name 'route.example' with no further data will be parsed as
+     * return array(
+     *      'name' => 'my.route.example',
+     *      'route' => '/my/route/example',
+     *      'method' => 'GET|POST',
+     *      'target' => array(
+     *          'app' => 'My',
+     *          'controller' => 'Route',
+     *          'action' => 'Example'
+     *      )
+     * );
+     *
+     * @param array &$definition
      */
-    private function parseRouteDefintion(string $name, array $definition): array
+    private function parseRouteDefintion(array &$definition)
     {
-        static $string;
-        
-        if (! isset($string)) {
-            $string = new CamelCase($name);
-        } else {
-            $string->setString($name);
-        }
-        
-        $name = $string->uncamelize();
-        
+        // Here we handle the case when there is no route, controller or action is set
         if (empty($definition['route']) || empty($definition['target']['controller']) || empty($definition['target']['action'])) {
             
-            // Try to get controller and action from route name
-            $ca = explode('.', $name);
+            // Try to get controller and action  strings from route names like 'controller.action'
+            $ca = explode('.', $definition['name']);
             
+            /**
+             * No route? Set it to '/controller'
+             */
             if (empty($definition['route'])) {
                 $definition['route'] = '/' . $ca[0];
             }
             
+            // No controller defined in targe array? Set it to the controller extracted from name.
             if (empty($definition['target']['controller'])) {
-                $definition['target']['controller'] = empty($ca[0]) ? $name : $ca[0];
+                $definition['target']['controller'] = empty($ca[0]) ? $definition['name'] : $ca[0];
             }
             
+            // No action set?
             if (empty($definition['target']['action'])) {
                 
+                // Take care of routes with multiple actions
                 if (empty(preg_match('/\|\w+\:\w+/', $definition['route']))) {
-                    $definition['target']['action'] = empty($ca[1]) ? $name : $ca[1];
+                    
+                    // Use the controller as action when there was no .action in name.
+                    $definition['target']['action'] = empty($ca[1]) ? $definition['name'] : $ca[1];
                 }
             }
         }
         
+        // We need the apps name
         $app = $this->getName(true);
         
         // Create route string
@@ -367,17 +388,21 @@ abstract class AbstractApp
             $definition['target']['app'] = $app;
         }
         
+        // Define default HTTP request methods the route should react on
         if (empty($definition['method'])) {
             $definition['method'] = 'GET|POST';
         }
         
-        if (strpos($name, $app) === false) {
-            $name = $app . '.' . $name;
+        // Prepend the apps name in front of the routes name to prevent collision with routes named like this in other apps
+        if (strpos($definition['name'], $app) === false) {
+            $definition['name'] = $app . '.' . $definition['name'];
         }
         
-        $definition['name'] = $name;
-        
-        return $definition;
+        // finally camelize the app, controller and action names in target section of our definition
+        array_walk($definition['target'], function(&$arg) {
+            $string = new CamelCase($arg);
+            $arg = $string->camelize();
+        });
     }
     
     /**
@@ -551,7 +576,7 @@ abstract class AbstractApp
      *
      * @return AbstractModel
      */
-    public function getModel(string $name = ''): AbstractModel 
+    public function getModel(string $name = ''): AbstractModel
     {
         if (empty($name)) {
             $name = $this->getComponentsName();
