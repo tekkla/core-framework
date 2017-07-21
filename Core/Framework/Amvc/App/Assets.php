@@ -5,19 +5,27 @@ namespace Core\Framework\Amvc\App;
  * Assets.php
  *
  * @author Michael "Tekkla" Zorn <tekkla@tekkla.de>
- * @copyright 2016
+ * @copyright 2016-2017
  * @license MIT
  */
 class Assets
 {
 
+    /**
+     *
+     * @var array
+     */
     private $assets = [];
 
     /**
+     * Adds an asset
      *
      * @param string $type
+     *            Assets type
      * @param string $filename
+     *            Filename of asset
      * @param array $options
+     *            Optional options
      */
     public function add(string $type, string $filename, array $options = [])
     {
@@ -28,19 +36,20 @@ class Assets
     }
 
     /**
+     * Return all assets of a specific type.
      *
      * @param string $type
-     *
+     *            Type name to return
+     *            
      * @return array
      */
     public function getType(string $type): array
     {
-        if (isset($this->assets[$type])) {
-            return $this->assets[$type];
-        }
+        return $this->assets[$type] ?? [];
     }
 
     /**
+     * Returns all stored assets of all types
      *
      * @return array
      */
@@ -49,4 +58,3 @@ class Assets
         return $this->assets;
     }
 }
-
