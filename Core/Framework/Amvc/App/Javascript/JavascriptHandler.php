@@ -8,7 +8,7 @@ use Core\Asset\Javascript\JavascriptObjectInterface;
  * JavascriptHandler.php
  *
  * @author Michael "Tekkla" Zorn <tekkla@tekkla.de>
- * @copyright 2016
+ * @copyright 2016-2017
  * @license MIT
  */
 class JavascriptHandler implements JavascriptHandlerInterface, \IteratorAggregate
@@ -36,7 +36,7 @@ class JavascriptHandler implements JavascriptHandlerInterface, \IteratorAggregat
      *
      * {@inheritdoc}
      *
-     * @see \Core\Framework\Amvc\App\Javascript\JavascriptHandlerInterface::add($js)
+     * @see JavascriptHandlerInterface::add($js)
      */
     public function add(JavascriptObjectInterface $js)
     {
@@ -47,7 +47,7 @@ class JavascriptHandler implements JavascriptHandlerInterface, \IteratorAggregat
      *
      * {@inheritdoc}
      *
-     * @see \Core\Framework\Amvc\App\Javascript\JavascriptHandlerInterface::get()
+     * @see JavascriptHandlerInterface::get()
      */
     public function get(): array
     {
@@ -58,7 +58,7 @@ class JavascriptHandler implements JavascriptHandlerInterface, \IteratorAggregat
      *
      * {@inheritdoc}
      *
-     * @see \Core\Framework\Amvc\App\Javascript\JavascriptHandlerInterface::getType($type)
+     * @see JavascriptHandlerInterface::getType($type)
      */
     public function getType(string $type): array
     {
@@ -69,7 +69,7 @@ class JavascriptHandler implements JavascriptHandlerInterface, \IteratorAggregat
      *
      * {@inheritdoc}
      *
-     * @see \Core\Framework\Amvc\App\Javascript\JavascriptHandlerInterface::removeType($type)
+     * @see JavascriptHandlerInterface::removeType($type)
      */
     public function removeType(string $type): bool
     {
@@ -85,7 +85,7 @@ class JavascriptHandler implements JavascriptHandlerInterface, \IteratorAggregat
      *
      * {@inheritdoc}
      *
-     * @see \Core\Framework\Amvc\App\Javascript\JavascriptHandlerInterface::file($url, $defer, $external)
+     * @see JavascriptHandlerInterface::file($url, $defer, $external)
      */
     public function file(string $url, bool $defer = true, bool $external = false): JavascriptObjectInterface
     {
@@ -115,7 +115,7 @@ class JavascriptHandler implements JavascriptHandlerInterface, \IteratorAggregat
      *
      * {@inheritdoc}
      *
-     * @see \Core\Framework\Amvc\App\Javascript\JavascriptHandlerInterface::script($script, $defer)
+     * @see JavascriptHandlerInterface::script($script, $defer)
      */
     public function script(string $script, bool $defer = true): JavascriptObjectInterface
     {
@@ -155,7 +155,7 @@ class JavascriptHandler implements JavascriptHandlerInterface, \IteratorAggregat
      *
      * {@inheritdoc}
      *
-     * @see \Core\Framework\Amvc\App\Javascript\JavascriptHandlerInterface::block($script, $defer)
+     * @see JavascriptHandlerInterface::block($script, $defer)
      */
     public function block(string $script, bool $defer = true): JavascriptObjectInterface
     {
@@ -174,7 +174,7 @@ class JavascriptHandler implements JavascriptHandlerInterface, \IteratorAggregat
      *
      * {@inheritdoc}
      *
-     * @see \Core\Framework\Amvc\App\Javascript\JavascriptHandlerInterface::variable($name, $value, $is_string, $defer)
+     * @see JavascriptHandlerInterface::variable($name, $value, $is_string, $defer)
      */
     public function variable(string $name, $value, bool $is_string = false, bool $defer = true): JavascriptObjectInterface
     {
@@ -200,7 +200,7 @@ class JavascriptHandler implements JavascriptHandlerInterface, \IteratorAggregat
      *
      * {@inheritDoc}
      *
-     * @see IteratorAggregate::getIterator()
+     * @see \IteratorAggregate::getIterator()
      */
     public function getIterator()
     {

@@ -22,10 +22,9 @@ class CssHandler implements CssHandlerInterface, \IteratorAggregate
     private $objects = [];
 
     /**
-     *
-     * {@inheritdoc}
-     *
-     * @see \Core\Framework\Amvc\App\CssHandler\CssHandlerInterface::add($css)
+     * 
+     * {@inheritDoc}
+     * @see CssHandlerInterface::add()
      */
     public function add(CssObjectInterface $css)
     {
@@ -36,7 +35,7 @@ class CssHandler implements CssHandlerInterface, \IteratorAggregate
      *
      * {@inheritdoc}
      *
-     * @see \Core\Framework\Amvc\App\CssHandler\CssHandlerInterface::link($url)
+     * @see CssHandlerInterface::link($url)
      */
     public function link(string $url): CssObjectInterface
     {
@@ -54,7 +53,7 @@ class CssHandler implements CssHandlerInterface, \IteratorAggregate
      *
      * {@inheritdoc}
      *
-     * @see \Core\Framework\Amvc\App\CssHandler\CssHandlerInterface::inline($styles)
+     * @see CssHandlerInterface::inline($styles)
      */
     public function inline(string $styles): CssObjectInterface
     {
@@ -72,7 +71,7 @@ class CssHandler implements CssHandlerInterface, \IteratorAggregate
      *
      * {@inheritdoc}
      *
-     * @see \Core\Framework\Amvc\App\CssHandler\CssHandlerInterface::get()
+     * @see CssHandlerInterface::get()
      */
     public function get(): array
     {
@@ -83,7 +82,7 @@ class CssHandler implements CssHandlerInterface, \IteratorAggregate
      *
      * {@inheritDoc}
      *
-     * @see IteratorAggregate::getIterator()
+     * @see \IteratorAggregate::getIterator()
      */
     public function getIterator()
     {

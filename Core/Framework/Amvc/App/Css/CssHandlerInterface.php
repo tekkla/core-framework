@@ -7,7 +7,7 @@ use Core\Asset\Css\CssObjectInterface;
  * CssHandlerInterface.php
  *
  * @author Michael "Tekkla" Zorn <tekkla@tekkla.de>
- * @copyright 2016
+ * @copyright 2016-2017
  * @license MIT
  */
 interface CssHandlerInterface
@@ -16,7 +16,7 @@ interface CssHandlerInterface
     /**
      * Adds a css object to the output queue
      *
-     * @param CssObject $css
+     * @param CssObjectInterface $css
      */
     public function add(CssObjectInterface $css);
 
