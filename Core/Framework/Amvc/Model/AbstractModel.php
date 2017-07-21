@@ -10,7 +10,7 @@ use Core\Framework\Amvc\AbstractMvc;
  * AbstractModel.php
  *
  * @author Michael "Tekkla" Zorn <tekkla@tekkla.de>
- * @copyright 2016
+ * @copyright 2016-2017
  * @license MIT
  */
 abstract class AbstractModel extends AbstractMvc
@@ -30,30 +30,6 @@ abstract class AbstractModel extends AbstractMvc
 
     /**
      *
-     * @var Security
-     */
-    protected $security;
-
-    /**
-     *
-     * @var ConfigStorage
-     */
-    protected $config;
-
-    /**
-     *
-     * @var Text
-     */
-    protected $text;
-
-    /**
-     *
-     * @var Router
-     */
-    protected $router;
-
-    /**
-     *
      * @var array
      */
     protected $errors = [];
@@ -66,15 +42,15 @@ abstract class AbstractModel extends AbstractMvc
      *
      * @param string $model_name
      *            Optional: When not set the name of the current model will be used
-     *
+     *            
      * @return AbstractModel
      */
-    final public function getModel($model_name = '')
+    final public function getModel($model_name = ''): AbstractModel
     {
         if (empty($model_name)) {
             $model_name = $this->getName();
         }
-
+        
         return $this->app->getModel($model_name);
     }
 
@@ -85,26 +61,26 @@ abstract class AbstractModel extends AbstractMvc
      *            Name of the registered db factory
      * @param string $prefix
      *            Optional table prefix.
-     *
+     *            
      * @return Db
      */
-    final protected function getDbConnector($resource_name = 'db.default', $prefix = '')
+    final protected function getDbConnector($resource_name = 'db.default', $prefix = ''): Db
     {
-        if (!$this->di->exists($resource_name)) {
+        if (! $this->di->exists($resource_name)) {
             Throw new ModelException(sprintf('A database service with name "%s" ist not registered', $resource_name));
         }
-
+        
         /* @var $db Db */
         $db = $this->di->get($resource_name);
-
+        
         if ($prefix) {
             $db->setPrefix($prefix);
         }
-
-        if (!empty($this->scheme)) {
+        
+        if (! empty($this->scheme)) {
             $db->setScheme($this->scheme);
         }
-
+        
         return $db;
     }
 
@@ -121,31 +97,31 @@ abstract class AbstractModel extends AbstractMvc
         if (empty($scheme)) {
             $scheme = $this->scheme;
         }
-
+        
         if (empty($scheme['filter'])) {
             return $data;
         }
-
+        
         $filter = [];
-
+        
         foreach ($scheme['filter'] as $f => $r) {
             $filter[$f] = $r;
         }
-
+        
         if (empty($filter)) {
             return $data;
         }
-
+        
         $result = filter_var_array($data, $filter);
-
+        
         if (empty($result)) {
             return $data;
         }
-
+        
         foreach ($result as $key => $value) {
             $data[$key] = $value;
         }
-
+        
         return $data;
     }
 
@@ -156,99 +132,97 @@ abstract class AbstractModel extends AbstractMvc
      *
      * @param array $skip
      *            Optional array of fieldnames to skip on validation
-     *
+     *            
      * @return boolean
      */
     protected function validate(array &$data, array $fields = [], bool $filter_before_validate = true, array $skip = [])
     {
         static $validator;
-
+        
         if (empty($fields)) {
-
+            
             // No and no fields in scheme means no validation rules so we have nothing to du here
             if (empty($this->scheme['fields'])) {
                 return $data;
             }
-
+            
             // Use the fields list from existing scheme
             $fields = $this->scheme['fields'];
         }
-
+        
         // Still no fields?
         if (empty($fields)) {
             return $data;
         }
-
+        
         // Lets run our rules
         foreach ($data as $key => $val) {
-
+            
             // Is this field inside the $skip array list?
             if (in_array($key, $skip)) {
                 continue;
             }
-
+            
             // Run possible filters before the validation process
-            if ($filter_before_validate && !empty($fields[$key]['filter'])) {
-
-                if (!is_array($fields[$key]['filter'])) {
+            if ($filter_before_validate && ! empty($fields[$key]['filter'])) {
+                
+                if (! is_array($fields[$key]['filter'])) {
                     $fields[$key]['filter'] = (array) $fields[$key]['filter'];
                 }
-
+                
                 foreach ($fields[$key]['filter'] as $filter) {
-
+                    
                     $options = [];
-
+                    
                     if (is_array($filter)) {
                         $options = $filter[1];
                         $filter = $filter[0];
                     }
-
+                    
                     $result = filter_var($val, $filter, $options);
-
+                    
                     if ($result === false) {
                         $this->addError($key, sprintf($this->app->language->get('validator.filter'), $filter));
-                    }
-                    else {
+                    } else {
                         $data[$key] = $result;
                     }
                 }
             }
-
+            
             if (empty($fields[$key]['validate'])) {
                 continue;
             }
-
+            
             if (empty($validator)) {
                 $validator = new Validator();
             }
-
-            if (!is_array($fields[$key]['validate'])) {
+            
+            if (! is_array($fields[$key]['validate'])) {
                 $fields[$key]['validate'] = (array) $fields[$key]['validate'];
             }
-
+            
             $validator->setValue($val);
-
+            
             foreach ($fields[$key]['validate'] as $rule) {
-
+                
                 $validator->parseRule($rule);
                 $validator->validate();
-
-                if (!$validator->isValid()) {
-
+                
+                if (! $validator->isValid()) {
+                    
                     $result = $validator->getResult();
-
+                    
                     if (is_array($result)) {
                         $result = vsprintf($this->app->language->get($result[0]), $result[1]);
-                    }
-                    else {
+                    } else {
                         $result = $this->app->language->get($result);
                     }
-
+                    
                     $this->errors[$key][] = $result;
                 }
             }
         }
-
+        
         return $data;
     }
 
@@ -257,9 +231,9 @@ abstract class AbstractModel extends AbstractMvc
      *
      * @return boolean
      */
-    final public function hasErrors()
+    final public function hasErrors(): bool
     {
-        return !empty($this->errors);
+        return ! empty($this->errors);
     }
 
     /**
@@ -267,7 +241,7 @@ abstract class AbstractModel extends AbstractMvc
      *
      * @return array
      */
-    final public function getErrors()
+    final public function getErrors(): array
     {
         return $this->errors;
     }
@@ -278,8 +252,6 @@ abstract class AbstractModel extends AbstractMvc
     final public function resetErrors()
     {
         $this->errors = [];
-
-        return $this;
     }
 
     /**
@@ -290,14 +262,10 @@ abstract class AbstractModel extends AbstractMvc
      *            recognized by FormDesigner and shown on top of the form.
      * @param string $error
      *            The error text to add
-     *
-     * @return \Core\Framework\Amvc\AbstractModel
      */
     final public function addError($key, $error)
     {
         $this->errors[$key][] = $error;
-
-        return $this;
     }
 
     /**
@@ -314,13 +282,13 @@ abstract class AbstractModel extends AbstractMvc
         if (empty($this->scheme) || empty($this->scheme['fields'])) {
             Throw new ModelException('There is no scheme/fields in scheme in this model');
         }
-
+        
         $data = [];
-
+        
         foreach ($this->scheme['fields'] as $key => $field) {
-            $data[$key] = !empty($field['default']) ? $field['default'] : '';
+            $data[$key] = ! empty($field['default']) ? $field['default'] : '';
         }
-
+        
         return $data;
     }
 }
