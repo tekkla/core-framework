@@ -1,13 +1,11 @@
 <?php
 namespace Core\Framework\Amvc\App;
 
-use Core\DI\DI;
 use Core\Toolbox\Strings\CamelCase;
 use Core\Framework\Amvc\App\Css\CssHandler;
 use Core\Framework\Amvc\App\Javascript\JavascriptHandler;
 use Core\Framework\Amvc\App\Css\CssHandlerInterface;
 use Core\Framework\Amvc\App\Javascript\JavascriptHandlerInterface;
-use Core\Framework\Page\Page;
 use Core\Config\ConfigStorage;
 use Core\Framework\Amvc\Controller\AbstractController;
 use Core\Framework\Amvc\View\AbstractView;
@@ -21,115 +19,113 @@ use Core\DI\DIException;
  * AbstractApp.php
  *
  * @author Michael "Tekkla" Zorn <tekkla@tekkla.de>
- * @copyright 2016
+ * @copyright 2016-2017
  * @license MIT
  */
 abstract class AbstractApp
 {
-
+    
     /**
      *
      * @var Settings
      */
     private $settings;
-
+    
     /**
      * List of appnames which are already initialized
      *
      * @var array
      */
     protected static $init_done = [];
-
+    
     /**
      * Storage for init stages
      *
      * @var array
      */
     protected static $init_stages = [];
-
+    
     /**
      * Holds the apps name
      *
      * @var string
      */
     protected $name;
-
+    
     /**
      *
      * @var string
      */
     protected $name_uncamelized;
-
+    
     /**
      * Stores app path
      *
      * @var Paths
      */
     public $paths;
-
+    
     /**
      *
      * @var ConfigStorage
      */
     public $config;
-
+    
     /**
      *
      * @var Permissions
      */
     public $permissions;
-
+    
     /**
      *
      * @var Language
      */
     public $language;
-
+    
     /**
      *
      * @var CssHandlerInterface
      */
     public $css;
-
+    
     /**
      *
      * @var JavascriptHandlerInterface
      */
     public $javascript;
-
+    
     /**
      *
      * @var Post
      */
     public $post;
-
+    
     /**
      *
      * @var Core
      */
     public $core;
-
+    
     /**
      * Constructor
      *
      * @event load() Called right after setting dependencies and direct before config gets initiated.
      *
      * @param string $name
-     * @param AppHandlerInterface $app_handler
      * @param ConfigStorage $config
-     * @param Page $page
-     * @param DIInterface $di
+     * @param Core $core
      */
     public function __construct(string $name, ConfigStorage $config, Core $core)
     {
         $this->setName($name);
-
+        
         $this->config = $config;
         $this->core = $core;
-
+        
         // Set default init stages which are used to prevent initiation of app parts when not needed and
         // to prevent multiple initiations when dealing with multiple app instances
-        if (!isset(self::$init_stages[$this->name])) {
+        if (! isset(self::$init_stages[$this->name])) {
             self::$init_stages[$this->name] = [
                 'config' => false,
                 'routes' => false,
@@ -140,44 +136,44 @@ abstract class AbstractApp
                 'js' => false
             ];
         }
-
+        
         // Call possible load method
         if (method_exists($this, 'Load')) {
             $this->Load();
         }
-
+        
         // Init paths
         $this->initPaths();
-
+        
         if ($this->paths->exists('dir.settings')) {
             $this->settings = new Settings($this->paths->get('dir.settings'));
         }
-
+        
         // Fololowing init are only needed when settings generally exist
         if (isset($this->settings)) {
-
+            
             // Config will always be initiated. No matter what else follows
             $this->initConfig();
-
+            
             // Apps only needs to be initiated once
             if (in_array($this->name, self::$init_done)) {
                 return;
             }
-
+            
             // Run init methods
             $this->initRoutes();
             $this->initPermissions();
             $this->initLanguage();
         }
-
+        
         // Init the apps css and javscript handlers
         $this->css = new CssHandler();
         $this->javascript = new JavascriptHandler();
-
+        
         // Create post storage
         $this->post = new Post($this);
     }
-
+    
     /**
      * Returns the apps path/directory
      *
@@ -187,7 +183,7 @@ abstract class AbstractApp
     {
         return dirname((new \ReflectionClass(static::class))->getFileName());
     }
-
+    
     /**
      *
      * @param string $name
@@ -195,11 +191,11 @@ abstract class AbstractApp
     public function setName(string $name)
     {
         $this->name = $name;
-
+        
         $string = new CamelCase($name);
         $this->name_uncamelized = $string->uncamelize();
     }
-
+    
     /**
      * Sets app related $_POST reference
      *
@@ -209,7 +205,7 @@ abstract class AbstractApp
     {
         $this->post = $post;
     }
-
+    
     /**
      * Returns reference to set post
      *
@@ -219,7 +215,7 @@ abstract class AbstractApp
     {
         return $this->post;
     }
-
+    
     /**
      *
      * @return string
@@ -228,7 +224,7 @@ abstract class AbstractApp
     {
         return $this->handler->getLanguage();
     }
-
+    
     /**
      * Initializes the app config data and flags by getting data from Cfg and adding
      * config defaultvalues from app $cfg on demand.
@@ -239,7 +235,7 @@ abstract class AbstractApp
             $this->config->setDefinition($this->settings->get('config'));
         }
     }
-
+    
     /**
      * Initializes the apps paths by creating the paths and writing them into the apps config.
      *
@@ -254,68 +250,68 @@ abstract class AbstractApp
         } else {
             $apps_url = $this->core->config->get('Core', 'url.apps');
         }
-
+        
         // Set path property which can be used on including additional app files like settings, routes, config etc
         $dir = $this->getDir();
-
+        
         // Get directory path of app
         $scanned_directory = array_diff(scandir($dir), array(
             '..',
             '.'
         ));
-
+        
         $this->paths = new Paths();
-
+        
         $dir = $this->getDir();
-
+        
         $string = new CamelCase('');
-
+        
         foreach ($scanned_directory as $item) {
-
-            if (is_dir($dir . '/' . $item) && !in_array($item, $exclude_dirs)) {
-
+            
+            if (is_dir($dir . '/' . $item) && ! in_array($item, $exclude_dirs)) {
+                
                 $string->setString($item);
                 $key = $string->uncamelize();
-
+                
                 $this->paths->add('dir.' . $key, $dir . '/' . $item);
                 $this->paths->add('url.' . $key, $apps_url . '/' . $this->name . '/' . $item);
             }
         }
-
+        
         // Add apps base dir and url to app config
         $this->paths->add('dir.app', $dir);
         $this->paths->add('url.app', $apps_url . '/' . $this->name);
     }
-
+    
     /**
      * Initiates in app set routes.
      */
     protected function initRoutes()
     {
-        if (isset($this->settings) && $this->settings->exists('routes') || !self::$init_stages[$this->name]['routes']) {
-
+        if (isset($this->settings) && $this->settings->exists('routes') || ! self::$init_stages[$this->name]['routes']) {
+            
             $routes = $this->settings->get('routes');
-
+            
             // Add always a missing index route!
-            if (!array_key_exists('index', $routes)) {
+            if (! array_key_exists('index', $routes)) {
                 $routes['index'] = [];
             }
-
+            
             foreach ($routes as $name => $definition) {
-
+                
                 if (is_numeric($name)) {
                     Throw new AppException(sprintf('AbstractApp "%s" sent a nameless route to be mapped.', $this->name));
                 }
-
+                
                 $definition = $this->parseRouteDefintion($name, $definition);
-
+                
                 $this->core->router->map($definition['method'], $definition['route'], $definition['target'], $definition['name']);
             }
-
+            
             self::$init_stages[$this->name]['routes'] = true;
         }
     }
-
+    
     /**
      *
      * @param string $name
@@ -324,94 +320,91 @@ abstract class AbstractApp
     private function parseRouteDefintion(string $name, array $definition): array
     {
         static $string;
-
-        if (!isset($string)) {
+        
+        if (! isset($string)) {
             $string = new CamelCase($name);
-        }
-        else {
+        } else {
             $string->setString($name);
         }
-
+        
         $name = $string->uncamelize();
-
+        
         if (empty($definition['route']) || empty($definition['target']['controller']) || empty($definition['target']['action'])) {
-
+            
             // Try to get controller and action from route name
             $ca = explode('.', $name);
-
+            
             if (empty($definition['route'])) {
                 $definition['route'] = '/' . $ca[0];
             }
-
+            
             if (empty($definition['target']['controller'])) {
                 $definition['target']['controller'] = empty($ca[0]) ? $name : $ca[0];
             }
-
+            
             if (empty($definition['target']['action'])) {
-
+                
                 if (empty(preg_match('/\|\w+\:\w+/', $definition['route']))) {
                     $definition['target']['action'] = empty($ca[1]) ? $name : $ca[1];
                 }
             }
         }
-
+        
         $app = $this->getName(true);
-
+        
         // Create route string
         if ($definition['route'] == '/') {
             $definition['route'] = '/' . $app;
-        }
-        else {
+        } else {
             if (strpos($definition['route'], '../') === false && $app != 'generic') {
                 $definition['route'] = '/' . $app . $definition['route'];
-            }
-            else {
+            } else {
                 $definition['route'] = str_replace('../', '/', $definition['route']);
             }
         }
-
+        
         if (empty($definition['target']['app']) && $app != 'generic') {
             $definition['target']['app'] = $app;
         }
-
+        
         if (empty($definition['method'])) {
             $definition['method'] = 'GET|POST';
         }
-
+        
         if (strpos($name, $app) === false) {
             $name = $app . '.' . $name;
         }
-
+        
         $definition['name'] = $name;
-
+        
         return $definition;
     }
-
+    
     /**
      * Inits apps permissions by addind default values for admin and for config if confix exists
      */
     protected function initPermissions()
     {
-        if (isset($this->settings) && $this->settings->exists('permissions') && !self::$init_stages[$this->name]['permissions']) {
-
+        if (isset($this->settings) && $this->settings->exists('permissions') && ! self::$init_stages[$this->name]['permissions']) {
+            
             $permissions = [
                 'admin'
             ];
-
+            
             if ($this->settings->exists('config')) {
                 $permissions[] = 'config';
             }
-
+            
             $permissions = array_merge($permissions, $this->settings->get('permissions'));
-
+            
             $this->permissions = new Permissions();
             $this->permissions->set($permissions);
-
+            
             // Set flat that permission init is done
             self::$init_stages[$this->name]['perms'] = true;
         }
     }
-
+    
     /**
      * Inits the language file according to the current language the site/user uses
      *
@@ -419,45 +412,50 @@ abstract class AbstractApp
      */
     protected function initLanguage()
     {
+        
         // Init only once
-        if (empty(self::$init_stages[$this->name]['language']) && $this->paths->exists('dir.language')) {
-
-            $path = $this->paths->get('dir.language');
-
+        if (empty(self::$init_stages[$this->name]['language'])) {
+            
+            // Do not care about a langfile exists or not. Every app gets it's language object!
             $this->language = new Language();
-
-            $languages = [
-                'en'
-            ];
-
-            // If there is a different language code ist set, override the english values with values from this language
-            // file
-            $site_language = $this->core->config->get('Core', 'site.language.default');
-
-            if ($site_language != 'en') {
-                $languages[] = $site_language;
-            }
-
-            foreach ($languages as $language) {
-
-                $filename = $path . DIRECTORY_SEPARATOR . $language . '.php';
-
-                if (!file_exists($filename)) {
-                    Throw new AppException(sprintf('No english languagefile (%s.php) found in languagedir "%s"', $language, $path));
+            
+            if ($this->paths->exists('dir.language')) {
+                
+                $path = $this->paths->get('dir.language');
+                
+                $languages = [
+                    'en'
+                ];
+                
+                // If there is a different language code ist set, override the english values with values from this language
+                // file
+                $site_language = $this->core->config->get('Core', 'site.language.default');
+                
+                if ($site_language != 'en') {
+                    $languages[] = $site_language;
                 }
-
-                $this->language->load($filename);
+                
+                foreach ($languages as $language) {
+                    
+                    $filename = $path . DIRECTORY_SEPARATOR . $language . '.php';
+                    
+                    if (! file_exists($filename)) {
+                        Throw new AppException(sprintf('No english languagefile (%s.php) found in languagedir "%s"', $language, $path));
+                    }
+                    
+                    $this->language->load($filename);
+                }
+                
+                // Set Core language as fallback language to all app that are nor Core
+                if ($this->name != 'Core') {
+                    $this->language->setFallbackLanguage($this->core->apps->getAppInstance('Core')->language);
+                }
             }
-
-            // Set Core language as fallback language to all app that are nor Core
-            if ($this->name != 'Core') {
-                $this->language->setFallbackLanguage($this->core->apps->getAppInstance('Core')->language);
-            }
-
+            
             self::$init_stages[$this->name]['language'] = true;
         }
     }
-
+    
     /**
      * Hidden method to factory mvc components like models, views or controllers
      *
@@ -473,61 +471,60 @@ abstract class AbstractApp
     private function MVCFactory(string $name, string $type, $arguments = null)
     {
         // Here we make sure that CSS and JS will correctly and only once be initiated!
-        if (!in_array($this->name, self::$init_done)) {
-
+        if (! in_array($this->name, self::$init_done)) {
+            
             // Init css and js only on non ajax requests
-            if (!$this->core->router->isAjax()) {
+            if (! $this->core->router->isAjax()) {
                 $this->initCss();
                 $this->initJs();
             }
-
+            
             // Store our apps name to be initiated
             self::$init_done[] = $this->name;
         }
-
+        
         $string = new CamelCase($name);
         $name = $string->camelize($name);
-
+        
         // Create classname of component to create
         $class = $this->getNamespace() . '\\' . $type . '\\' . $name . $type;
-
+        
         // By default each MVC component constructor needs at least a name and this app object as argument
         $args = [
             $name,
             $this
         ];
-
+        
         // Add additional arguments
         if (isset($arguments)) {
-            if (!is_array($arguments)) {
+            if (! is_array($arguments)) {
                 $arguments = (array) $arguments;
             }
-
+            
             foreach ($arguments as $arg) {
                 $args[] = $arg;
             }
         }
-
+        
         try {
             $object = $this->core->di->instance($class, $args);
-        }
-        catch (DIException $e) {
+        } catch (DIException $e) {
             $this->core->logger->error(sprintf('Class "%s" could not be found in DI container.', $class));
             return false;
         }
-
+        
         switch ($type) {
             case 'Controller':
-
+                
                 if ($object->model !== false) {
                     $object->model = $this->getModel($name);
                 }
                 break;
         }
-
+        
         return $object;
     }
-
+    
     /**
      * Autodiscovery of the components name
      *
@@ -542,68 +539,66 @@ abstract class AbstractApp
             'Model',
             'View'
         ];
-
+        
         return str_replace($strip, '', $parts[0]);
     }
-
+    
     /**
      * Creates an app related model object form this or a different app
      *
      * @param string $name
      *            The models name
-     * @param string $app_name
-     *            Name of a different app to get the model from
      *
-     * @return Model
+     * @return AbstractModel
      */
-    public function getModel(string $name = '')
+    public function getModel(string $name = ''): AbstractModel 
     {
         if (empty($name)) {
             $name = $this->getComponentsName();
         }
-
+        
         // Create a model instance from a different app?
         $model = $this->MVCFactory($name, 'Model');
-
+        
         return $model;
     }
-
+    
     /**
      * Creates an app related controller object
      *
      * @param string $name
      *
-     * @return Controller
+     * @return AbstractController
      */
-    public function getController(string $name = '')
+    public function getController(string $name = ''): AbstractController
     {
         if (empty($name)) {
             $name = $this->getComponentsName();
         }
-
+        
         $controller = $this->MVCFactory($name, 'Controller');
-
+        
         return $controller;
     }
-
+    
     /**
      * Creates an app related view object
      *
      * @param string $name
      *
-     * @return View
+     * @return AbstractView
      */
-    public function getView(string $name = '')
+    public function getView(string $name = ''): AbstractView
     {
         if (empty($name)) {
             $name = $this->getComponentsName();
         }
-
+        
         $view = $this->MVCFactory($name, 'View');
-
+        
         return $view;
     }
-
+    
     /**
      * Returns apps default config
      *
@@ -614,10 +609,10 @@ abstract class AbstractApp
         if ($refresh) {
             $this->initConfig();
         }
-
+        
         return $this->config;
     }
-
+    
     /**
      * Returns the namespace of the called component
      *
@@ -627,7 +622,7 @@ abstract class AbstractApp
     {
         return substr(get_called_class(), 0, strrpos(get_called_class(), '\\'));
     }
-
+    
     /**
      * Inits apps css file
      *
@@ -644,20 +639,20 @@ abstract class AbstractApp
     protected function initCss()
     {
         // Init css only once
-        if (!self::$init_stages[$this->name]['css'] && $this->paths->exists('dir.assets')) {
-
+        if (! self::$init_stages[$this->name]['css'] && $this->paths->exists('dir.assets')) {
+            
             // Check for existance of apps css file
             $filename = $this->paths->get('dir.assets') . DIRECTORY_SEPARATOR . $this->name . '.css';
-
+            
             if (file_exists($filename)) {
                 $this->css->link($this->paths->get('url.assets') . DIRECTORY_SEPARATOR . $this->name . '.css');
             }
-
+            
             // Set flag for initiated css
             self::$init_stages[$this->name]['css'] = true;
         }
     }
-
+    
     /**
      * Inits apps javascript file
      *
@@ -672,19 +667,19 @@ abstract class AbstractApp
      */
     protected function initJs()
     {
-        if (!self::$init_stages[$this->name]['js'] && $this->paths->exists('dir.assets')) {
-
+        if (! self::$init_stages[$this->name]['js'] && $this->paths->exists('dir.assets')) {
+            
             $filename = $this->paths->get('dir.assets') . DIRECTORY_SEPARATOR . $this->name . '.js';
-
+            
             if (file_exists($filename)) {
                 $this->javascript->file($this->paths->get('url.assets') . DIRECTORY_SEPARATOR . $this->name . '.js');
             }
-
+            
             // Set flag for initated js
             self::$init_stages[$this->name]['js'] = true;
         }
     }
-
+    
     /**
      * Returns the name of this app.
      *
@@ -698,12 +693,11 @@ abstract class AbstractApp
         if ($uncamelize == true) {
             $string = new CamelCase($this->name);
             return $string->uncamelize();
-        }
-        else {
+        } else {
             return $this->name;
         }
     }
-
+    
     /**
      * Returns the init stagelist of this app.
      *
@@ -713,7 +707,7 @@ abstract class AbstractApp
     {
         return self::$init_stages[$this->name];
     }
-
+    
     /**
      * Generates an url by it's name
      *
@@ -726,7 +720,7 @@ abstract class AbstractApp
     {
         return $this->core->router->generate($name, $params);
     }
-
+    
     /**
      *
      * @return null|RedirectInterface
@@ -734,16 +728,16 @@ abstract class AbstractApp
     public function forceLogin()
     {
         $login = $this->core->di->get('core.security.login');
-
-        if (!$login->loggedIn()) {
-
+        
+        if (! $login->loggedIn()) {
+            
             $redirect = new Redirect();
-
+            
             $redirect->setApp('Core');
             $redirect->setController('Login');
             $redirect->setAction('Login');
             $redirect->setClearPost(true);
-
+            
             return $redirect;
         }
     }
