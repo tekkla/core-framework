@@ -8,7 +8,7 @@ use Core\Asset\Css\CssObject;
  * CssHandler.php
  *
  * @author Michael "Tekkla" Zorn <tekkla@tekkla.de>
- * @copyright 2016
+ * @copyright 2016-2017
  * @license MIT
  */
 class CssHandler implements CssHandlerInterface, \IteratorAggregate
@@ -84,7 +84,7 @@ class CssHandler implements CssHandlerInterface, \IteratorAggregate
      *
      * @see \IteratorAggregate::getIterator()
      */
-    public function getIterator()
+    public function getIterator(): \ArrayIterator
     {
         return new \ArrayIterator($this->objects);
     }
