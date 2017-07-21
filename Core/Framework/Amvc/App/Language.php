@@ -7,7 +7,7 @@ use Core\Toolbox\Arrays\Flatten;
  * Language.php
  *
  * @author Michael "Tekkla" Zorn <tekkla@tekkla.de>
- * @copyright 2016
+ * @copyright 2016-2017
  * @license MIT
  */
 class Language
@@ -78,6 +78,10 @@ class Language
         }
 
         $loaded = include $filename;
+        
+        if (!is_array($loaded)) {
+            Throw new AppException(sprintf('Languagefile "%s" does not conain any languagedate. Make sure it returns an array.'), $filename);
+        }
 
         if ($loaded) {
             $array = new Flatten($loaded);
@@ -111,7 +115,7 @@ class Language
      * @return string|array
      */
     public function get(string $key)
-    { //
+    { 
         $result = $this->strings[$key] ?? $key;
 
         // Is there a redirection to another string?
