@@ -7,7 +7,7 @@ use Core\Framework\Amvc\AbstractMvc;
  * AbstractView.php
  *
  * @author Michael "Tekkla" Zorn <tekkla@tekkla.de>
- * @copyright 2016
+ * @copyright 2016-2017
  * @license MIT
  */
 abstract class AbstractView extends AbstractMvc
@@ -39,22 +39,22 @@ abstract class AbstractView extends AbstractMvc
      *            Parameters to add to the template
      * @param array $vars
      *            The key/value based vars array to be used in template
-     *
+     *            
      * @throws ViewException
      *
      * @return string The result of the template call/rendering
      */
     public function render(): string
     {
-        if (!method_exists($this, $this->action)) {
+        if (! method_exists($this, $this->action)) {
             Throw new ViewException('No template to render.');
         }
-
+        
         // Render into own outputbuffer
         ob_start();
-
+        
         $this->di->invokeMethod($this, $this->action, $this->params);
-
+        
         return ob_get_clean();
     }
 
@@ -73,7 +73,7 @@ abstract class AbstractView extends AbstractMvc
             $this->di = $val;
             return;
         }
-
+        
         $this->__magic_vars[$key] = $val;
     }
 
@@ -82,8 +82,8 @@ abstract class AbstractView extends AbstractMvc
      *
      * @param string $key
      *            The name of the var
-     *
-     * @return Ambigous <boolean, multitype
+     *            
+     * @return mixed
      */
     public final function __get($key)
     {
@@ -109,7 +109,7 @@ abstract class AbstractView extends AbstractMvc
     {
         ob_start();
         echo var_dump($this->__magic_vars);
-
+        
         return ob_end_flush();
     }
 
@@ -118,12 +118,12 @@ abstract class AbstractView extends AbstractMvc
      *
      * @param string|number $val
      *            The value to encode
-     *
+     *            
      * @throws ViewException
      *
      * @return string
      */
-    protected function html($val, $mode = 's')
+    protected function html($val, string $mode = 's')
     {
         switch ($mode) {
             case 'e':
@@ -131,7 +131,7 @@ abstract class AbstractView extends AbstractMvc
             case 's':
                 return $this->htmlS($val);
         }
-
+        
         Throw new ViewException(sprintf('Mode "%s" is a not supported AbstractView::html() output mode.', $mode));
     }
 
@@ -140,17 +140,17 @@ abstract class AbstractView extends AbstractMvc
      *
      * @param string|number $val
      *            The value to encode
-     *
+     *            
      * @throws ViewException
      *
      * @return string
      */
-    protected function htmlS($val)
+    protected function htmlS($val): string
     {
         if (is_array($val) || is_object($val)) {
             Throw new ViewException('It is not allowed to uses arrays or objects for htmlS() output.');
         }
-
+        
         return htmlspecialchars($val, ENT_COMPAT, 'UTF-8');
     }
 
@@ -159,17 +159,17 @@ abstract class AbstractView extends AbstractMvc
      *
      * @param string|number $val
      *            The value to encode
-     *
+     *            
      * @throws ViewException
      *
      * @return string
      */
-    protected function htmlE($val)
+    protected function htmlE($val): string
     {
         if (is_array($val) || is_object($val)) {
             Throw new ViewException('It is not allowed to uses arrays or objects for htmlE() output.');
         }
-
+        
         return htmlentities($val, ENT_COMPAT, 'UTF-8');
     }
 
@@ -184,7 +184,7 @@ abstract class AbstractView extends AbstractMvc
      */
     public function Edit()
     {
-        if (!empty($this->__magic_vars['form'])) {
+        if (! empty($this->__magic_vars['form'])) {
             echo $this->form;
         }
     }
