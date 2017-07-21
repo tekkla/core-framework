@@ -2,18 +2,16 @@
 namespace Core\Framework\Amvc\Controller;
 
 use Core\Framework\Amvc\AbstractMvc;
-use Core\Framework\Amvc\View\View;
-use Core\Message\Message;
 use Core\Html\FormDesigner\FormDesigner;
-use Core\Ajax\Ajax;
 use Core\Toolbox\Strings\CamelCase;
 use Core\Framework\Amvc\View\AbstractView;
+use Core\Framework\Amvc\Model\AbstractModel;
 
 /**
  * AbstractController.php
  *
  * @author Michael "Tekkla" Zorn <tekkla@tekkla.de>
- * @copyright 2016
+ * @copyright 2016-2017
  * @license MIT
  */
 abstract class AbstractController extends AbstractMvc
@@ -21,7 +19,7 @@ abstract class AbstractController extends AbstractMvc
 
     /**
      *
-     * @var View
+     * @var AbstractView
      */
     private $view;
 
@@ -78,7 +76,7 @@ abstract class AbstractController extends AbstractMvc
      * Stores the controller bound Model object.
      * Set to false when controller has no model.
      *
-     * @var Model
+     * @var AbstractModel
      */
     public $model;
 
@@ -117,11 +115,11 @@ abstract class AbstractController extends AbstractMvc
             'js',
             'file'
         ];
-
+        
         if (in_array($format, $no_render_format)) {
             $this->render = false;
         }
-
+        
         $this->format = $format;
     }
 
@@ -138,9 +136,9 @@ abstract class AbstractController extends AbstractMvc
     /**
      * Returns a set Redirect object
      *
-     * @return \Core\Framework\Amvc\AbstractController\Redirect
+     * @return RedirectInterface
      */
-    public function getRedirect()
+    public function getRedirect(): RedirectInterface
     {
         return $this->redirect;
     }
@@ -175,126 +173,127 @@ abstract class AbstractController extends AbstractMvc
             Throw new ControllerException($this->app->language->get('access.missing_userrights'));
             return false;
         }
-
+        
         // Init return var with boolean false as default value. This default
         // prevents from running the views render() method when the controller
         // action is stopped manually by using return.
         $return = false;
-
+        
         // Call existing before event
         $eventAction = 'before' . $this->action;
-
+        
         if (method_exists($this, $eventAction)) {
             $this->di->invokeMethod($this, $eventAction, $this->params);
         }
-
+        
         // a little bit of reflection magic to pass request param into controller func
         $return = $this->di->invokeMethod($this, $this->action, $this->params);
-
+        
         // Call existing before event
         $eventAction = 'after' . $this->action;
-
+        
         if (method_exists($this, $eventAction)) {
             $this->di->invokeMethod($this, $eventAction, $this->params);
         }
-
+        
         // Do we have a result?
         if (isset($return)) {
-
+            
             // Boolean false result means to stop work for controller
             if ($return == false) {
                 return false;
             }
         }
-
+        
         // Render the view and return the result
         if ($this->render === true) {
-
+            
             // Create view instance if not alredy done
-            if (!$this->view instanceof AbstractView) {
+            if (! $this->view instanceof AbstractView) {
                 $this->view = $this->app->getView($this->name);
             }
-
+            
             $this->view->setAction($this->action);
             $this->view->setParams($this->params);
             $this->view->setVars($this->vars);
-
+            
             if (isset($this->logger)) {
                 $this->view->setLogger($this->logger);
             }
-
+            
             // Check if there still no view object
             if (empty($this->view)) {
                 Throw new ControllerException(sprintf('A result has to be rendered but "%sView" does not exist.', $this->name));
             }
-
+            
             // Render
             $content = $this->view->render();
-
+            
             // Run possible onEmpty event of app on no render result
             if (empty($content) && method_exists($this->app, 'onEmpty')) {
                 $content = $this->app->onEmpty();
             }
-
+            
             return $content;
-        }
-        else {
-
+        } else {
+            
             // Without view rendering we return the return value send from called controller action
             return $return;
         }
     }
 
     /**
-     * Redirects from one action to another
-     *
-     * @param string|array $target
-     *            Name of redirectaction to call within this controller or an array aof app, controller and action name
-     *            which will be called as redirect.
+     * Initates a redirect
+     * 
+     * @param string $app
+     *            Name of redirect app. Will be current app when not set.
+     * @param string $controller
+     *            Name of redirect controller. Will be current controller when not set.
+     * @param string $action
+     *            Name of redirect action. Will be current action when not set.
      * @param array $params
      *            Optional key => value array of params to pass into redirect action (Default: empty array)
      * @param bool $clear_post
      *            Optional flag to control emptying posted data (Default: true)
      */
-    protected function redirect($app = null, $controller = null, $action = null, array $params = [], bool $clear_post = true)
+    protected function redirect(string $app = null, string $controller = null, string $action = null, array $params = [], bool $clear_post = true)
     {
         // No params mean to use the current
         if (empty($params)) {
             $params = $this->params;
         }
-
+        
         $redirect = new Redirect();
-
+        
         // Set params at first because the params gets scanned for ACA data which would override manually set ACA data
         $redirect->setParams($params);
-
+        
         // Now set manual ACA data
         $redirect->setApp(empty($app) ? $this->app->getName() : $app);
         $redirect->setController(empty($controller) ? $this->getName() : $controller);
         $redirect->setAction(empty($action) ? $this->getAction() : $action);
-
+        
         // Clear $_POST data before redirect?
         $redirect->setClearPost($clear_post);
-
+        
         $this->redirect = $redirect;
     }
 
     /**
      * Does an urlredirect but cares about what kind (ajax?) of request was send.
      *
-     * @param Url|string $url
+     * @param string $url
      */
-    protected function doRefresh($url)
+    protected function doRefresh(string $url)
     {
         if ($this->app->core->router->isAjax()) {
             $cmd = $this->ajax->createActCommand();
-
+            
             $cmd->setFunction('refresh');
             $cmd->setArgs($url);
-
+            
             $this->ajax->addCommand($cmd);
-        }
-        else {
+        } else {
             $this->redirectExit($url);
         }
     }
@@ -309,53 +308,52 @@ abstract class AbstractController extends AbstractMvc
      *
      * @param bool $force
      *            Set this to true if you want to force a brutal stop
-     *
+     *            
      * @return boolean
      */
-    protected function checkControllerAccess($force = false): bool
+    protected function checkControllerAccess(bool $force = false): bool
     {
         // Is there an global access method in the app main class to call?
         if (method_exists($this->app, 'Access') && $this->app->Access() === false) {
             return false;
         }
-
+        
         // No ACL
         if (empty($this->access)) {
             return true;
         }
-
+        
         $perm = [];
-
+        
         // Global access for all actions?
         if (array_key_exists('*', $this->access)) {
-            if (!is_array($this->access['*'])) {
+            if (! is_array($this->access['*'])) {
                 $this->access['*'] = (array) $this->access['*'];
             }
-
+            
             $perm += $this->access['*'];
-        }
-        else {
-
+        } else {
+            
             // ACL exists but action not in it? This means to grant access.
-            if (!array_key_exists($this->action, $this->access)) {
+            if (! array_key_exists($this->action, $this->access)) {
                 return true;
             }
         }
-
+        
         // Actions access set?
         if (isset($this->access[$this->action])) {
-            if (!is_array($this->access[$this->action])) {
+            if (! is_array($this->access[$this->action])) {
                 $this->access[$this->action] = (array) $this->access[$this->action];
             }
-
+            
             $perm += $this->access[$this->action];
         }
-
+        
         // Check the permissions against the current user
         if ($perm) {
             return $this->checkAccess($perm);
         }
-
+        
         return false;
     }
 
@@ -366,7 +364,7 @@ abstract class AbstractController extends AbstractMvc
      *            Name of var or list of vars in an array
      * @param mixed $arg2
      *            Optional value to be ste when $arg1 is the name of a var
-     *
+     *            
      * @throws ControllerException
      *
      * @return AbstractController
@@ -374,18 +372,16 @@ abstract class AbstractController extends AbstractMvc
     protected function setVar($arg1, $arg2 = null)
     {
         // One argument has to be an assoc array
-        if (!isset($arg2) && is_array($arg1)) {
+        if (! isset($arg2) && is_array($arg1)) {
             foreach ($arg1 as $var => $value) {
                 $this->vars[$var] = $this->varHandleObject($value);
             }
-        }
-        elseif (isset($arg2)) {
+        } elseif (isset($arg2)) {
             $this->vars[$arg1] = $this->varHandleObject($arg2);
-        }
-        else {
+        } else {
             Throw new ControllerException(sprintf('The var "%s" to set are not correct.', $arg1));
         }
-
+        
         return $this;
     }
 
@@ -393,21 +389,21 @@ abstract class AbstractController extends AbstractMvc
     {
         // Handle objects
         if (is_object($val)) {
-
+            
             switch (true) {
-
+                
                 // Handle buildable objects
                 case method_exists($val, 'build'):
                     $val = $val->build();
                     break;
-
+                
                 // Handle all other objects
                 default:
                     $val = get_object_vars($val);
                     break;
             }
         }
-
+        
         return $val;
     }
 
@@ -420,41 +416,41 @@ abstract class AbstractController extends AbstractMvc
     {
         /* @var $fd \Core\Html\FormDesigner\FormDesigner */
         $fd = new FormDesigner($this->app->getName(true));
-
+        
         // Generate form id when id is not provided
-        if (!$id) {
-
+        if (! $id) {
+            
             $pieces = [];
-
+            
             $string = new CamelCase($this->app->getName());
             $pieces[] = $string->uncamelize();
-
+            
             $string->setString($this->name);
             $pieces[] = $string->uncamelize();
-
+            
             // get calling method name
             $dbt = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
-
+            
             if (isset($dbt[1]['function'])) {
                 $string->setString($dbt[1]['function']);
                 $pieces[] = $string->uncamelize();
             }
-
+            
             $id = implode('-', $pieces);
         }
-
+        
         if ($id) {
             $fd->setId($id);
         }
-
+        
         // Create forms eaction url
         if (isset($this->route)) {
             $fd->html->setAction($this->app->url($this->route, $this->params));
         }
-
+        
         // Set session token
         $fd->setToken($this->di->get('core.security.form.token.name'), $this->di->get('core.security.form.token'));
-
+        
         return $fd;
     }
 
@@ -470,15 +466,15 @@ abstract class AbstractController extends AbstractMvc
     {
         // No view rendering!
         $this->render = false;
-
+        
         if (empty($location)) {
             $location = BASEURL;
         }
-
+        
         if (preg_match('~^(ftp|http)[s]?://~', $location) == 0 && substr($location, 0, 6) != 'about:') {
             $location = BASEURL . $location;
         }
-
+        
         $_SESSION['Core']['redirect'] = [
             'location' => $location,
             'permanent' => $permanent
