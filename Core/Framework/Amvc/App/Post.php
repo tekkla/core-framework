@@ -5,7 +5,7 @@ namespace Core\Framework\Amvc\App;
  * Post.php
  *
  * @author Michael "Tekkla" Zorn <tekkla@tekkla.de>
- * @copyright 2016
+ * @copyright 2016-2017
  * @license MIT
  */
 class Post
@@ -55,8 +55,10 @@ class Post
 
     /**
      * Checks for empty data
+     *
+     * @return bool
      */
-    public function empty()
+    public function empty(): bool
     {
         return empty($this->data);
     }
@@ -67,12 +69,11 @@ class Post
     public function clean()
     {
         $this->data = [];
-
+        
         $app = $this->app->getName(true);
-
+        
         if (isset($_POST[$app])) {
             unset($_POST[$app]);
         }
     }
 }
-
