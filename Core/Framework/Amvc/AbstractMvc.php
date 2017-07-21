@@ -59,8 +59,7 @@ abstract class AbstractMvc
      * Constructor
      *
      * @param string $name
-     * @param App $app
-     * @param Security $security
+     * @param AbstractApp $app
      */
     final public function __construct($name, AbstractApp $app)
     {
