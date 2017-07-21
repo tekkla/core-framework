@@ -41,19 +41,23 @@ class Paths
     /**
      * Get a specific path
      *
-     * Will be an empty string when path not exists.
-     *
      * @param string $key
+     *
+     * @throws AppException
      *
      * @return string
      */
     public function get(string $key): string
     {
-        return $this->paths[$key] ?? '';
+        if (!isset($this->paths[$key])) {
+            Throw new AppException(sprintf('A "%s" path does not exist.'), $key);
+        }
+        
+        return $this->paths[$key];
     }
 
     /**
-     * Checks for an existing path by it's key
+     * Checks for an existing path by it's key and proves if the path exists in filesystem.
      *
      * @param string $key
      *
