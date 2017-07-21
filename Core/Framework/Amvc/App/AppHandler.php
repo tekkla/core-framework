@@ -95,9 +95,6 @@ class AppHandler implements AppHandlerInterface
                 Throw new AppHandlerException('App must be an instance of AbstractApp class!');
             }
 
-            $instance->setName($name);
-            $instance->language->setCode($this->core->config->get('Core', 'site.language.default') ?? 'en');
-
             $this->instances[$name] = $instance;
         }
 
