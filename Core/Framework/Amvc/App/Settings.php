@@ -7,7 +7,7 @@ use Core\Toolbox\Strings\CamelCase;
  * Settings.php
  *
  * @author Michael "Tekkla" Zorn <tekkla@tekkla.de>
- * @copyright 2016
+ * @copyright 2016-2017
  * @license MIT
  */
 class Settings
@@ -26,6 +26,7 @@ class Settings
     private $settings = [];
 
     /**
+     * Constructor
      *
      * @param string $path
      *            Path to settings files
@@ -36,11 +37,22 @@ class Settings
         $this->loadSettings();
     }
 
-    public function setPath(string $path) {
+    /**
+     * Sets the path to load settings from
+     *
+     * @param string $path
+     */
+    public function setPath(string $path)
+    {
+        if (empty($path)) {
+            Throw new AppException('It is not permitted to set an empty settings path!');
+        }
+        
         $this->path = $path;
     }
 
     /**
+     * Loads all files inside the given settings path and stores them by their uncamelized filename
      */
     public function loadSettings()
     {
@@ -49,17 +61,18 @@ class Settings
             '..',
             '.'
         ));
-
+        
         foreach ($files as $file) {
-
+            
             $string = new CamelCase(explode('.', $file)[0]);
             $key = $string->uncamelize();
-
+            
             $this->add($key, include $this->path . DIRECTORY_SEPARATOR . $file);
         }
     }
 
     /**
+     * Adds a settings array by a given key
      *
      * @param string $key
      * @param array $settings
@@ -77,12 +90,15 @@ class Settings
      */
     public function get(string $key): array
     {
-        if (isset($this->settings[$key])) {
-            return $this->settings[$key];
+        if (! isset($this->settings[$key])) {
+            Throw new AppException(sprintf('A "%s" settings array does not exist.'), $key);
         }
+        
+        return $this->settings[$key];
     }
 
     /**
+     * Checks for an settings array by a specific key
      *
      * @param string $key
      *
@@ -93,4 +109,3 @@ class Settings
         return isset($this->settings[$key]);
     }
 }
-
