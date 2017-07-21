@@ -1,10 +1,7 @@
 <?php
 namespace Core\Framework\Amvc\App;
 
-use Core\Config\Config;
 use Core\Toolbox\Strings\CamelCase;
-use Core\Framework\Amvc\App\Paths;
-use Core\Framework\Amvc\App\AppHandlerInterface;
 use Core\Framework\Core;
 
 /**
@@ -155,7 +152,7 @@ class AppHandler implements AppHandlerInterface
      *
      * {@inheritdoc}
      *
-     * @see IteratorAggregate::getIterator()
+     * @see \IteratorAggregate::getIterator()
      */
     public function getIterator()
     {
