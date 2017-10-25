@@ -1,42 +1,49 @@
 {
-  "name" : "tekkla/core-framework",
-  "description" : "Combining component for my core libraries. Note: This is currently not working alone. Some quite important core-libs are still missing!",
-  "require" : {
-    "php" : ">=7.0.0",
-    "tekkla/core-config" : ">=1.2.3",
-    "tekkla/core-asset" : ">=1.1.1.1",
-    "tekkla/core-logger" : ">=1.0.2",
-    "tekkla/core-language" : ">=1.1.1.2",
-    "tekkla/core-ajax" : ">=1.4",
-    "tekkla/core-router" : ">=1.2.0",
-    "tekkla/core-message" : ">=0.0.3.1",
-    "tekkla/core-mailer" : ">=0.0.5",
-    "tekkla/core-toolbox" : ">=0.0.7.0",
-    "tekkla/core-di" : ">=0.0.2",
-    "tekkla/core-html" : ">=0.2",
-    "tekkla/core-data" : ">=0.0.4.1",
-    "tekkla/core-http" : ">=0.0.2.1",
-    "tekkla/core-security" : ">=0.0.4",
-    "tekkla/core-validator" : ">=0.2.2"
-  },
-  "repositories" : [ {
-    "type" : "composer",
-    "url" : "https://packagist.org/"
-  } ],
-  "license" : "MIT",
-  "keywords" : [ "core", "framework", "alpha" ],
-  "autoload" : {
-    "psr-0" : {
-      "Core\\Framework" : "",
-      "Themes\\Core" : "",
-      "Apps\\Core" : ""
-    }
-  },
-  "type" : "framework",
-  "homepage" : "https://github.com/tekkla/core-framework",
-  "authors" : [ {
-    "name" : "Michael Zorn",
-    "email" : "tekkla@tekkla.de",
-    "role" : "Developer"
-  } ]
+	"name" : "tekkla/core-framework",
+	"description" : "Combining component for my core libraries. Note: This is currently not working alone. Some quite important core-libs are still missing!",
+	"require" : {
+		"php" : ">=7.0.0",
+		"tekkla/core-config" : "dev-dev",
+		"tekkla/core-asset" : "dev-dev",
+		"tekkla/core-logger" : "dev-dev",
+		"tekkla/core-language" : "dev-dev",
+		"tekkla/core-ajax" : "dev-dev",
+		"tekkla/core-router" : "dev-dev",
+		"tekkla/core-message" : "dev-dev",
+		"tekkla/core-mailer" : "dev-dev",
+		"tekkla/core-toolbox" : "dev-dev",
+		"tekkla/core-di" : "dev-dev",
+		"tekkla/core-html" : "dev-dev",
+		"tekkla/core-data" : "dev-dev",
+		"tekkla/core-http" : "dev-dev",
+		"tekkla/core-security" : "dev-dev",
+		"tekkla/core-validator" : "dev-dev"
+	},
+	"repositories" : [{
+			"type" : "composer",
+			"url" : "https://packagist.org/"
+		}
+	],
+	"license" : "MIT",
+	"keywords" : [
+		"core",
+		"framework",
+		"alpha"
+	],
+	"autoload" : {
+		"psr-0" : {
+			"Core\\Framework" : "",
+			"Themes\\Core" : "",
+			"Apps\\Core" : ""
+		}
+	},
+	"type" : "framework",
+	"homepage" : "https://github.com/tekkla/core-framework",
+	"authors" : [{
+			"name" : "Michael Zorn",
+			"email" : "tekkla@tekkla.de",
+			"role" : "Developer"
+		}
+	],
+	"minimum-stability" : "dev"
 }
