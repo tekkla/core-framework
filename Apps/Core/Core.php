@@ -104,7 +104,7 @@ final class Core extends AbstractApp
         $this->javascript->file($this->config->get('url.vendor_tekkla') . '/core-framework/Core/Framework/Assets/framework.js', $defer);
 
         // Add ajax handler
-        $this->javascript->file($this->config->get('url.vendor_tekkla') . '/core-ajax/Core/Ajax/Asset/core.ajax.js', $defer);
+        $this->javascript->file($this->config->get('url.vendor_tekkla') . '/core-ajax/Core/Ajax/Asset/ajax.js', $defer);
 
         // Insert Core apps JS asset
         $this->javascript->file($this->paths->get('url.assets') . '/Core.js', $defer);
