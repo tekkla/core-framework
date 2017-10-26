@@ -1,8 +1,8 @@
 <?php
 namespace Core\Framework\Amvc\Controller;
 
-use Core\Ajax\Commands\CommandInterface;
 use Core\Ajax\Commands\Dom\DomCommand;
+use Core\Ajax\Commands\Dom\DomCommandInterface;
 
 /**
  * AbstractAjaxController.php
@@ -61,9 +61,9 @@ abstract class AbstractAjaxController extends AbstractController
     /**
      * Adds a ajax command to the ajax handler commandstack
      *
-     * @param CommandInterface $command
+     * @param DomCommandInterface $command
      */
-    protected function addCommand(CommandInterface $command)
+    protected function addCommand(DomCommandInterface $command)
     {
         $this->app->core->di->get('core.ajax')->addCommand($command);
     }
