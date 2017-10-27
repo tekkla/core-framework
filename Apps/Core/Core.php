@@ -101,7 +101,7 @@ final class Core extends AbstractApp
         $this->javascript->variable('fadeout_time', $this->config->get('js.style.fadeout_time'), false, $defer);
 
         // Add Core js
-        $this->javascript->file($this->config->get('url.vendor_tekkla') . '/core-js/Core/Js/asset/core.js', $defer);
+        $this->javascript->file($this->config->get('url.vendor_tekkla') . '/core-js/Core/Js/Asset/core.js', $defer);
         
         // Add framework js
         $this->javascript->file($this->config->get('url.vendor_tekkla') . '/core-framework/Core/Framework/Assets/framework.js', $defer);
