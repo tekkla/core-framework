@@ -17,7 +17,8 @@
 		"tekkla/core-data": "dev-dev",
 		"tekkla/core-http": "dev-dev",
 		"tekkla/core-security": "dev-dev",
-		"tekkla/core-validator": "dev-dev"
+		"tekkla/core-validator": "dev-dev",
+		"tekkla/core-js": "dev-dev"
 	},
 	"repositories": [
 		{
@@ -99,6 +100,11 @@
 			"type": "git",
 			"url": "https://github.com/tekkla/core-language.git",
 			"name": "Language"
+		},
+		{
+			"type": "git",
+			"url": "https://github.com/tekkla/core-js.git",
+			"name": "Js"
 		}
 	],
 	"license": "MIT",
