@@ -19748,10 +19748,11 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
 } );
 
 }));
-/*
- * --------------------------------------------------------------------------------- Core specific plugins Uses other
- * plugins, so put this always at the end of this file!
- * ---------------------------------------------------------------------------------
+
+/**
+ * Core specific plugins 
+ * 
+ * Uses other plugins, so put this always at the end of this file!
  */
 (function( $ ) {
 
