@@ -93,9 +93,6 @@ final class Core extends AbstractApp
         else {
             $this->javascript->file('https://maxcdn.bootstrapcdn.com/bootstrap/' . $version . '/js/bootstrap.min.js', $defer, true);
         }
-       
-        // Add plugins file
-        $this->javascript->file($this->config->get('url.vendor_tekkla') . '/core-framework/Core/Framework/Assets/plugins.js', $defer);
 
         // Add global fadeout time var set in config
         $this->javascript->variable('fadeout_time', $this->config->get('js.style.fadeout_time'), false, $defer);
@@ -106,6 +103,9 @@ final class Core extends AbstractApp
         // Add framework js
         $this->javascript->file($this->config->get('url.vendor_tekkla') . '/core-framework/Core/Framework/Assets/framework.js', $defer);
 
+        // Add framework plugins file
+        $this->javascript->file($this->config->get('url.vendor_tekkla') . '/core-framework/Core/Framework/Assets/plugins.js', $defer);
+        
         // Add ajax handler
         $this->javascript->file($this->config->get('url.vendor_tekkla') . '/core-ajax/Core/Ajax/Assets/ajax.js', $defer);
 
