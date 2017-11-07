@@ -207,8 +207,9 @@ $.mask = {
 });
 
 /*
- * ----------------------------------------------------------------------------------- moment.js version : 2.17.0
- * authors : Tim Wood, Iskren Chernev, Moment.js contributors license : MIT momentjs.com
+ * -----------------------------------------------------------------------------------
+ * moment.js version : 2.17.0 authors : Tim Wood, Iskren Chernev, Moment.js
+ * contributors license : MIT momentjs.com
  * -----------------------------------------------------------------------------------
  */
 ;(function (global, factory) {
@@ -902,11 +903,13 @@ var matchUnsigned  = /\d+/;           // 0 - inf
 var matchSigned    = /[+-]?\d+/;      // -inf - inf
 
 var matchOffset    = /Z|[+-]\d\d:?\d\d/gi; // +00:00 -00:00 +0000 -0000 or Z
-var matchShortOffset = /Z|[+-]\d\d(?::?\d\d)?/gi; // +00 -00 +00:00 -00:00 +0000 -0000 or Z
+var matchShortOffset = /Z|[+-]\d\d(?::?\d\d)?/gi; // +00 -00 +00:00 -00:00
+                                                    // +0000 -0000 or Z
 
 var matchTimestamp = /[+-]?\d+(\.\d{1,3})?/; // 123456789 123456789.123
 
-// any word (or two) characters or numbers including two/three word month in arabic.
+// any word (or two) characters or numbers including two/three word month in
+// arabic.
 // includes scottish gaelic two word and hyphenated months
 var matchWord = /[0-9]*['a-z\u00A0-\u05FF\u0700-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+|[\u0600-\u06FF\/]+(\s*?[\u0600-\u06FF]+){1,2}/i;
 
@@ -927,7 +930,8 @@ function getParseRegexForToken (token, config) {
     return regexes[token](config._strict, config._locale);
 }
 
-// Code from http://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript
+// Code from
+// http://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript
 function unescapeFormat(s) {
     return regexEscape(s.replace('\\', '').replace(/\\(\[)|\\(\])|\[([^\]\[]*)\]|\\(.)/g, function (matched, p1, p2, p3, p4) {
         return p1 || p2 || p3 || p4;
@@ -1353,7 +1357,8 @@ function createUTCDate (y) {
 
 // start-of-first-week - start-of-year
 function firstWeekOffset(year, dow, doy) {
-    var // first-week day -- which january is always in the first week (4 for iso, 1 for other)
+    var // first-week day -- which january is always in the first week (4 for
+        // iso, 1 for other)
         fwd = 7 + dow - doy,
         // first-week day local weekday -- which local weekday is fwd
         fwdlw = (7 + createUTCDate(year, 0, fwd).getUTCDay() - dow) % 7;
@@ -1929,7 +1934,8 @@ addParseToken('Hmmss', function (input, array, config) {
 // LOCALES
 
 function localeIsPM (input) {
-    // IE8 Quirks Mode & IE7 Standards Mode do not allow accessing strings like arrays
+    // IE8 Quirks Mode & IE7 Standards Mode do not allow accessing strings like
+    // arrays
     // Using charAt should be more compatible.
     return ((input + '').toLowerCase().charAt(0) === 'p');
 }
@@ -1986,8 +1992,10 @@ function normalizeLocale(key) {
 }
 
 // pick the locale from the array
-// try ['en-au', 'en-gb'] as 'en-au', 'en-gb', 'en', as in move through the list trying each
-// substring from most specific to least, but move to the next array item if it's a more specific variant than the
+// try ['en-au', 'en-gb'] as 'en-au', 'en-gb', 'en', as in move through the list
+// trying each
+// substring from most specific to least, but move to the next array item if
+// it's a more specific variant than the
 // current root
 function chooseLocale(names) {
     var i = 0, j, next, locale, split;
@@ -2003,7 +2011,8 @@ function chooseLocale(names) {
                 return locale;
             }
             if (next && next.length >= j && compareArrays(split, next, true) >= j - 1) {
-                // the next array item is better than a shallower substring of this one
+                // the next array item is better than a shallower substring of
+                // this one
                 break;
             }
             j--;
@@ -2184,7 +2193,8 @@ function checkOverflow (m) {
 }
 
 // iso 8601 regex
-// 0000-00-00 0000-W00 or 0000-W00-0 + T + 00 or 00:00 or 00:00:00 or 00:00:00.000 + +00:00 or +0000 or +00)
+// 0000-00-00 0000-W00 or 0000-W00-0 + T + 00 or 00:00 or 00:00:00 or
+// 00:00:00.000 + +00:00 or +0000 or +00)
 var extendedIsoRegex = /^\s*((?:[+-]\d{6}|\d{4})-(?:\d\d-\d\d|W\d\d-\d|W\d\d|\d\d\d|\d\d))(?:(T| )(\d\d(?::\d\d(?::\d\d(?:[.,]\d+)?)?)?)([\+\-]\d\d(?::?\d\d)?|\s*Z)?)?$/;
 var basicIsoRegex = /^\s*((?:[+-]\d{6}|\d{4})(?:\d\d\d\d|W\d\d\d|W\d\d|\d\d\d|\d\d))(?:(T| )(\d\d(?:\d\d(?:\d\d(?:[.,]\d+)?)?)?)([\+\-]\d\d(?::?\d\d)?|\s*Z)?)?$/;
 
@@ -2321,7 +2331,8 @@ function currentDateArray(config) {
 
 // convert an array to a date.
 // the array should mirror the parameters below
-// note: all values past the year are optional and will default to the lowest possible value.
+// note: all values past the year are optional and will default to the lowest
+// possible value.
 // [year, month, day , hour, minute, second, millisecond]
 function configFromArray (config) {
     var i, date, input = [], currentDate, yearToUse;
@@ -2447,7 +2458,8 @@ hooks.ISO_8601 = function () {};
 
 // date from string and format string
 function configFromStringAndFormat(config) {
-    // TODO: Move this to another part of the creation flow to prevent circular deps
+    // TODO: Move this to another part of the creation flow to prevent circular
+    // deps
     if (config._f === hooks.ISO_8601) {
         configFromISO(config);
         return;
@@ -2568,7 +2580,8 @@ function configFromStringAndArray(config) {
             continue;
         }
 
-        // if there is any input that was not parsed add a penalty for that format
+        // if there is any input that was not parsed add a penalty for that
+        // format
         currentScore += getParsingFlags(tempConfig).charsLeftOver;
 
         // or tokens
@@ -2772,7 +2785,8 @@ function Duration (duration) {
     this._milliseconds = +milliseconds +
         seconds * 1e3 + // 1000
         minutes * 6e4 + // 1000 * 60
-        hours * 1000 * 60 * 60; // using 1000 * 60 * 60 instead of 36e5 to avoid floating point rounding errors
+        hours * 1000 * 60 * 60; // using 1000 * 60 * 60 instead of 36e5 to avoid
+                                // floating point rounding errors
                                 // https://github.com/moment/moment/issues/2978
     // Because of dateAddRemove treats 24 hours as different from a
     // day when working around DST, we need to store them separately
@@ -3027,7 +3041,8 @@ function isUtc () {
 // ASP.NET json date format regex
 var aspNetRegex = /^(\-)?(?:(\d*)[. ])?(\d+)\:(\d+)(?:\:(\d+)(\.\d*)?)?$/;
 
-// from http://docs.closure-library.googlecode.com/git/closure_goog_date_date.js.source.html
+// from
+// http://docs.closure-library.googlecode.com/git/closure_goog_date_date.js.source.html
 // somewhat more in line with 4.4.3.2 2004 spec, but allows decimal anywhere
 // and further modified to allow for strings containing both week and day
 var isoRegex = /^(-)?P(?:(-?[0-9,.]*)Y)?(?:(-?[0-9,.]*)M)?(?:(-?[0-9,.]*)W)?(?:(-?[0-9,.]*)D)?(?:T(?:(-?[0-9,.]*)H)?(?:(-?[0-9,.]*)M)?(?:(-?[0-9,.]*)S)?)?$/;
@@ -3061,7 +3076,12 @@ function createDuration (input, key) {
             h  : toInt(match[HOUR])                         * sign,
             m  : toInt(match[MINUTE])                       * sign,
             s  : toInt(match[SECOND])                       * sign,
-            ms : toInt(absRound(match[MILLISECOND] * 1000)) * sign // the millisecond decimal point is included in the
+            ms : toInt(absRound(match[MILLISECOND] * 1000)) * sign // the
+                                                                    // millisecond
+                                                                    // decimal
+                                                                    // point is
+                                                                    // included
+                                                                    // in the
                                                                     // match
         };
     } else if (!!(match = isoRegex.exec(input))) {
@@ -3296,8 +3316,11 @@ function diff (input, units, asFloat) {
         output = units === 'second' ? delta / 1e3 : // 1000
             units === 'minute' ? delta / 6e4 : // 1000 * 60
             units === 'hour' ? delta / 36e5 : // 1000 * 60 * 60
-            units === 'day' ? (delta - zoneDelta) / 864e5 : // 1000 * 60 * 60 * 24, negate dst
-            units === 'week' ? (delta - zoneDelta) / 6048e5 : // 1000 * 60 * 60 * 24 * 7, negate dst
+            units === 'day' ? (delta - zoneDelta) / 864e5 : // 1000 * 60 * 60 *
+                                                            // 24, negate dst
+            units === 'week' ? (delta - zoneDelta) / 6048e5 : // 1000 * 60 *
+                                                                // 60 * 24 * 7,
+                                                                // negate dst
             delta;
     }
     return asFloat ? output : absFloor(output);
@@ -3346,7 +3369,8 @@ function toISOString () {
 }
 
 /**
- * Return a human readable representation of a moment that can also be evaluated to get a new moment which is the same
+ * Return a human readable representation of a moment that can also be evaluated
+ * to get a new moment which is the same
  * 
  * @link https://nodejs.org/dist/latest/docs/api/util.html#util_custom_inspect_function_on_objects
  */
@@ -4226,7 +4250,8 @@ function as (units) {
         months = this._months + daysToMonths(days);
         return units === 'month' ? months : months / 12;
     } else {
-        // handle milliseconds separately because of floating point math errors (issue #1867)
+        // handle milliseconds separately because of floating point math errors
+        // (issue #1867)
         days = this._days + Math.round(monthsToDays(this._months));
         switch (units) {
             case 'week'   : return days / 7     + milliseconds / 6048e5;
@@ -4298,7 +4323,8 @@ var thresholds = {
     M: 11   // months to year
 };
 
-// helper function for moment.fn.from, moment.fn.fromNow, and moment.duration.fn.humanize
+// helper function for moment.fn.from, moment.fn.fromNow, and
+// moment.duration.fn.humanize
 function substituteTimeAgo(string, number, withoutSuffix, isFuture, locale) {
     return locale.relativeTime(number || 1, !!withoutSuffix, string, isFuture);
 }
@@ -4329,7 +4355,8 @@ function relativeTime$1 (posNegDuration, withoutSuffix, locale) {
     return substituteTimeAgo.apply(null, a);
 }
 
-// This function allows you to set the rounding function for relative time strings
+// This function allows you to set the rounding function for relative time
+// strings
 function getSetRelativeTimeRounding (roundingFunction) {
     if (roundingFunction === undefined) {
         return round;
@@ -4371,7 +4398,8 @@ function toISOString$1() {
     // * milliseconds bubble up until they become hours
     // * days do not bubble at all
     // * months bubble up until they become years
-    // This is because there is no context-free conversion between hours and days
+    // This is because there is no context-free conversion between hours and
+    // days
     // (think of clock changes)
     // and also not between days and months (28-31 days per month)
     var seconds = abs$1(this._milliseconds) / 1000;
@@ -4390,7 +4418,8 @@ function toISOString$1() {
     months %= 12;
 
 
-    // inspired by https://github.com/dordille/moment-isoduration/blob/master/moment.isoduration.js
+    // inspired by
+    // https://github.com/dordille/moment-isoduration/blob/master/moment.isoduration.js
     var Y = years;
     var M = months;
     var D = days;
@@ -4564,12 +4593,17 @@ hooks.defineLocale('af', {
     },
     ordinalParse: /\d{1,2}(ste|de)/,
     ordinal : function (number) {
-        return number + ((number === 1 || number === 8 || number >= 20) ? 'ste' : 'de'); // Thanks to Joris Röling :
+        return number + ((number === 1 || number === 8 || number >= 20) ? 'ste' : 'de'); // Thanks
+                                                                                            // to
+                                                                                            // Joris
+                                                                                            // Röling
+                                                                                            // :
                                                                                             // https://github.com/jjupiter
     },
     week : {
         dow : 1, // Maandag is die eerste dag van die week.
-        doy : 4  // Die week wat die 4de Januarie bevat is die eerste week van die jaar.
+        doy : 4  // Die week wat die 4de Januarie bevat is die eerste week
+                    // van die jaar.
     }
 });
 
@@ -4617,7 +4651,8 @@ hooks.defineLocale('ar-dz', {
     },
     week : {
         dow : 0, // Sunday is the first day of the week.
-        doy : 4  // The week that contains Jan 1st is the first week of the year.
+        doy : 4  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -4732,7 +4767,8 @@ hooks.defineLocale('ar-ly', {
     },
     week : {
         dow : 6, // Saturday is the first day of the week.
-        doy : 12  // The week that contains Jan 1st is the first week of the year.
+        doy : 12  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -4781,7 +4817,8 @@ hooks.defineLocale('ar-ma', {
     },
     week : {
         dow : 6, // Saturday is the first day of the week.
-        doy : 12  // The week that contains Jan 1st is the first week of the year.
+        doy : 12  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -4875,7 +4912,8 @@ hooks.defineLocale('ar-sa', {
     },
     week : {
         dow : 0, // Sunday is the first day of the week.
-        doy : 6  // The week that contains Jan 1st is the first week of the year.
+        doy : 6  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -5054,7 +5092,8 @@ hooks.defineLocale('ar', {
     },
     week : {
         dow : 6, // Saturday is the first day of the week.
-        doy : 12  // The week that contains Jan 1st is the first week of the year.
+        doy : 12  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -5148,7 +5187,8 @@ hooks.defineLocale('az', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 7  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -5271,7 +5311,8 @@ hooks.defineLocale('be', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 7  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -5354,7 +5395,8 @@ hooks.defineLocale('bg', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 7  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -5462,7 +5504,8 @@ hooks.defineLocale('bn', {
     },
     week : {
         dow : 0, // Sunday is the first day of the week.
-        doy : 6  // The week that contains Jan 1st is the first week of the year.
+        doy : 6  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -5570,7 +5613,8 @@ hooks.defineLocale('bo', {
     },
     week : {
         dow : 0, // Sunday is the first day of the week.
-        doy : 6  // The week that contains Jan 1st is the first week of the year.
+        doy : 6  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -5667,7 +5711,8 @@ hooks.defineLocale('br', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -5799,7 +5844,8 @@ hooks.defineLocale('bs', {
     ordinal : '%d.',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 7  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -5869,7 +5915,8 @@ hooks.defineLocale('ca', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -6030,7 +6077,8 @@ hooks.defineLocale('cs', {
     ordinal : '%d.',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -6082,7 +6130,8 @@ hooks.defineLocale('cv', {
     ordinal : '%d-мӗш',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 7  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -6131,13 +6180,18 @@ hooks.defineLocale('cy', {
         yy: '%d flynedd'
     },
     ordinalParse: /\d{1,2}(fed|ain|af|il|ydd|ed|eg)/,
-    // traditional ordinal numbers above 31 are not commonly used in colloquial Welsh
+    // traditional ordinal numbers above 31 are not commonly used in colloquial
+    // Welsh
     ordinal: function (number) {
         var b = number,
             output = '',
             lookup = [
-                '', 'af', 'il', 'ydd', 'ydd', 'ed', 'ed', 'ed', 'fed', 'fed', 'fed', // 1af to 10fed
-                'eg', 'fed', 'eg', 'eg', 'fed', 'eg', 'eg', 'fed', 'eg', 'fed' // 11eg to 20fed
+                '', 'af', 'il', 'ydd', 'ydd', 'ed', 'ed', 'ed', 'fed', 'fed', 'fed', // 1af
+                                                                                        // to
+                                                                                        // 10fed
+                'eg', 'fed', 'eg', 'eg', 'fed', 'eg', 'eg', 'fed', 'eg', 'fed' // 11eg
+                                                                                // to
+                                                                                // 20fed
             ];
         if (b > 20) {
             if (b === 40 || b === 50 || b === 60 || b === 80 || b === 100) {
@@ -6152,7 +6206,8 @@ hooks.defineLocale('cy', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -6201,7 +6256,8 @@ hooks.defineLocale('da', {
     ordinal : '%d.',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -6269,7 +6325,8 @@ hooks.defineLocale('de-at', {
     ordinal : '%d.',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -6336,7 +6393,8 @@ hooks.defineLocale('de', {
     ordinal : '%d.',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -6425,7 +6483,8 @@ hooks.defineLocale('dv', {
     },
     week : {
         dow : 7,  // Sunday is the first day of the week.
-        doy : 12  // The week that contains Jan 1st is the first week of the year.
+        doy : 12  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -6437,7 +6496,13 @@ hooks.defineLocale('el', {
     monthsNominativeEl : 'Ιανουάριος_Φεβρουάριος_Μάρτιος_Απρίλιος_Μάιος_Ιούνιος_Ιούλιος_Αύγουστος_Σεπτέμβριος_Οκτώβριος_Νοέμβριος_Δεκέμβριος'.split('_'),
     monthsGenitiveEl : 'Ιανουαρίου_Φεβρουαρίου_Μαρτίου_Απριλίου_Μαΐου_Ιουνίου_Ιουλίου_Αυγούστου_Σεπτεμβρίου_Οκτωβρίου_Νοεμβρίου_Δεκεμβρίου'.split('_'),
     months : function (momentToFormat, format) {
-        if (/D/.test(format.substring(0, format.indexOf('MMMM')))) { // if there is a day number before 'MMMM'
+        if (/D/.test(format.substring(0, format.indexOf('MMMM')))) { // if
+                                                                        // there
+                                                                        // is a
+                                                                        // day
+                                                                        // number
+                                                                        // before
+                                                                        // 'MMMM'
             return this._monthsGenitiveEl[momentToFormat.month()];
         } else {
             return this._monthsNominativeEl[momentToFormat.month()];
@@ -6508,7 +6573,8 @@ hooks.defineLocale('el', {
     ordinal: '%dη',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4st is the first week of the year.
+        doy : 4  // The week that contains Jan 4st is the first week of the
+                    // year.
     }
 });
 
@@ -6564,7 +6630,8 @@ hooks.defineLocale('en-au', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -6672,7 +6739,8 @@ hooks.defineLocale('en-gb', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -6728,7 +6796,8 @@ hooks.defineLocale('en-ie', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -6784,14 +6853,16 @@ hooks.defineLocale('en-nz', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
 // ! moment.js locale configuration
 // ! locale : Esperanto [eo]
 // ! author : Colin Dean : https://github.com/colindean
-// ! komento: Mi estas malcerta se mi korekte traktis akuzativojn en tiu traduko.
+// ! komento: Mi estas malcerta se mi korekte traktis akuzativojn en tiu
+// traduko.
 // ! Se ne, bonvolu korekti kaj avizi min por ke mi povas lerni!
 
 hooks.defineLocale('eo', {
@@ -6846,7 +6917,8 @@ hooks.defineLocale('eo', {
     ordinal : '%da',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 7  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -6915,7 +6987,8 @@ hooks.defineLocale('es-do', {
     ordinal : '%dº',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -6985,7 +7058,8 @@ hooks.defineLocale('es', {
     ordinal : '%dº',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -7054,7 +7128,8 @@ hooks.defineLocale('et', {
     ordinal : '%d.',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -7109,7 +7184,8 @@ hooks.defineLocale('eu', {
     ordinal : '%d.',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 7  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -7205,7 +7281,8 @@ hooks.defineLocale('fa', {
     ordinal : '%dم',
     week : {
         dow : 6, // Saturday is the first day of the week.
-        doy : 12 // The week that contains Jan 1st is the first week of the year.
+        doy : 12 // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -7301,7 +7378,8 @@ hooks.defineLocale('fi', {
     ordinal : '%d.',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -7350,7 +7428,8 @@ hooks.defineLocale('fo', {
     ordinal : '%d.',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -7452,7 +7531,8 @@ hooks.defineLocale('fr-ch', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -7505,7 +7585,8 @@ hooks.defineLocale('fr', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -7567,7 +7648,8 @@ hooks.defineLocale('fy', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -7632,7 +7714,8 @@ hooks.defineLocale('gd', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -7698,7 +7781,8 @@ hooks.defineLocale('gl', {
     ordinal : '%dº',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -7867,7 +7951,8 @@ hooks.defineLocale('hi', {
             return symbolMap$6[match];
         });
     },
-    // Hindi notation for meridiems are quite fuzzy in practice. While there exists
+    // Hindi notation for meridiems are quite fuzzy in practice. While there
+    // exists
     // a rigid notion of a 'Pahar' it is not used as rigidly in modern Hindi.
     meridiemParse: /रात|सुबह|दोपहर|शाम/,
     meridiemHour : function (hour, meridiem) {
@@ -7899,7 +7984,8 @@ hooks.defineLocale('hi', {
     },
     week : {
         dow : 0, // Sunday is the first day of the week.
-        doy : 6  // The week that contains Jan 1st is the first week of the year.
+        doy : 6  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -8033,7 +8119,8 @@ hooks.defineLocale('hr', {
     ordinal : '%d.',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 7  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -8131,7 +8218,8 @@ hooks.defineLocale('hu', {
     ordinal : '%d.',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -8215,14 +8303,16 @@ hooks.defineLocale('hy-am', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 7  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
 // ! moment.js locale configuration
 // ! locale : Indonesian [id]
 // ! author : Mohammad Satrio Utomo : https://github.com/tyok
-// ! reference: http://id.wikisource.org/wiki/Pedoman_Umum_Ejaan_Bahasa_Indonesia_yang_Disempurnakan
+// ! reference:
+// http://id.wikisource.org/wiki/Pedoman_Umum_Ejaan_Bahasa_Indonesia_yang_Disempurnakan
 
 hooks.defineLocale('id', {
     months : 'Januari_Februari_Maret_April_Mei_Juni_Juli_Agustus_September_Oktober_November_Desember'.split('_'),
@@ -8287,7 +8377,8 @@ hooks.defineLocale('id', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 7  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -8403,7 +8494,8 @@ hooks.defineLocale('is', {
     ordinal : '%d.',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -8462,7 +8554,8 @@ hooks.defineLocale('it', {
     ordinal: '%dº',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -8599,7 +8692,8 @@ hooks.defineLocale('jv', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 7  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -8753,7 +8847,8 @@ hooks.defineLocale('kk', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 7  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -8931,7 +9026,8 @@ hooks.defineLocale('ky', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 7  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -8965,10 +9061,11 @@ function processPastTime(string) {
     return 'virun ' + string;
 }
 /**
- * Returns true if the word before the given number loses the '-n' ending. e.g. 'an 10 Deeg' but 'a 5 Deeg'
+ * Returns true if the word before the given number loses the '-n' ending. e.g.
+ * 'an 10 Deeg' but 'a 5 Deeg'
  * 
  * @param number
- *         {integer}
+ *            {integer}
  * @returns {boolean}
  */
 function eifelerRegelAppliesToNumber(number) {
@@ -9028,7 +9125,8 @@ hooks.defineLocale('lb', {
         nextWeek: 'dddd [um] LT',
         lastDay: '[Gëschter um] LT',
         lastWeek: function () {
-            // Different date string for 'Dënschdeg' (Tuesday) and 'Donneschdeg' (Thursday) due to phonological rule
+            // Different date string for 'Dënschdeg' (Tuesday) and 'Donneschdeg'
+            // (Thursday) due to phonological rule
             switch (this.day()) {
                 case 2:
                 case 4:
@@ -9222,7 +9320,8 @@ hooks.defineLocale('lt', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -9245,7 +9344,8 @@ var units$1 = {
 };
 /**
  * @param withoutSuffix
- *         boolean true = a length of time; false = before/after a period of time.
+ *            boolean true = a length of time; false = before/after a period of
+ *            time.
  */
 function format$1(forms, number, withoutSuffix) {
     if (withoutSuffix) {
@@ -9309,13 +9409,15 @@ hooks.defineLocale('lv', {
     ordinal : '%d.',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
 // ! moment.js locale configuration
 // ! locale : Montenegrin [me]
-// ! author : Miodrag Nikač <miodrag@restartit.me> : https://github.com/miodragnikac
+// ! author : Miodrag Nikač <miodrag@restartit.me> :
+// https://github.com/miodragnikac
 
 var translator = {
     words: { // Different grammatical cases
@@ -9409,13 +9511,15 @@ hooks.defineLocale('me', {
     ordinal : '%d.',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 7  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
 // ! moment.js locale configuration
 // ! locale : Maori [mi]
-// ! author : John Corrigan <robbiecloset@gmail.com> : https://github.com/johnideal
+// ! author : John Corrigan <robbiecloset@gmail.com> :
+// https://github.com/johnideal
 
 hooks.defineLocale('mi', {
     months: 'Kohi-tāte_Hui-tanguru_Poutū-te-rangi_Paenga-whāwhā_Haratua_Pipiri_Hōngoingoi_Here-turi-kōkā_Mahuru_Whiringa-ā-nuku_Whiringa-ā-rangi_Hakihea'.split('_'),
@@ -9462,7 +9566,8 @@ hooks.defineLocale('mi', {
     ordinal: '%dº',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -9541,7 +9646,8 @@ hooks.defineLocale('mk', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 7  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -9759,7 +9865,8 @@ hooks.defineLocale('mr', {
     },
     week : {
         dow : 0, // Sunday is the first day of the week.
-        doy : 6  // The week that contains Jan 1st is the first week of the year.
+        doy : 6  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -9831,7 +9938,8 @@ hooks.defineLocale('ms-my', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 7  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -9902,7 +10010,8 @@ hooks.defineLocale('ms', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 7  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -10039,7 +10148,8 @@ hooks.defineLocale('nb', {
     ordinal : '%d.',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -10151,7 +10261,8 @@ hooks.defineLocale('ne', {
     },
     week : {
         dow : 0, // Sunday is the first day of the week.
-        doy : 6  // The week that contains Jan 1st is the first week of the year.
+        doy : 6  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -10226,7 +10337,8 @@ hooks.defineLocale('nl-be', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -10301,7 +10413,8 @@ hooks.defineLocale('nl', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -10350,7 +10463,8 @@ hooks.defineLocale('nn', {
     ordinal : '%d.',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -10384,7 +10498,8 @@ var numberMap$9 = {
 };
 
 hooks.defineLocale('pa-in', {
-    // There are months name as per Nanakshahi Calender but they are not used as rigidly in modern Punjabi.
+    // There are months name as per Nanakshahi Calender but they are not used as
+    // rigidly in modern Punjabi.
     months : 'ਜਨਵਰੀ_ਫ਼ਰਵਰੀ_ਮਾਰਚ_ਅਪ੍ਰੈਲ_ਮਈ_ਜੂਨ_ਜੁਲਾਈ_ਅਗਸਤ_ਸਤੰਬਰ_ਅਕਤੂਬਰ_ਨਵੰਬਰ_ਦਸੰਬਰ'.split('_'),
     monthsShort : 'ਜਨਵਰੀ_ਫ਼ਰਵਰੀ_ਮਾਰਚ_ਅਪ੍ਰੈਲ_ਮਈ_ਜੂਨ_ਜੁਲਾਈ_ਅਗਸਤ_ਸਤੰਬਰ_ਅਕਤੂਬਰ_ਨਵੰਬਰ_ਦਸੰਬਰ'.split('_'),
     weekdays : 'ਐਤਵਾਰ_ਸੋਮਵਾਰ_ਮੰਗਲਵਾਰ_ਬੁਧਵਾਰ_ਵੀਰਵਾਰ_ਸ਼ੁੱਕਰਵਾਰ_ਸ਼ਨੀਚਰਵਾਰ'.split('_'),
@@ -10431,7 +10546,8 @@ hooks.defineLocale('pa-in', {
             return symbolMap$10[match];
         });
     },
-    // Punjabi notation for meridiems are quite fuzzy in practice. While there exists
+    // Punjabi notation for meridiems are quite fuzzy in practice. While there
+    // exists
     // a rigid notion of a 'Pahar' it is not used as rigidly in modern Punjabi.
     meridiemParse: /ਰਾਤ|ਸਵੇਰ|ਦੁਪਹਿਰ|ਸ਼ਾਮ/,
     meridiemHour : function (hour, meridiem) {
@@ -10463,7 +10579,8 @@ hooks.defineLocale('pa-in', {
     },
     week : {
         dow : 0, // Sunday is the first day of the week.
-        doy : 6  // The week that contains Jan 1st is the first week of the year.
+        doy : 6  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -10557,7 +10674,8 @@ hooks.defineLocale('pl', {
     ordinal : '%d.',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -10661,7 +10779,8 @@ hooks.defineLocale('pt', {
     ordinal : '%dº',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -10725,7 +10844,8 @@ hooks.defineLocale('ro', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 7  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -10765,7 +10885,8 @@ hooks.defineLocale('ru', {
         standalone: 'январь_февраль_март_апрель_май_июнь_июль_август_сентябрь_октябрь_ноябрь_декабрь'.split('_')
     },
     monthsShort : {
-        // по CLDR именно "июл." и "июн.", но какой смысл менять букву на точку ?
+        // по CLDR именно "июл." и "июн.", но какой смысл менять букву на точку
+        // ?
         format: 'янв._февр._мар._апр._мая_июня_июля_авг._сент._окт._нояб._дек.'.split('_'),
         standalone: 'янв._февр._март_апр._май_июнь_июль_авг._сент._окт._нояб._дек.'.split('_')
     },
@@ -10780,7 +10901,8 @@ hooks.defineLocale('ru', {
     longMonthsParse : monthsParse$2,
     shortMonthsParse : monthsParse$2,
 
-    // полные названия с падежами, по три буквы, для некоторых, по 4 буквы, сокращения с точкой и без точки
+    // полные названия с падежами, по три буквы, для некоторых, по 4 буквы,
+    // сокращения с точкой и без точки
     monthsRegex: /^(январ[ья]|янв\.?|феврал[ья]|февр?\.?|марта?|мар\.?|апрел[ья]|апр\.?|ма[йя]|июн[ья]|июн\.?|июл[ья]|июл\.?|августа?|авг\.?|сентябр[ья]|сент?\.?|октябр[ья]|окт\.?|ноябр[ья]|нояб?\.?|декабр[ья]|дек\.?)/i,
 
     // копия предыдущего
@@ -10897,7 +11019,8 @@ hooks.defineLocale('ru', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 7  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -10947,7 +11070,8 @@ hooks.defineLocale('se', {
     ordinal : '%d.',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -11146,7 +11270,8 @@ hooks.defineLocale('sk', {
     ordinal : '%d.',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -11297,7 +11422,8 @@ hooks.defineLocale('sl', {
     ordinal : '%d.',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 7  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -11356,13 +11482,15 @@ hooks.defineLocale('sq', {
     ordinal : '%d.',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
 // ! moment.js locale configuration
 // ! locale : Serbian Cyrillic [sr-cyrl]
-// ! author : Milan Janačković<milanjanackovic@gmail.com> : https://github.com/milan-j
+// ! author : Milan Janačković<milanjanackovic@gmail.com> :
+// https://github.com/milan-j
 
 var translator$1 = {
     words: { // Different grammatical cases
@@ -11455,13 +11583,15 @@ hooks.defineLocale('sr-cyrl', {
     ordinal : '%d.',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 7  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
 // ! moment.js locale configuration
 // ! locale : Serbian [sr]
-// ! author : Milan Janačković<milanjanackovic@gmail.com> : https://github.com/milan-j
+// ! author : Milan Janačković<milanjanackovic@gmail.com> :
+// https://github.com/milan-j
 
 var translator$2 = {
     words: { // Different grammatical cases
@@ -11554,7 +11684,8 @@ hooks.defineLocale('sr', {
     ordinal : '%d.',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 7  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -11632,7 +11763,8 @@ hooks.defineLocale('ss', {
     ordinal : '%d',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -11690,7 +11822,8 @@ hooks.defineLocale('sv', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -11738,7 +11871,8 @@ hooks.defineLocale('sw', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 7  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -11857,7 +11991,8 @@ hooks.defineLocale('ta', {
     },
     week : {
         dow : 0, // Sunday is the first day of the week.
-        doy : 6  // The week that contains Jan 1st is the first week of the year.
+        doy : 6  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -11935,7 +12070,8 @@ hooks.defineLocale('te', {
     },
     week : {
         dow : 0, // Sunday is the first day of the week.
-        doy : 6  // The week that contains Jan 1st is the first week of the year.
+        doy : 6  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -11992,7 +12128,8 @@ hooks.defineLocale('tet', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -12005,7 +12142,10 @@ hooks.defineLocale('th', {
     monthsShort : 'ม.ค._ก.พ._มี.ค._เม.ย._พ.ค._มิ.ย._ก.ค._ส.ค._ก.ย._ต.ค._พ.ย._ธ.ค.'.split('_'),
     monthsParseExact: true,
     weekdays : 'อาทิตย์_จันทร์_อังคาร_พุธ_พฤหัสบดี_ศุกร์_เสาร์'.split('_'),
-    weekdaysShort : 'อาทิตย์_จันทร์_อังคาร_พุธ_พฤหัส_ศุกร์_เสาร์'.split('_'), // yes, three characters difference
+    weekdaysShort : 'อาทิตย์_จันทร์_อังคาร_พุธ_พฤหัส_ศุกร์_เสาร์'.split('_'), // yes,
+                                                                                // three
+                                                                                // characters
+                                                                                // difference
     weekdaysMin : 'อา._จ._อ._พ._พฤ._ศ._ส.'.split('_'),
     weekdaysParseExact : true,
     longDateFormat : {
@@ -12099,7 +12239,8 @@ hooks.defineLocale('tl-ph', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -12208,7 +12349,8 @@ hooks.defineLocale('tlh', {
     ordinal : '%d.',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -12287,7 +12429,8 @@ hooks.defineLocale('tr', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 7  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -12296,7 +12439,8 @@ hooks.defineLocale('tr', {
 // ! author : Robin van der Vliet : https://github.com/robin0van0der0v
 // ! author : Iustì Canun
 
-// After the year there should be a slash and the amount of years since December 26, 1979 in Roman numerals.
+// After the year there should be a slash and the amount of years since December
+// 26, 1979 in Roman numerals.
 // This is currently too difficult (maybe even impossible) to add.
 hooks.defineLocale('tzl', {
     months : 'Januar_Fevraglh_Març_Avrïu_Mai_Gün_Julia_Guscht_Setemvar_Listopäts_Noemvar_Zecemvar'.split('_'),
@@ -12350,7 +12494,8 @@ hooks.defineLocale('tzl', {
     ordinal : '%d.',
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -12414,7 +12559,8 @@ hooks.defineLocale('tzm-latn', {
     },
     week : {
         dow : 6, // Saturday is the first day of the week.
-        doy : 12  // The week that contains Jan 1st is the first week of the year.
+        doy : 12  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -12461,7 +12607,8 @@ hooks.defineLocale('tzm', {
     },
     week : {
         dow : 6, // Saturday is the first day of the week.
-        doy : 12  // The week that contains Jan 1st is the first week of the year.
+        doy : 12  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -12563,7 +12710,8 @@ hooks.defineLocale('uk', {
         y : 'рік',
         yy : relativeTimeWithPlural$4
     },
-    // M. E.: those two are virtually unused but a user might want to implement them for his/her website for some reason
+    // M. E.: those two are virtually unused but a user might want to implement
+    // them for his/her website for some reason
     meridiemParse: /ночі|ранку|дня|вечора/,
     isPM: function (input) {
         return /^(дня|вечора)$/.test(input);
@@ -12596,7 +12744,8 @@ hooks.defineLocale('uk', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 7  // The week that contains Jan 1st is the first week of the
+                    // year.
     }
 });
 
@@ -12643,7 +12792,8 @@ hooks.defineLocale('uz', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 4th is the first week of the year.
+        doy : 7  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -12711,7 +12861,8 @@ hooks.defineLocale('vi', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -12768,7 +12919,8 @@ hooks.defineLocale('x-pseudo', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -12933,7 +13085,8 @@ hooks.defineLocale('zh-cn', {
     week : {
         // GB/T 7408-1994《数据元和交换格式·信息交换·日期和时间表示法》与ISO 8601:1988等效
         dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the
+                    // year.
     }
 });
 
@@ -13131,21 +13284,28 @@ return hooks;
 })));
 
 /*
- * /*! version : 4.17.43 ========================================================= bootstrap-datetimejs
- * https://github.com/Eonasdan/bootstrap-datetimepicker Copyright (c) 2015 Jonathan Peterson
+ * /*! version : 4.17.43
+ * =========================================================
+ * bootstrap-datetimejs https://github.com/Eonasdan/bootstrap-datetimepicker
+ * Copyright (c) 2015 Jonathan Peterson
  * =========================================================
  */
 /*
- * The MIT License (MIT) Copyright (c) 2015 Jonathan Peterson Permission is hereby granted, free of charge, to any
- * person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software
- * without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute,
- * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions: The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
- * AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * The MIT License (MIT) Copyright (c) 2015 Jonathan Peterson Permission is
+ * hereby granted, free of charge, to any person obtaining a copy of this
+ * software and associated documentation files (the "Software"), to deal in the
+ * Software without restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do
+ * so, subject to the following conditions: The above copyright notice and this
+ * permission notice shall be included in all copies or substantial portions of
+ * the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+ * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+ * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
 /* global define:false */
 /* global exports:false */
@@ -13202,9 +13362,12 @@ ba=function(){var b=!1;
 // Ignore event if in the middle of a picker transition
 return o?(o.find(".collapse").each(function(){var c=a(this).data("collapse");return!c||!c.transitioning||(b=!0,!1)}),b?l:(n&&n.hasClass("btn")&&n.toggleClass("active"),o.hide(),a(window).off("resize",I),o.off("click","[data-action]"),o.off("mousedown",!1),o.remove(),o=!1,J({type:"dp.hide",date:e.clone()}),g.blur(),k=0,f=e.clone(),l)):l},ca=function(){aa(null)},da=function(a){
 // inputDate.locale(options.locale);
-return void 0===d.parseInputDate?b.isMoment(a)||(a=y(a)):a=d.parseInputDate(a),a},/***********************************
-                                                                                     * Widget UI interaction functions
-                                                                                     **********************************/
+return void 0===d.parseInputDate?b.isMoment(a)||(a=y(a)):a=d.parseInputDate(a),a},/******
+                                                                                     * Widget
+                                                                                     * UI
+                                                                                     * interaction
+                                                                                     * functions
+                                                                                     *****/
 ea={next:function(){var a=q[k].navFnc;f.add(q[k].navStep,a),W(),K(a)},previous:function(){var a=q[k].navFnc;f.subtract(q[k].navStep,a),W(),K(a)},pickerSwitch:function(){L(1)},selectMonth:function(b){var c=a(b.target).closest("tbody").find("span").index(a(b.target));f.month(c),k===p?(aa(e.clone().year(f.year()).month(f.month())),d.inline||ba()):(L(-1),W()),K("M")},selectYear:function(b){var c=parseInt(a(b.target).text(),10)||0;f.year(c),k===p?(aa(e.clone().year(f.year())),d.inline||ba()):(L(-1),W()),K("YYYY")},selectDecade:function(b){var c=parseInt(a(b.target).data("selection"),10)||0;f.year(c),k===p?(aa(e.clone().year(f.year())),d.inline||ba()):(L(-1),W()),K("YYYY")},selectDay:function(b){var c=f.clone();a(b.target).is(".old")&&c.subtract(1,"M"),a(b.target).is(".new")&&c.add(1,"M"),aa(c.date(parseInt(a(b.target).text(),10))),A()||d.keepOpen||d.inline||ba()},incrementHours:function(){var a=e.clone().add(1,"h");R(a,"h")&&aa(a)},incrementMinutes:function(){var a=e.clone().add(d.stepping,"m");R(a,"m")&&aa(a)},incrementSeconds:function(){var a=e.clone().add(1,"s");R(a,"s")&&aa(a)},decrementHours:function(){var a=e.clone().subtract(1,"h");R(a,"h")&&aa(a)},decrementMinutes:function(){var a=e.clone().subtract(d.stepping,"m");R(a,"m")&&aa(a)},decrementSeconds:function(){var a=e.clone().subtract(1,"s");R(a,"s")&&aa(a)},togglePeriod:function(){aa(e.clone().add(e.hours()>=12?-12:12,"h"))},togglePicker:function(b){var c,e=a(b.target),f=e.closest("ul"),g=f.find(".in"),h=f.find(".collapse:not(.in)");if(g&&g.length){if(c=g.data("collapse"),c&&c.transitioning)return;g.collapse?(// if
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         // collapse
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         // plugin
@@ -13215,7 +13378,8 @@ ea={next:function(){var a=q[k].navFnc;f.add(q[k].navStep,a),W(),K(a)},previous:f
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         // then
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         // use
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         // it
-g.collapse("hide"),h.collapse("show")):(// otherwise just toggle in class on the two views
+g.collapse("hide"),h.collapse("show")):(// otherwise just toggle in class on the
+                                        // two views
 g.removeClass("in"),h.addClass("in")),e.is("span")?e.toggleClass(d.icons.time+" "+d.icons.date):e.find("span").toggleClass(d.icons.time+" "+d.icons.date)}},showPicker:function(){o.find(".timepicker > div:not(.timepicker-picker)").hide(),o.find(".timepicker .timepicker-picker").show()},showHours:function(){o.find(".timepicker .timepicker-picker").hide(),o.find(".timepicker .timepicker-hours").show()},showMinutes:function(){o.find(".timepicker .timepicker-picker").hide(),o.find(".timepicker .timepicker-minutes").show()},showSeconds:function(){o.find(".timepicker .timepicker-picker").hide(),o.find(".timepicker .timepicker-seconds").show()},selectHour:function(b){var c=parseInt(a(b.target).text(),10);h||(e.hours()>=12?12!==c&&(c+=12):12===c&&(c=0)),aa(e.clone().hours(c)),ea.showPicker.call(l)},selectMinute:function(b){aa(e.clone().minutes(parseInt(a(b.target).text(),10))),ea.showPicker.call(l)},selectSecond:function(b){aa(e.clone().seconds(parseInt(a(b.target).text(),10))),ea.showPicker.call(l)},clear:ca,today:function(){var a=y();R(a,"d")&&aa(a)},close:ba},fa=function(b){return!a(b.currentTarget).is(".disabled")&&(ea[a(b.currentTarget).data("action")].apply(l,arguments),!1)},/**
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          * Shows
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          * the
@@ -13242,11 +13406,13 @@ return g.prop("disabled")||!d.ignoreReadonly&&g.prop("readonly")||o?l:(void 0!==
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      */
 ha=function(){return o?ba():ga()},ia=function(a){var b,c,e,f,g=null,h=[],i={},j=a.which,k="p";w[j]=k;for(b in w)w.hasOwnProperty(b)&&w[b]===k&&(h.push(b),parseInt(b,10)!==j&&(i[b]=!0));for(b in d.keyBinds)if(d.keyBinds.hasOwnProperty(b)&&"function"==typeof d.keyBinds[b]&&(e=b.split(" "),e.length===h.length&&v[j]===e[e.length-1])){for(f=!0,c=e.length-2;c>=0;c--)if(!(v[e[c]]in i)){f=!1;break}if(f){g=d.keyBinds[b];break}}g&&(g.call(l,o),a.stopPropagation(),a.preventDefault())},ja=function(a){w[a.which]="r",a.stopPropagation(),a.preventDefault()},ka=function(b){var c=a(b.target).val().trim(),d=c?da(c):null;return aa(d),b.stopImmediatePropagation(),!1},la=function(){g.on({change:ka,blur:d.debug?"":ba,keydown:ia,keyup:ja,focus:d.allowInputToggle?ga:""}),c.is("input")?g.on({focus:ga}):n&&(n.on("click",ha),n.on("mousedown",!1))},ma=function(){g.off({change:ka,blur:blur,keydown:ia,keyup:ja,focus:d.allowInputToggle?ba:""}),c.is("input")?g.off({focus:ga}):n&&(n.off("click",ha),n.off("mousedown",!1))},na=function(b){
 // Store given enabledDates and disabledDates as keys.
-// This way we can check their existence in O(1) time instead of looping through whole array.
+// This way we can check their existence in O(1) time instead of looping through
+// whole array.
 // (for example: options.enabledDates['2014-02-27'] === true)
 var c={};return a.each(b,function(){var a=da(this);a.isValid()&&(c[a.format("YYYY-MM-DD")]=!0)}),!!Object.keys(c).length&&c},oa=function(b){
 // Store given enabledHours and disabledHours as keys.
-// This way we can check their existence in O(1) time instead of looping through whole array.
+// This way we can check their existence in O(1) time instead of looping through
+// whole array.
 // (for example: options.enabledHours['2014-02-27'] === true)
 var c={};return a.each(b,function(){c[this]=!0}),!!Object.keys(c).length&&c},pa=function(){var a=d.format||"L LT";i=a.replace(/(\[[^\[]*\])|(\\)?(LTS|LT|LL?L?L?|l{1,4})/g,function(a){var b=e.localeData().longDateFormat(a)||a;return b.replace(/(\[[^\[]*\])|(\\)?(LTS|LT|LL?L?L?|l{1,4})/g,function(a){// temp
                                                                                                                                                                                                                                                                                                             // fix
@@ -13254,28 +13420,37 @@ var c={};return a.each(b,function(){c[this]=!0}),!!Object.keys(c).length&&c},pa=
                                                                                                                                                                                                                                                                                                             // #740
 return e.localeData().longDateFormat(a)||a})}),j=d.extraFormats?d.extraFormats.slice():[],j.indexOf(a)<0&&j.indexOf(i)<0&&j.push(i),h=i.toLowerCase().indexOf("a")<1&&i.replace(/\[.*?\]/g,"").indexOf("h")<1,z("y")&&(p=2),z("M")&&(p=1),z("d")&&(p=0),k=Math.max(p,k),m||aa(e)};
 // initializing element and component attributes
-if(/*******************************************************************************************************************
-     * Public API functions ===================== Important: Do not expose direct references to private objects or the
-     * options object to the outer world. Always return a clone when returning values or make a clone when setting a
-     * private variable.
-     ******************************************************************************************************************/
+if(/***************************************************************************
+     * Public API functions ===================== Important: Do not expose
+     * direct references to private objects or the options object to the outer
+     * world. Always return a clone when returning values or make a clone when
+     * setting a private variable.
+     **************************************************************************/
 l.destroy=function(){
-// /<summary>Destroys the widget and removes all attached event listeners</summary>
+// /<summary>Destroys the widget and removes all attached event
+// listeners</summary>
 ba(),ma(),c.removeData("DateTimePicker"),c.removeData("date")},l.toggle=ha,l.show=ga,l.hide=ba,l.disable=function(){
-// /<summary>Disables the input element, the component is attached to, by adding a disabled="true" attribute to it.
-// /If the widget was visible before that call it is hidden. Possibly emits dp.hide</summary>
+// /<summary>Disables the input element, the component is attached to, by adding
+// a disabled="true" attribute to it.
+// /If the widget was visible before that call it is hidden. Possibly emits
+// dp.hide</summary>
 return ba(),n&&n.hasClass("btn")&&n.addClass("disabled"),g.prop("disabled",!0),l},l.enable=function(){
-// /<summary>Enables the input element, the component is attached to, by removing disabled attribute from it.</summary>
+// /<summary>Enables the input element, the component is attached to, by
+// removing disabled attribute from it.</summary>
 return n&&n.hasClass("btn")&&n.removeClass("disabled"),g.prop("disabled",!1),l},l.ignoreReadonly=function(a){if(0===arguments.length)return d.ignoreReadonly;if("boolean"!=typeof a)throw new TypeError("ignoreReadonly () expects a boolean parameter");return d.ignoreReadonly=a,l},l.options=function(b){if(0===arguments.length)return a.extend(!0,{},d);if(!(b instanceof Object))throw new TypeError("options() options parameter should be an object");return a.extend(!0,d,b),a.each(d,function(a,b){if(void 0===l[a])throw new TypeError("option "+a+" is not recognized!");l[a](b)}),l},l.date=function(a){
 // /<signature helpKeyword="$.fn.datetimepicker.date">
-// /<summary>Returns the component's model current date, a moment object or null if not set.</summary>
+// /<summary>Returns the component's model current date, a moment object or null
+// if not set.</summary>
 // /<returns type="Moment">date.clone()</returns>
 // /</signature>
 // /<signature>
-// /<summary>Sets the components model current moment to it. Passing a null value unsets the components model current
-// moment. Parsing of the newDate parameter is made using moment library with the options.format and options.useStrict
+// /<summary>Sets the components model current moment to it. Passing a null
+// value unsets the components model current
+// moment. Parsing of the newDate parameter is made using moment library with
+// the options.format and options.useStrict
 // components configuration.</summary>
-// /<param name="newDate" locid="$.fn.datetimepicker.date_p:newDate">Takes string, Date, moment, null parameter.</param>
+// /<param name="newDate" locid="$.fn.datetimepicker.date_p:newDate">Takes
+// string, Date, moment, null parameter.</param>
 // /</signature>
 if(0===arguments.length)return m?null:e.clone();if(!(null===a||"string"==typeof a||b.isMoment(a)||a instanceof Date))throw new TypeError("date() parameter must be one of [null, string, moment or Date]");return aa(null===a?null:da(a)),l},l.format=function(a){
 // /<summary>test su</summary>
@@ -13283,71 +13458,93 @@ if(0===arguments.length)return m?null:e.clone();if(!(null===a||"string"==typeof 
 // /<returns type="string|boolean">returns foo</returns>
 if(0===arguments.length)return d.format;if("string"!=typeof a&&("boolean"!=typeof a||a!==!1))throw new TypeError("format() expects a string or boolean:false parameter "+a);return d.format=a,i&&pa(),l},l.timeZone=function(a){if(0===arguments.length)return d.timeZone;if("string"!=typeof a)throw new TypeError("newZone() expects a string parameter");return d.timeZone=a,l},l.dayViewHeaderFormat=function(a){if(0===arguments.length)return d.dayViewHeaderFormat;if("string"!=typeof a)throw new TypeError("dayViewHeaderFormat() expects a string parameter");return d.dayViewHeaderFormat=a,l},l.extraFormats=function(a){if(0===arguments.length)return d.extraFormats;if(a!==!1&&!(a instanceof Array))throw new TypeError("extraFormats() expects an array or false parameter");return d.extraFormats=a,j&&pa(),l},l.disabledDates=function(b){
 // /<signature helpKeyword="$.fn.datetimepicker.disabledDates">
-// /<summary>Returns an array with the currently set disabled dates on the component.</summary>
+// /<summary>Returns an array with the currently set disabled dates on the
+// component.</summary>
 // /<returns type="array">options.disabledDates</returns>
 // /</signature>
 // /<signature>
-// /<summary>Setting this takes precedence over options.minDate, options.maxDate configuration. Also calling this
+// /<summary>Setting this takes precedence over options.minDate, options.maxDate
+// configuration. Also calling this
 // function removes the configuration of
 // /options.enabledDates if such exist.</summary>
-// /<param name="dates" locid="$.fn.datetimepicker.disabledDates_p:dates">Takes an [ string or Date or moment ] of
+// /<param name="dates" locid="$.fn.datetimepicker.disabledDates_p:dates">Takes
+// an [ string or Date or moment ] of
 // values and allows the user to select only from those days.</param>
 // /</signature>
 if(0===arguments.length)return d.disabledDates?a.extend({},d.disabledDates):d.disabledDates;if(!b)return d.disabledDates=!1,_(),l;if(!(b instanceof Array))throw new TypeError("disabledDates() expects an array parameter");return d.disabledDates=na(b),d.enabledDates=!1,_(),l},l.enabledDates=function(b){
 // /<signature helpKeyword="$.fn.datetimepicker.enabledDates">
-// /<summary>Returns an array with the currently set enabled dates on the component.</summary>
+// /<summary>Returns an array with the currently set enabled dates on the
+// component.</summary>
 // /<returns type="array">options.enabledDates</returns>
 // /</signature>
 // /<signature>
-// /<summary>Setting this takes precedence over options.minDate, options.maxDate configuration. Also calling this
-// function removes the configuration of options.disabledDates if such exist.</summary>
-// /<param name="dates" locid="$.fn.datetimepicker.enabledDates_p:dates">Takes an [ string or Date or moment ] of values
+// /<summary>Setting this takes precedence over options.minDate, options.maxDate
+// configuration. Also calling this
+// function removes the configuration of options.disabledDates if such
+// exist.</summary>
+// /<param name="dates" locid="$.fn.datetimepicker.enabledDates_p:dates">Takes
+// an [ string or Date or moment ] of values
 // and allows the user to select only from those days.</param>
 // /</signature>
 if(0===arguments.length)return d.enabledDates?a.extend({},d.enabledDates):d.enabledDates;if(!b)return d.enabledDates=!1,_(),l;if(!(b instanceof Array))throw new TypeError("enabledDates() expects an array parameter");return d.enabledDates=na(b),d.disabledDates=!1,_(),l},l.daysOfWeekDisabled=function(a){if(0===arguments.length)return d.daysOfWeekDisabled.splice(0);if("boolean"==typeof a&&!a)return d.daysOfWeekDisabled=!1,_(),l;if(!(a instanceof Array))throw new TypeError("daysOfWeekDisabled() expects an array parameter");if(d.daysOfWeekDisabled=a.reduce(function(a,b){return b=parseInt(b,10),b>6||b<0||isNaN(b)?a:(a.indexOf(b)===-1&&a.push(b),a)},[]).sort(),d.useCurrent&&!d.keepInvalid){for(var b=0;!R(e,"d");){if(e.add(1,"d"),31===b)throw"Tried 31 times to find a valid date";b++}aa(e)}return _(),l},l.maxDate=function(a){if(0===arguments.length)return d.maxDate?d.maxDate.clone():d.maxDate;if("boolean"==typeof a&&a===!1)return d.maxDate=!1,_(),l;"string"==typeof a&&("now"!==a&&"moment"!==a||(a=y()));var b=da(a);if(!b.isValid())throw new TypeError("maxDate() Could not parse date parameter: "+a);if(d.minDate&&b.isBefore(d.minDate))throw new TypeError("maxDate() date parameter is before options.minDate: "+b.format(i));return d.maxDate=b,d.useCurrent&&!d.keepInvalid&&e.isAfter(a)&&aa(d.maxDate),f.isAfter(b)&&(f=b.clone().subtract(d.stepping,"m")),_(),l},l.minDate=function(a){if(0===arguments.length)return d.minDate?d.minDate.clone():d.minDate;if("boolean"==typeof a&&a===!1)return d.minDate=!1,_(),l;"string"==typeof a&&("now"!==a&&"moment"!==a||(a=y()));var b=da(a);if(!b.isValid())throw new TypeError("minDate() Could not parse date parameter: "+a);if(d.maxDate&&b.isAfter(d.maxDate))throw new TypeError("minDate() date parameter is after options.maxDate: "+b.format(i));return d.minDate=b,d.useCurrent&&!d.keepInvalid&&e.isBefore(a)&&aa(d.minDate),f.isBefore(b)&&(f=b.clone().add(d.stepping,"m")),_(),l},l.defaultDate=function(a){
 // /<signature helpKeyword="$.fn.datetimepicker.defaultDate">
-// /<summary>Returns a moment with the options.defaultDate option configuration or false if not set</summary>
+// /<summary>Returns a moment with the options.defaultDate option configuration
+// or false if not set</summary>
 // /<returns type="Moment">date.clone()</returns>
 // /</signature>
 // /<signature>
-// /<summary>Will set the picker's inital date. If a boolean:false value is passed the options.defaultDate parameter is
+// /<summary>Will set the picker's inital date. If a boolean:false value is
+// passed the options.defaultDate parameter is
 // cleared.</summary>
-// /<param name="defaultDate" locid="$.fn.datetimepicker.defaultDate_p:defaultDate">Takes a string, Date, moment,
+// /<param name="defaultDate"
+// locid="$.fn.datetimepicker.defaultDate_p:defaultDate">Takes a string, Date,
+// moment,
 // boolean:false</param>
 // /</signature>
 if(0===arguments.length)return d.defaultDate?d.defaultDate.clone():d.defaultDate;if(!a)return d.defaultDate=!1,l;"string"==typeof a&&(a="now"===a||"moment"===a?y():y(a));var b=da(a);if(!b.isValid())throw new TypeError("defaultDate() Could not parse date parameter: "+a);if(!R(b))throw new TypeError("defaultDate() date passed is invalid according to component setup validations");return d.defaultDate=b,(d.defaultDate&&d.inline||""===g.val().trim())&&aa(d.defaultDate),l},l.locale=function(a){if(0===arguments.length)return d.locale;if(!b.localeData(a))throw new TypeError("locale() locale "+a+" is not loaded from moment locales!");return d.locale=a,e.locale(d.locale),f.locale(d.locale),i&&pa(),o&&(ba(),ga()),l},l.stepping=function(a){return 0===arguments.length?d.stepping:(a=parseInt(a,10),(isNaN(a)||a<1)&&(a=1),d.stepping=a,l)},l.useCurrent=function(a){var b=["year","month","day","hour","minute"];if(0===arguments.length)return d.useCurrent;if("boolean"!=typeof a&&"string"!=typeof a)throw new TypeError("useCurrent() expects a boolean or string parameter");if("string"==typeof a&&b.indexOf(a.toLowerCase())===-1)throw new TypeError("useCurrent() expects a string parameter of "+b.join(", "));return d.useCurrent=a,l},l.collapse=function(a){if(0===arguments.length)return d.collapse;if("boolean"!=typeof a)throw new TypeError("collapse() expects a boolean parameter");return d.collapse===a?l:(d.collapse=a,o&&(ba(),ga()),l)},l.icons=function(b){if(0===arguments.length)return a.extend({},d.icons);if(!(b instanceof Object))throw new TypeError("icons() expects parameter to be an Object");return a.extend(d.icons,b),o&&(ba(),ga()),l},l.tooltips=function(b){if(0===arguments.length)return a.extend({},d.tooltips);if(!(b instanceof Object))throw new TypeError("tooltips() expects parameter to be an Object");return a.extend(d.tooltips,b),o&&(ba(),ga()),l},l.useStrict=function(a){if(0===arguments.length)return d.useStrict;if("boolean"!=typeof a)throw new TypeError("useStrict() expects a boolean parameter");return d.useStrict=a,l},l.sideBySide=function(a){if(0===arguments.length)return d.sideBySide;if("boolean"!=typeof a)throw new TypeError("sideBySide() expects a boolean parameter");return d.sideBySide=a,o&&(ba(),ga()),l},l.viewMode=function(a){if(0===arguments.length)return d.viewMode;if("string"!=typeof a)throw new TypeError("viewMode() expects a string parameter");if(r.indexOf(a)===-1)throw new TypeError("viewMode() parameter must be one of ("+r.join(", ")+") value");return d.viewMode=a,k=Math.max(r.indexOf(a),p),L(),l},l.toolbarPlacement=function(a){if(0===arguments.length)return d.toolbarPlacement;if("string"!=typeof a)throw new TypeError("toolbarPlacement() expects a string parameter");if(u.indexOf(a)===-1)throw new TypeError("toolbarPlacement() parameter must be one of ("+u.join(", ")+") value");return d.toolbarPlacement=a,o&&(ba(),ga()),l},l.widgetPositioning=function(b){if(0===arguments.length)return a.extend({},d.widgetPositioning);if("[object Object]"!=={}.toString.call(b))throw new TypeError("widgetPositioning() expects an object variable");if(b.horizontal){if("string"!=typeof b.horizontal)throw new TypeError("widgetPositioning() horizontal variable must be a string");if(b.horizontal=b.horizontal.toLowerCase(),t.indexOf(b.horizontal)===-1)throw new TypeError("widgetPositioning() expects horizontal parameter to be one of ("+t.join(", ")+")");d.widgetPositioning.horizontal=b.horizontal}if(b.vertical){if("string"!=typeof b.vertical)throw new TypeError("widgetPositioning() vertical variable must be a string");if(b.vertical=b.vertical.toLowerCase(),s.indexOf(b.vertical)===-1)throw new TypeError("widgetPositioning() expects vertical parameter to be one of ("+s.join(", ")+")");d.widgetPositioning.vertical=b.vertical}return _(),l},l.calendarWeeks=function(a){if(0===arguments.length)return d.calendarWeeks;if("boolean"!=typeof a)throw new TypeError("calendarWeeks() expects parameter to be a boolean value");return d.calendarWeeks=a,_(),l},l.showTodayButton=function(a){if(0===arguments.length)return d.showTodayButton;if("boolean"!=typeof a)throw new TypeError("showTodayButton() expects a boolean parameter");return d.showTodayButton=a,o&&(ba(),ga()),l},l.showClear=function(a){if(0===arguments.length)return d.showClear;if("boolean"!=typeof a)throw new TypeError("showClear() expects a boolean parameter");return d.showClear=a,o&&(ba(),ga()),l},l.widgetParent=function(b){if(0===arguments.length)return d.widgetParent;if("string"==typeof b&&(b=a(b)),null!==b&&"string"!=typeof b&&!(b instanceof a))throw new TypeError("widgetParent() expects a string or a jQuery object parameter");return d.widgetParent=b,o&&(ba(),ga()),l},l.keepOpen=function(a){if(0===arguments.length)return d.keepOpen;if("boolean"!=typeof a)throw new TypeError("keepOpen() expects a boolean parameter");return d.keepOpen=a,l},l.focusOnShow=function(a){if(0===arguments.length)return d.focusOnShow;if("boolean"!=typeof a)throw new TypeError("focusOnShow() expects a boolean parameter");return d.focusOnShow=a,l},l.inline=function(a){if(0===arguments.length)return d.inline;if("boolean"!=typeof a)throw new TypeError("inline() expects a boolean parameter");return d.inline=a,l},l.clear=function(){return ca(),l},l.keyBinds=function(a){return 0===arguments.length?d.keyBinds:(d.keyBinds=a,l)},l.getMoment=function(a){return y(a)},l.debug=function(a){if("boolean"!=typeof a)throw new TypeError("debug() expects a boolean parameter");return d.debug=a,l},l.allowInputToggle=function(a){if(0===arguments.length)return d.allowInputToggle;if("boolean"!=typeof a)throw new TypeError("allowInputToggle() expects a boolean parameter");return d.allowInputToggle=a,l},l.showClose=function(a){if(0===arguments.length)return d.showClose;if("boolean"!=typeof a)throw new TypeError("showClose() expects a boolean parameter");return d.showClose=a,l},l.keepInvalid=function(a){if(0===arguments.length)return d.keepInvalid;if("boolean"!=typeof a)throw new TypeError("keepInvalid() expects a boolean parameter");return d.keepInvalid=a,l},l.datepickerInput=function(a){if(0===arguments.length)return d.datepickerInput;if("string"!=typeof a)throw new TypeError("datepickerInput() expects a string parameter");return d.datepickerInput=a,l},l.parseInputDate=function(a){if(0===arguments.length)return d.parseInputDate;if("function"!=typeof a)throw new TypeError("parseInputDate() sholud be as function");return d.parseInputDate=a,l},l.disabledTimeIntervals=function(b){
 // /<signature helpKeyword="$.fn.datetimepicker.disabledTimeIntervals">
-// /<summary>Returns an array with the currently set disabled dates on the component.</summary>
+// /<summary>Returns an array with the currently set disabled dates on the
+// component.</summary>
 // /<returns type="array">options.disabledTimeIntervals</returns>
 // /</signature>
 // /<signature>
-// /<summary>Setting this takes precedence over options.minDate, options.maxDate configuration. Also calling this
+// /<summary>Setting this takes precedence over options.minDate, options.maxDate
+// configuration. Also calling this
 // function removes the configuration of
 // /options.enabledDates if such exist.</summary>
-// /<param name="dates" locid="$.fn.datetimepicker.disabledTimeIntervals_p:dates">Takes an [ string or Date or moment ]
+// /<param name="dates"
+// locid="$.fn.datetimepicker.disabledTimeIntervals_p:dates">Takes an [ string
+// or Date or moment ]
 // of values and allows the user to select only from those days.</param>
 // /</signature>
 if(0===arguments.length)return d.disabledTimeIntervals?a.extend({},d.disabledTimeIntervals):d.disabledTimeIntervals;if(!b)return d.disabledTimeIntervals=!1,_(),l;if(!(b instanceof Array))throw new TypeError("disabledTimeIntervals() expects an array parameter");return d.disabledTimeIntervals=b,_(),l},l.disabledHours=function(b){
 // /<signature helpKeyword="$.fn.datetimepicker.disabledHours">
-// /<summary>Returns an array with the currently set disabled hours on the component.</summary>
+// /<summary>Returns an array with the currently set disabled hours on the
+// component.</summary>
 // /<returns type="array">options.disabledHours</returns>
 // /</signature>
 // /<signature>
-// /<summary>Setting this takes precedence over options.minDate, options.maxDate configuration. Also calling this
+// /<summary>Setting this takes precedence over options.minDate, options.maxDate
+// configuration. Also calling this
 // function removes the configuration of
 // /options.enabledHours if such exist.</summary>
-// /<param name="hours" locid="$.fn.datetimepicker.disabledHours_p:hours">Takes an [ int ] of values and disallows the
+// /<param name="hours" locid="$.fn.datetimepicker.disabledHours_p:hours">Takes
+// an [ int ] of values and disallows the
 // user to select only from those hours.</param>
 // /</signature>
 if(0===arguments.length)return d.disabledHours?a.extend({},d.disabledHours):d.disabledHours;if(!b)return d.disabledHours=!1,_(),l;if(!(b instanceof Array))throw new TypeError("disabledHours() expects an array parameter");if(d.disabledHours=oa(b),d.enabledHours=!1,d.useCurrent&&!d.keepInvalid){for(var c=0;!R(e,"h");){if(e.add(1,"h"),24===c)throw"Tried 24 times to find a valid date";c++}aa(e)}return _(),l},l.enabledHours=function(b){
 // /<signature helpKeyword="$.fn.datetimepicker.enabledHours">
-// /<summary>Returns an array with the currently set enabled hours on the component.</summary>
+// /<summary>Returns an array with the currently set enabled hours on the
+// component.</summary>
 // /<returns type="array">options.enabledHours</returns>
 // /</signature>
 // /<signature>
-// /<summary>Setting this takes precedence over options.minDate, options.maxDate configuration. Also calling this
-// function removes the configuration of options.disabledHours if such exist.</summary>
-// /<param name="hours" locid="$.fn.datetimepicker.enabledHours_p:hours">Takes an [ int ] of values and allows the user
+// /<summary>Setting this takes precedence over options.minDate, options.maxDate
+// configuration. Also calling this
+// function removes the configuration of options.disabledHours if such
+// exist.</summary>
+// /<param name="hours" locid="$.fn.datetimepicker.enabledHours_p:hours">Takes
+// an [ int ] of values and allows the user
 // to select only from those hours.</param>
 // /</signature>
 if(0===arguments.length)return d.enabledHours?a.extend({},d.enabledHours):d.enabledHours;if(!b)return d.enabledHours=!1,_(),l;if(!(b instanceof Array))throw new TypeError("enabledHours() expects an array parameter");if(d.enabledHours=oa(b),d.disabledHours=!1,d.useCurrent&&!d.keepInvalid){for(var c=0;!R(e,"h");){if(e.add(1,"h"),24===c)throw"Tried 24 times to find a valid date";c++}aa(e)}return _(),l},/**
@@ -13419,15 +13616,17 @@ return e=y(),f=e.clone(),a.extend(!0,d,H()),l.options(d),pa(),la(),g.prop("disab
  * See (http://jquery.com/).
  * 
  * @name jQuery
- * @class See the jQuery Library (http://jquery.com/) for full details. This just documents the function and classes
- *        that are added to jQuery by this plug-in.
+ * @class See the jQuery Library (http://jquery.com/) for full details. This
+ *        just documents the function and classes that are added to jQuery by
+ *        this plug-in.
  */
 /**
  * See (http://jquery.com/)
  * 
  * @name fn
- * @class See the jQuery Library (http://jquery.com/) for full details. This just documents the function and classes
- *        that are added to jQuery by this plug-in.
+ * @class See the jQuery Library (http://jquery.com/) for full details. This
+ *        just documents the function and classes that are added to jQuery by
+ *        this plug-in.
  * @memberOf jQuery
  */
 /**
@@ -13447,10 +13646,12 @@ b=a.extend(!0,{},a.fn.datetimepicker.defaults,b),d.data("DateTimePicker",c(d,b))
 
 
 /*
- * --------------------------------------------------------------------------------- /*! jQuery UI - v1.12.1 -
- * 2016-11-29 http://jqueryui.com Includes: widget.js, position.js, data.js, disable-selection.js, scroll-parent.js,
- * widgets/draggable.js, widgets/droppable.js, widgets/resizable.js, widgets/selectable.js, widgets/sortable.js,
- * widgets/mouse.js Copyright jQuery Foundation and other contributors; Licensed MIT
+ * ---------------------------------------------------------------------------------
+ * /*! jQuery UI - v1.12.1 - 2016-11-29 http://jqueryui.com Includes: widget.js,
+ * position.js, data.js, disable-selection.js, scroll-parent.js,
+ * widgets/draggable.js, widgets/droppable.js, widgets/resizable.js,
+ * widgets/selectable.js, widgets/sortable.js, widgets/mouse.js Copyright jQuery
+ * Foundation and other contributors; Licensed MIT
  */
 
 (function( factory ) {
@@ -13471,13 +13672,14 @@ var version = $.ui.version = "1.12.1";
 
 
 /*
- * ! jQuery UI Widget 1.12.1 http://jqueryui.com Copyright jQuery Foundation and other contributors Released under the
- * MIT license. http://jquery.org/license
+ * ! jQuery UI Widget 1.12.1 http://jqueryui.com Copyright jQuery Foundation and
+ * other contributors Released under the MIT license. http://jquery.org/license
  */
 
 // >>label: Widget
 // >>group: Core
-// >>description: Provides a factory for creating stateful widgets with a common API.
+// >>description: Provides a factory for creating stateful widgets with a common
+// API.
 // >>docs: http://api.jqueryui.com/jQuery.widget/
 // >>demos: http://jqueryui.com/widget/
 
@@ -13908,16 +14110,21 @@ $.Widget.prototype = {
     continue;
    }
 
-   // We are doing this to create a new jQuery object because the _removeClass() call
-   // on the next line is going to destroy the reference to the current elements being
-   // tracked. We need to save a copy of this collection so that we can add the new classes
+   // We are doing this to create a new jQuery object because the
+    // _removeClass() call
+   // on the next line is going to destroy the reference to the current
+    // elements being
+   // tracked. We need to save a copy of this collection so that we can add the
+    // new classes
    // below.
    elements = $( currentElements.get() );
    this._removeClass( currentElements, classKey );
 
    // We don't use _addClass() here, because that uses this.options.classes
-   // for generating the string of classes. We want to use the value passed in from
-   // _setOption(), this is the new value of the classes option which was passed to
+   // for generating the string of classes. We want to use the value passed in
+    // from
+   // _setOption(), this is the new value of the classes option which was
+    // passed to
    // _setOption(). We pass this value directly to _classes().
    elements.addClass( this._classes( {
     element: elements,
@@ -14190,8 +14397,9 @@ var widget = $.widget;
 
 
 /*
- * ! jQuery UI Position 1.12.1 http://jqueryui.com Copyright jQuery Foundation and other contributors Released under the
- * MIT license. http://jquery.org/license http://api.jqueryui.com/position/
+ * ! jQuery UI Position 1.12.1 http://jqueryui.com Copyright jQuery Foundation
+ * and other contributors Released under the MIT license.
+ * http://jquery.org/license http://api.jqueryui.com/position/
  */
 
 // >>label: Position
@@ -14672,13 +14880,14 @@ var position = $.ui.position;
 
 
 /*
- * ! jQuery UI :data 1.12.1 http://jqueryui.com Copyright jQuery Foundation and other contributors Released under the
- * MIT license. http://jquery.org/license
+ * ! jQuery UI :data 1.12.1 http://jqueryui.com Copyright jQuery Foundation and
+ * other contributors Released under the MIT license. http://jquery.org/license
  */
 
 // >>label: :data Selector
 // >>group: Core
-// >>description: Selects elements which have data stored under the specified key.
+// >>description: Selects elements which have data stored under the specified
+// key.
 // >>docs: http://api.jqueryui.com/data-selector/
 
 
@@ -14697,13 +14906,15 @@ var data = $.extend( $.expr[ ":" ], {
 } );
 
 /*
- * ! jQuery UI Disable Selection 1.12.1 http://jqueryui.com Copyright jQuery Foundation and other contributors Released
- * under the MIT license. http://jquery.org/license
+ * ! jQuery UI Disable Selection 1.12.1 http://jqueryui.com Copyright jQuery
+ * Foundation and other contributors Released under the MIT license.
+ * http://jquery.org/license
  */
 
 // >>label: disableSelection
 // >>group: Core
-// >>description: Disable selection of text content within the set of matched elements.
+// >>description: Disable selection of text content within the set of matched
+// elements.
 // >>docs: http://api.jqueryui.com/disableSelection/
 
 // This file is deprecated
@@ -14729,8 +14940,9 @@ var disableSelection = $.fn.extend( {
 
 
 /*
- * ! jQuery UI Scroll Parent 1.12.1 http://jqueryui.com Copyright jQuery Foundation and other contributors Released
- * under the MIT license. http://jquery.org/license
+ * ! jQuery UI Scroll Parent 1.12.1 http://jqueryui.com Copyright jQuery
+ * Foundation and other contributors Released under the MIT license.
+ * http://jquery.org/license
  */
 
 // >>label: scrollParent
@@ -14765,13 +14977,14 @@ var scrollParent = $.fn.scrollParent = function( includeHidden ) {
 var ie = $.ui.ie = !!/msie [\w.]+/.exec( navigator.userAgent.toLowerCase() );
 
 /*
- * ! jQuery UI Mouse 1.12.1 http://jqueryui.com Copyright jQuery Foundation and other contributors Released under the
- * MIT license. http://jquery.org/license
+ * ! jQuery UI Mouse 1.12.1 http://jqueryui.com Copyright jQuery Foundation and
+ * other contributors Released under the MIT license. http://jquery.org/license
  */
 
 // >>label: Mouse
 // >>group: Widgets
-// >>description: Abstracts mouse-based interactions to assist in creating certain widgets.
+// >>description: Abstracts mouse-based interactions to assist in creating
+// certain widgets.
 // >>docs: http://api.jqueryui.com/mouse/
 
 
@@ -14882,8 +15095,10 @@ var widgetsMouse = $.widget( "ui.mouse", {
 
  _mouseMove: function( event ) {
 
-  // Only check for mouseups outside the document if you've moved inside the document
-  // at least once. This prevents the firing of mouseup in the case of IE<9, which will
+  // Only check for mouseups outside the document if you've moved inside the
+    // document
+  // at least once. This prevents the firing of mouseup in the case of IE<9,
+    // which will
   // fire a mousemove event if content is placed under the cursor. See #7778
   // Support: IE <9
   if ( this._mouseMoved ) {
@@ -15010,7 +15225,8 @@ var safeActiveElement = $.ui.safeActiveElement = function( document ) {
  var activeElement;
 
  // Support: IE 9 only
- // IE9 throws an "Unspecified error" accessing document.activeElement from an <iframe>
+ // IE9 throws an "Unspecified error" accessing document.activeElement from
+    // an <iframe>
  try {
   activeElement = document.activeElement;
  } catch ( error ) {
@@ -15047,8 +15263,9 @@ var safeBlur = $.ui.safeBlur = function( element ) {
 
 
 /*
- * ! jQuery UI Draggable 1.12.1 http://jqueryui.com Copyright jQuery Foundation and other contributors Released under
- * the MIT license. http://jquery.org/license
+ * ! jQuery UI Draggable 1.12.1 http://jqueryui.com Copyright jQuery Foundation
+ * and other contributors Released under the MIT license.
+ * http://jquery.org/license
  */
 
 // >>label: Draggable
@@ -15200,7 +15417,8 @@ $.widget( "ui.draggable", $.ui.mouse, {
   }
 
   /*
-     * - Position generation - This block generates everything position related - it's the core of draggables.
+     * - Position generation - This block generates everything position related -
+     * it's the core of draggables.
      */
 
   // Cache the margins of the original element
@@ -15243,11 +15461,13 @@ $.widget( "ui.draggable", $.ui.mouse, {
    $.ui.ddmanager.prepareOffsets( this, event );
   }
 
-  // Execute the drag once - this causes the helper not to be visible before getting its
+  // Execute the drag once - this causes the helper not to be visible before
+    // getting its
   // correct position
   this._mouseDrag( event, true );
 
-  // If the ddmanager is used for droppables, inform the manager that dragging has started
+  // If the ddmanager is used for droppables, inform the manager that dragging
+    // has started
   // (see #5003)
   if ( $.ui.ddmanager ) {
    $.ui.ddmanager.dragStart( this, event );
@@ -15282,7 +15502,8 @@ $.widget( "ui.draggable", $.ui.mouse, {
   this.position = this._generatePosition( event, true );
   this.positionAbs = this._convertPositionTo( "absolute" );
 
-  // Call plugins and callbacks and use the resulting position if something is returned
+  // Call plugins and callbacks and use the resulting position if something is
+    // returned
   if ( !noPropagation ) {
    var ui = this._uiHash();
    if ( this._trigger( "drag", event, ui ) === false ) {
@@ -15343,13 +15564,15 @@ $.widget( "ui.draggable", $.ui.mouse, {
  _mouseUp: function( event ) {
   this._unblockFrames();
 
-  // If the ddmanager is used for droppables, inform the manager that dragging has stopped
+  // If the ddmanager is used for droppables, inform the manager that dragging
+    // has stopped
   // (see #5003)
   if ( $.ui.ddmanager ) {
    $.ui.ddmanager.dragStop( this, event );
   }
 
-  // Only need to focus if the event occurred on the draggable itself, see #10527
+  // Only need to focus if the event occurred on the draggable itself, see
+    // #10527
   if ( this.handleElement.is( event.target ) ) {
 
    // The interaction is over; whether or not the click resulted in a drag,
@@ -15457,12 +15680,16 @@ $.widget( "ui.draggable", $.ui.mouse, {
   var po = this.offsetParent.offset(),
    document = this.document[ 0 ];
 
-  // This is a special case where we need to modify a offset calculated on start, since the
+  // This is a special case where we need to modify a offset calculated on
+    // start, since the
   // following happened:
-  // 1. The position of the helper is absolute, so it's position is calculated based on the
+  // 1. The position of the helper is absolute, so it's position is calculated
+    // based on the
   // next positioned parent
-  // 2. The actual offset parent is a child of the scroll parent, and the scroll parent isn't
-  // the document, which means that the scroll is included in the initial calculation of the
+  // 2. The actual offset parent is a child of the scroll parent, and the
+    // scroll parent isn't
+  // the document, which means that the scroll is included in the initial
+    // calculation of the
   // offset of the parent, and never recalculated upon drag
   if ( this.cssPosition === "absolute" && this.scrollParent[ 0 ] !== document &&
     $.contains( this.scrollParent[ 0 ], this.offsetParent[ 0 ] ) ) {
@@ -15605,7 +15832,8 @@ $.widget( "ui.draggable", $.ui.mouse, {
     // The absolute mouse position
     pos.top +
 
-    // Only for relative positioned nodes: Relative offset from element to offset parent
+    // Only for relative positioned nodes: Relative offset from element to
+    // offset parent
     this.offset.relative.top * mod +
 
     // The offsetParent's offset without borders (offset + border)
@@ -15619,7 +15847,8 @@ $.widget( "ui.draggable", $.ui.mouse, {
     // The absolute mouse position
     pos.left +
 
-    // Only for relative positioned nodes: Relative offset from element to offset parent
+    // Only for relative positioned nodes: Relative offset from element to
+    // offset parent
     this.offset.relative.left * mod +
 
     // The offsetParent's offset without borders (offset + border)
@@ -15649,7 +15878,8 @@ $.widget( "ui.draggable", $.ui.mouse, {
   }
 
   /*
-     * - Position constraining - Constrain the position to a mix of grid, containment.
+     * - Position constraining - Constrain the position to a mix of grid,
+     * containment.
      */
 
   // If we are not dragging yet, we won't check for options
@@ -15683,7 +15913,8 @@ $.widget( "ui.draggable", $.ui.mouse, {
 
    if ( o.grid ) {
 
-    // Check for grid elements set to 0 to prevent divide by 0 error causing invalid
+    // Check for grid elements set to 0 to prevent divide by 0 error causing
+    // invalid
     // argument errors in IE (see ticket #6950)
     top = o.grid[ 1 ] ? this.originalPageY + Math.round( ( pageY -
      this.originalPageY ) / o.grid[ 1 ] ) * o.grid[ 1 ] : this.originalPageY;
@@ -15721,7 +15952,8 @@ $.widget( "ui.draggable", $.ui.mouse, {
     // Click offset (relative to the element)
     this.offset.click.top -
 
-    // Only for relative positioned nodes: Relative offset from element to offset parent
+    // Only for relative positioned nodes: Relative offset from element to
+    // offset parent
     this.offset.relative.top -
 
     // The offsetParent's offset without borders (offset + border)
@@ -15738,7 +15970,8 @@ $.widget( "ui.draggable", $.ui.mouse, {
     // Click offset (relative to the element)
     this.offset.click.left -
 
-    // Only for relative positioned nodes: Relative offset from element to offset parent
+    // Only for relative positioned nodes: Relative offset from element to
+    // offset parent
     this.offset.relative.left -
 
     // The offsetParent's offset without borders (offset + border)
@@ -15769,7 +16002,8 @@ $.widget( "ui.draggable", $.ui.mouse, {
   ui = ui || this._uiHash();
   $.ui.plugin.call( this, type, [ event, ui, this ], true );
 
-  // Absolute position and offset (see #6884 ) have to be recalculated after plugins
+  // Absolute position and offset (see #6884 ) have to be recalculated after
+    // plugins
   if ( /^(drag|start|stop)/.test( type ) ) {
    this.positionAbs = this._convertPositionTo( "absolute" );
    ui.offset = this.positionAbs;
@@ -15805,7 +16039,8 @@ $.ui.plugin.add( "draggable", "connectToSortable", {
 
     // RefreshPositions is called at drag start to refresh the containerCache
     // which is used in drag. This ensures it's initialized and synchronized
-    // with any changes that might have happened on the page since initialization.
+    // with any changes that might have happened on the page since
+    // initialization.
     sortable.refreshPositions();
     sortable._trigger( "activate", event, uiSortable );
    }
@@ -15926,7 +16161,8 @@ $.ui.plugin.add( "draggable", "connectToSortable", {
      draggable.dropped = sortable.element;
 
      // Need to refreshPositions of all sortables in the case that
-     // adding to one sortable changes the location of the other sortables (#9675)
+     // adding to one sortable changes the location of the other sortables
+        // (#9675)
      $.each( draggable.sortables, function() {
       this.refreshPositions();
      } );
@@ -15939,8 +16175,10 @@ $.ui.plugin.add( "draggable", "connectToSortable", {
     if ( sortable.currentItem ) {
      sortable._mouseDrag( event );
 
-     // Copy the sortable's position because the draggable's can potentially reflect
-     // a relative position, while sortable is always absolute, which the dragged
+     // Copy the sortable's position because the draggable's can potentially
+        // reflect
+     // a relative position, while sortable is always absolute, which the
+        // dragged
      // element has now become. (#8809)
      ui.position = sortable.position;
     }
@@ -15971,7 +16209,8 @@ $.ui.plugin.add( "draggable", "connectToSortable", {
       sortable.placeholder.remove();
      }
 
-     // Restore and recalculate the draggable's offset considering the sortable
+     // Restore and recalculate the draggable's offset considering the
+        // sortable
      // may have modified them in unexpected ways. (#8809, #10669)
      ui.helper.appendTo( draggable._parent );
      draggable._refreshOffsets( event );
@@ -16271,8 +16510,9 @@ var widgetsDraggable = $.ui.draggable;
 
 
 /*
- * ! jQuery UI Droppable 1.12.1 http://jqueryui.com Copyright jQuery Foundation and other contributors Released under
- * the MIT license. http://jquery.org/license
+ * ! jQuery UI Droppable 1.12.1 http://jqueryui.com Copyright jQuery Foundation
+ * and other contributors Released under the MIT license.
+ * http://jquery.org/license
  */
 
 // >>label: Droppable
@@ -16531,7 +16771,8 @@ var intersect = $.ui.intersect = ( function() {
   case "fit":
    return ( l <= x1 && x2 <= r && t <= y1 && y2 <= b );
   case "intersect":
-   return ( l < x1 + ( draggable.helperProportions.width / 2 ) && // Right Half
+   return ( l < x1 + ( draggable.helperProportions.width / 2 ) && // Right
+                                                                    // Half
     x2 - ( draggable.helperProportions.width / 2 ) < r && // Left Half
     t < y1 + ( draggable.helperProportions.height / 2 ) && // Bottom Half
     y2 - ( draggable.helperProportions.height / 2 ) < b ); // Top Half
@@ -16606,7 +16847,8 @@ $.ui.ddmanager = {
 
   var dropped = false;
 
-  // Create a copy of the droppables in case the list changes during the drop (#9116)
+  // Create a copy of the droppables in case the list changes during the drop
+    // (#9116)
   $.each( ( $.ui.ddmanager.droppables[ draggable.options.scope ] || [] ).slice(), function() {
 
    if ( !this.options ) {
@@ -16630,7 +16872,8 @@ $.ui.ddmanager = {
  },
  dragStart: function( draggable, event ) {
 
-  // Listen for scrolling so that if the dragging causes scrolling the position of the
+  // Listen for scrolling so that if the dragging causes scrolling the
+    // position of the
   // droppables can be recalculated (see #5003)
   draggable.element.parentsUntil( "body" ).on( "scroll.droppable", function() {
    if ( !draggable.options.refreshPositions ) {
@@ -16640,13 +16883,15 @@ $.ui.ddmanager = {
  },
  drag: function( draggable, event ) {
 
-  // If you have a highly dynamic page, you might try this option. It renders positions
+  // If you have a highly dynamic page, you might try this option. It renders
+    // positions
   // every time you move the mouse.
   if ( draggable.options.refreshPositions ) {
    $.ui.ddmanager.prepareOffsets( draggable, event );
   }
 
-  // Run through all droppables and check their positions based on specific tolerance options
+  // Run through all droppables and check their positions based on specific
+    // tolerance options
   $.each( $.ui.ddmanager.droppables[ draggable.options.scope ] || [], function() {
 
    if ( this.options.disabled || this.greedyChild || !this.visible ) {
@@ -16699,7 +16944,8 @@ $.ui.ddmanager = {
  dragStop: function( draggable, event ) {
   draggable.element.parentsUntil( "body" ).off( "scroll.droppable" );
 
-  // Call prepareOffsets one final time since IE does not fire return scroll events when
+  // Call prepareOffsets one final time since IE does not fire return scroll
+    // events when
   // overflow was caused by drag (see #5003)
   if ( !draggable.options.refreshPositions ) {
    $.ui.ddmanager.prepareOffsets( draggable, event );
@@ -16708,7 +16954,8 @@ $.ui.ddmanager = {
 };
 
 // DEPRECATED
-// TODO: switch return back to widget declaration at top of file when this is removed
+// TODO: switch return back to widget declaration at top of file when this is
+// removed
 if ( $.uiBackCompat !== false ) {
 
  // Backcompat for activeClass and hoverClass options
@@ -16748,8 +16995,9 @@ var widgetsDroppable = $.ui.droppable;
 
 
 /*
- * ! jQuery UI Resizable 1.12.1 http://jqueryui.com Copyright jQuery Foundation and other contributors Released under
- * the MIT license. http://jquery.org/license
+ * ! jQuery UI Resizable 1.12.1 http://jqueryui.com Copyright jQuery Foundation
+ * and other contributors Released under the MIT license.
+ * http://jquery.org/license
  */
 
 // >>label: Resizable
@@ -17928,8 +18176,9 @@ var widgetsResizable = $.ui.resizable;
 
 
 /*
- * ! jQuery UI Selectable 1.12.1 http://jqueryui.com Copyright jQuery Foundation and other contributors Released under
- * the MIT license. http://jquery.org/license
+ * ! jQuery UI Selectable 1.12.1 http://jqueryui.com Copyright jQuery Foundation
+ * and other contributors Released under the MIT license.
+ * http://jquery.org/license
  */
 
 // >>label: Selectable
@@ -18219,8 +18468,9 @@ var widgetsSelectable = $.widget( "ui.selectable", $.ui.mouse, {
 
 
 /*
- * ! jQuery UI Sortable 1.12.1 http://jqueryui.com Copyright jQuery Foundation and other contributors Released under the
- * MIT license. http://jquery.org/license
+ * ! jQuery UI Sortable 1.12.1 http://jqueryui.com Copyright jQuery Foundation
+ * and other contributors Released under the MIT license.
+ * http://jquery.org/license
  */
 
 // >>label: Sortable
@@ -18351,7 +18601,8 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
   // We have to refresh the items data once first
   this._refreshItems( event );
 
-  // Find out if the clicked node (or one of its parents) is a actual item in this.items
+  // Find out if the clicked node (or one of its parents) is a actual item in
+    // this.items
   $( event.target ).parents().each( function() {
    if ( $.data( this, that.widgetName + "-item" ) === that ) {
     currentItem = $( this );
@@ -18389,7 +18640,8 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
 
   this.currentContainer = this;
 
-  // We only need to call refreshPositions, because the refreshItems call has been moved to
+  // We only need to call refreshPositions, because the refreshItems call has
+    // been moved to
   // mouseCapture
   this.refreshPositions();
 
@@ -18400,7 +18652,8 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
   this._cacheHelperProportions();
 
   /*
-     * - Position generation - This block generates everything position related - it's the core of draggables.
+     * - Position generation - This block generates everything position related -
+     * it's the core of draggables.
      */
 
   // Cache the margins of the original element
@@ -18423,12 +18676,14 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
    },
    parent: this._getParentOffset(),
 
-   // This is a relative to absolute position minus the actual position calculation -
+   // This is a relative to absolute position minus the actual position
+    // calculation -
    // only used for relative positioned helper
    relative: this._getRelativeOffset()
   } );
 
-  // Only after we got the offset, we can change the helper's position to absolute
+  // Only after we got the offset, we can change the helper's position to
+    // absolute
   // TODO: Still need to figure out a way to make relative sorting possible
   this.helper.css( "position", "absolute" );
   this.cssPosition = this.helper.css( "position" );
@@ -18447,7 +18702,8 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
    parent: this.currentItem.parent()[ 0 ]
   };
 
-  // If the helper is not the original, hide the original so it's not playing any role during
+  // If the helper is not the original, hide the original so it's not playing
+    // any role during
   // the drag, won't cause anything bad this way
   if ( this.helper[ 0 ] !== this.currentItem[ 0 ] ) {
    this.currentItem.hide();
@@ -18520,7 +18776,8 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
 
   this._addClass( this.helper, "ui-sortable-helper" );
 
-  // Execute the drag once - this causes the helper not to be visiblebefore getting its
+  // Execute the drag once - this causes the helper not to be visiblebefore
+    // getting its
   // correct position
   this._mouseDrag( event );
   return true;
@@ -18737,7 +18994,8 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
 
   if ( this.placeholder ) {
 
-   // $(this.placeholder[0]).remove(); would have been the jQuery way - unfortunately,
+   // $(this.placeholder[0]).remove(); would have been the jQuery way -
+    // unfortunately,
    // it unbinds ALL events from the original node!
    if ( this.placeholder[ 0 ].parentNode ) {
     this.placeholder[ 0 ].parentNode.removeChild( this.placeholder[ 0 ] );
@@ -19018,7 +19276,8 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
    this.options.axis === "x" || this._isFloating( this.items[ 0 ].item ) :
    false;
 
-  // This has to be redone because due to the item being moved out/into the offsetParent,
+  // This has to be redone because due to the item being moved out/into the
+    // offsetParent,
   // the offsetParent's position will change
   if ( this.offsetParent && this.helper ) {
    this.offset.parent = this._getParentOffset();
@@ -19029,7 +19288,8 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
   for ( i = this.items.length - 1; i >= 0; i-- ) {
    item = this.items[ i ];
 
-   // We ignore calculating positions of all connected containers when we're not over them
+   // We ignore calculating positions of all connected containers when we're
+    // not over them
    if ( item.instance !== this.currentContainer && this.currentContainer &&
      item.item[ 0 ] !== this.currentItem[ 0 ] ) {
     continue;
@@ -19102,16 +19362,20 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
     },
     update: function( container, p ) {
 
-     // 1. If a className is set as 'placeholder option, we don't force sizes -
+     // 1. If a className is set as 'placeholder option, we don't force sizes
+        // -
      // the class is responsible for that
-     // 2. The option 'forcePlaceholderSize can be enabled to force it even if a
+     // 2. The option 'forcePlaceholderSize can be enabled to force it even
+        // if a
      // class name is specified
      if ( className && !o.forcePlaceholderSize ) {
       return;
      }
 
-     // If the element doesn't have a actual height by itself (without styles coming
-     // from a stylesheet), it receives the inline height from the dragged item
+     // If the element doesn't have a actual height by itself (without styles
+        // coming
+     // from a stylesheet), it receives the inline height from the dragged
+        // item
      if ( !p.height() ) {
       p.height(
        that.currentItem.innerHeight() -
@@ -19134,7 +19398,8 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
   // Append it after the actual current item
   that.currentItem.after( that.placeholder );
 
-  // Update the size of the placeholder (TODO: Logic to fuzzy, see line 316/317)
+  // Update the size of the placeholder (TODO: Logic to fuzzy, see line
+    // 316/317)
   o.placeholder.update( that, that.placeholder );
 
  },
@@ -19165,7 +19430,8 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
 
    if ( this._intersectsWith( this.containers[ i ].containerCache ) ) {
 
-    // If we've already found a container and it's more "inner" than this, then continue
+    // If we've already found a container and it's more "inner" than this, then
+    // continue
     if ( innermostContainer &&
       $.contains(
        this.containers[ i ].element[ 0 ],
@@ -19200,7 +19466,8 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
    }
   } else {
 
-   // When entering a new container, we will find the item with the least distance and
+   // When entering a new container, we will find the item with the least
+    // distance and
    // append our item near it
    dist = 10000;
    itemWithLeastDistance = null;
@@ -19323,12 +19590,16 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
   this.offsetParent = this.helper.offsetParent();
   var po = this.offsetParent.offset();
 
-  // This is a special case where we need to modify a offset calculated on start, since the
+  // This is a special case where we need to modify a offset calculated on
+    // start, since the
   // following happened:
-  // 1. The position of the helper is absolute, so it's position is calculated based on the
+  // 1. The position of the helper is absolute, so it's position is calculated
+    // based on the
   // next positioned parent
-  // 2. The actual offset parent is a child of the scroll parent, and the scroll parent isn't
-  // the document, which means that the scroll is included in the initial calculation of the
+  // 2. The actual offset parent is a child of the scroll parent, and the
+    // scroll parent isn't
+  // the document, which means that the scroll is included in the initial
+    // calculation of the
   // offset of the parent, and never recalculated upon drag
   if ( this.cssPosition === "absolute" && this.scrollParent[ 0 ] !== this.document[ 0 ] &&
     $.contains( this.scrollParent[ 0 ], this.offsetParent[ 0 ] ) ) {
@@ -19336,7 +19607,8 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
    po.top += this.scrollParent.scrollTop();
   }
 
-  // This needs to be actually done for all browsers, since pageX/pageY includes this
+  // This needs to be actually done for all browsers, since pageX/pageY
+    // includes this
   // information with an ugly IE fix
   if ( this.offsetParent[ 0 ] === this.document[ 0 ].body ||
     ( this.offsetParent[ 0 ].tagName &&
@@ -19444,7 +19716,8 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
     // The absolute mouse position
     pos.top +
 
-    // Only for relative positioned nodes: Relative offset from element to offset parent
+    // Only for relative positioned nodes: Relative offset from element to
+    // offset parent
     this.offset.relative.top * mod +
 
     // The offsetParent's offset without borders (offset + border)
@@ -19458,7 +19731,8 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
     // The absolute mouse position
     pos.left +
 
-    // Only for relative positioned nodes: Relative offset from element to offset parent
+    // Only for relative positioned nodes: Relative offset from element to
+    // offset parent
     this.offset.relative.left * mod +
 
     // The offsetParent's offset without borders (offset + border)
@@ -19484,20 +19758,24 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
      this.scrollParent,
     scrollIsRootNode = ( /(html|body)/i ).test( scroll[ 0 ].tagName );
 
-  // This is another very weird special case that only happens for relative elements:
+  // This is another very weird special case that only happens for relative
+    // elements:
   // 1. If the css position is relative
   // 2. and the scroll parent is the document or similar to the offset parent
-  // we have to refresh the relative offset during the scroll so there are no jumps
+  // we have to refresh the relative offset during the scroll so there are no
+    // jumps
   if ( this.cssPosition === "relative" && !( this.scrollParent[ 0 ] !== this.document[ 0 ] &&
     this.scrollParent[ 0 ] !== this.offsetParent[ 0 ] ) ) {
    this.offset.relative = this._getRelativeOffset();
   }
 
   /*
-     * - Position constraining - Constrain the position to a mix of grid, containment.
+     * - Position constraining - Constrain the position to a mix of grid,
+     * containment.
      */
 
-  if ( this.originalPosition ) { // If we are not dragging yet, we won't check for options
+  if ( this.originalPosition ) { // If we are not dragging yet, we won't
+                                    // check for options
 
    if ( this.containment ) {
     if ( event.pageX - this.offset.click.left < this.containment[ 0 ] ) {
@@ -19547,7 +19825,8 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
     // Click offset (relative to the element)
     this.offset.click.top -
 
-    // Only for relative positioned nodes: Relative offset from element to offset parent
+    // Only for relative positioned nodes: Relative offset from element to
+    // offset parent
     this.offset.relative.top -
 
     // The offsetParent's offset without borders (offset + border)
@@ -19564,7 +19843,8 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
     // Click offset (relative to the element)
     this.offset.click.left -
 
-    // Only for relative positioned nodes: Relative offset from element to offset parent
+    // Only for relative positioned nodes: Relative offset from element to
+    // offset parent
     this.offset.relative.left -
 
     // The offsetParent's offset without borders (offset + border)
@@ -19585,8 +19865,10 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
 
   // Various things done here to improve the performance:
   // 1. we create a setTimeout, that calls refreshPositions
-  // 2. on the instance, we have a counter variable, that get's higher after every append
-  // 3. on the local scope, we copy the counter variable, and check in the timeout,
+  // 2. on the instance, we have a counter variable, that get's higher after
+    // every append
+  // 3. on the local scope, we copy the counter variable, and check in the
+    // timeout,
   // if it's still the same
   // 4. this lets only the last addition to the timeout stack through
   this.counter = this.counter ? ++this.counter : 1;
@@ -19606,13 +19888,15 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
 
   this.reverting = false;
 
-  // We delay all events that have to be triggered to after the point where the placeholder
+  // We delay all events that have to be triggered to after the point where
+    // the placeholder
   // has been removed and everything else normalized again
   var i,
    delayedTriggers = [];
 
   // We first have to update the dom position of the actual currentItem
-  // Note: don't do it if the current item is already removed (by a user), or it gets
+  // Note: don't do it if the current item is already removed (by a user), or
+    // it gets
   // reappended (see #4088)
   if ( !this._noFinalSort && this.currentItem.parent().length ) {
    this.placeholder.before( this.currentItem );
@@ -19701,7 +19985,8 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
    this._trigger( "beforeStop", event, this._uiHash() );
   }
 
-  // $(this.placeholder[0]).remove(); would have been the jQuery way - unfortunately,
+  // $(this.placeholder[0]).remove(); would have been the jQuery way -
+    // unfortunately,
   // it unbinds ALL events from the original node!
   this.placeholder[ 0 ].parentNode.removeChild( this.placeholder[ 0 ] );
 
@@ -19750,7 +20035,7 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
 }));
 
 /**
- * Core specific plugins 
+ * Core specific plugins
  * 
  * Uses other plugins, so put this always at the end of this file!
  */
@@ -19763,17 +20048,10 @@ var widgetsSortable = $.widget( "ui.sortable", $.ui.mouse, {
 
         return this.each(function() {
 
-            // standard options
             var options = $(this).data("datepicker-options") != undefined ? $(this).data("datepicker-options") : {};
-
-            // mask format
             var maskformat = $(this).data("form-mask") != undefined ? $(this).data("form-mask") : "9999-99-99";
 
-            // attach datepicker
             $(this).datetimepicker(options).mask(maskformat).attr('size', maskformat.length);
-            
-            console.log(this);
-            
         });
     };
 
