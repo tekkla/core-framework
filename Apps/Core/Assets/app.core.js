@@ -5,5 +5,4 @@
  * @license MIT
  * @coypright 2016
  */
-
-CORE.createNS("TOKEN");
+CORE.createNS("APP.CORE");
