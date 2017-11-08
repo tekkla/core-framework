@@ -236,7 +236,7 @@ class Dispatcher extends AbstractAcap
             if (! empty($js_objects)) {
                 foreach ($js_objects as $js) {
                     if ($js->getType() == 'file') {
-                        $ajax->addCommand(new \Core\Ajax\Commands\Act\JQueryGetScriptCommand($js->getContent()));
+                        $ajax->addCommand(new \Core\Ajax\Commands\Act\GetScriptCommand($js->getContent()));
                     }
                 }
             }
