@@ -667,10 +667,10 @@ abstract class AbstractApp
         if (! self::$init_stages[$this->name]['css'] && $this->paths->exists('dir.assets')) {
             
             // Check for existance of apps css file
-            $filename = $this->paths->get('dir.assets') . DIRECTORY_SEPARATOR . $this->name . '.css';
+            $filename = $this->paths->get('dir.assets') . DIRECTORY_SEPARATOR . 'app.' . $this->name . '.css';
             
             if (file_exists($filename)) {
-                $this->css->link($this->paths->get('url.assets') . DIRECTORY_SEPARATOR . $this->name . '.css');
+                $this->css->link($this->paths->get('url.assets') . DIRECTORY_SEPARATOR . 'app.' . $this->name . '.css');
             }
             
             // Set flag for initiated css
@@ -694,10 +694,10 @@ abstract class AbstractApp
     {
         if (! self::$init_stages[$this->name]['js'] && $this->paths->exists('dir.assets')) {
             
-            $filename = $this->paths->get('dir.assets') . DIRECTORY_SEPARATOR . $this->name . '.js';
+            $filename = $this->paths->get('dir.assets') . DIRECTORY_SEPARATOR . 'app.' . $this->name . '.js';
             
             if (file_exists($filename)) {
-                $this->javascript->file($this->paths->get('url.assets') . DIRECTORY_SEPARATOR . $this->name . '.js');
+                $this->javascript->file($this->paths->get('url.assets') . DIRECTORY_SEPARATOR . 'app.' . $this->name . '.js');
             }
             
             // Set flag for initated js
