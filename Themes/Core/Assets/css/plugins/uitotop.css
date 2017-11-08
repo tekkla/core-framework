@@ -1,0 +1,21 @@
+/*
+|--------------------------------------------------------------------------
+| UItoTop jQuery Plugin 1.2
+| http://www.mattvarone.com/design/uitotop-jquery-plugin/
+|--------------------------------------------------------------------------
+*/
+#scrolltotop {
+    display: none;
+    text-decoration: none;
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    overflow: hidden;
+    width: 51px;
+    height: 51px;
+    border: none;
+    text-indent: 100%;
+    background: url(../images/ui.totop.png) no-repeat left top;
+    cursor: pointer;
+    z-index: 99999;
+}

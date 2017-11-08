@@ -1,0 +1,44 @@
+/*
+|--------------------------------------------------------------------------
+| XDEBUG beautifying
+|--------------------------------------------------------------------------
+*/
+.xdebug-error {
+	font-size: 12px;
+	width: 95%;
+	margin: 0 auto 10px auto;
+	border-color: #666;
+	background: #ccc;
+	text-shadow: none;
+}
+
+.xdebug-error th, .xdebug-error td {
+	padding: 2px;
+}
+
+.xdebug-error th {
+	background: #333;
+	font-size: 1.2em;
+	color: #ddd;
+}
+
+.xdebug-error td {
+	background: #fee;
+}
+
+.xdebug-error tr td {
+	color: #333 !important;
+}
+
+.xdebug-error span {
+	display: none;
+}
+
+.xdebug-error_description th {
+	font-size: 1.2em;
+}
+
+.xdebug-error_callStack th {
+	background: #666;
+	color: #ddd;
+}
