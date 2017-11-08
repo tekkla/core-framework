@@ -872,7 +872,7 @@ final class Core
         $replacements = [
             '../fonts/' =>  $replacement . '/Fonts/',
             '../img/' => $replacement  . '/Images/',
-            '../images/', $replacement  . '/Images/'
+            '../images/' => $replacement  . '/Images/'
         ];
         
         foreach ($replacements as $search => $replace) {
