@@ -90,12 +90,19 @@ final class Core extends AbstractApp
             $this->javascript->file('https://maxcdn.bootstrapcdn.com/bootstrap/' . $version . '/js/bootstrap.min.js', $defer, true);
         }
         
-        // Add framework plugins files
-        $pluginsdir = $themedir . '/Plugins';
-        $pluginsurl = $themeurl . '/Plugins';
+        // Add framework preload and plugins files
+        $folders = [
+            'Preload',
+            'Plugins'
+        ];
         
-        foreach (glob($pluginsdir . '/*.js') as $filename) {
-            $this->javascript->file(str_replace($pluginsdir, $pluginsurl, $filename), $defer);
+        foreach ($folders as $folder) {
+            $dir = $themedir . '/' . $folder;
+            $url = $themeurl . '/' . $folder;
+            
+            foreach (glob($dir . '/*.js') as $filename) {
+                $this->javascript->file(str_replace($dir, $url, $filename), $defer);
+            }
         }
         
         // Add global fadeout time var set in config
