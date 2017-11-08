@@ -3,7 +3,6 @@ namespace Apps\Core\Controller;
 
 use Apps\Core\Model\ConfigModel;
 use Core\Html\FormDesigner\FormGroup;
-use Core\Security\SecurityException;
 use Core\Toolbox\Strings\CamelCase;
 use Apps\Core\CoreException;
 use Core\Framework\Amvc\Controller\ControllerException;
@@ -12,7 +11,7 @@ use Core\Framework\Amvc\Controller\ControllerException;
  * ConfigController.php
  *
  * @author Michael "Tekkla" Zorn <tekkla@tekkla.de>
- * @copyright 2015
+ * @copyright 2015-2017
  * @license MIT
  */
 class ConfigController extends AbstractCoreController
