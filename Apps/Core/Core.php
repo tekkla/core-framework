@@ -12,7 +12,7 @@ use Core\Framework\Amvc\App\AbstractApp;
  */
 final class Core extends AbstractApp
 {
-
+    
     public function Load()
     {
         /**
@@ -21,7 +21,7 @@ final class Core extends AbstractApp
          */
         self::$init_stages[$this->name]['js'] = true;
     }
-
+    
     public function Init()
     {
         if (! $this->core->router->isAjax()) {
@@ -29,7 +29,7 @@ final class Core extends AbstractApp
             $this->initCssAssets();
         }
     }
-
+    
     private function getThemeDir(): string
     {
         // Theme name
@@ -43,7 +43,7 @@ final class Core extends AbstractApp
         
         return $themedir;
     }
-
+    
     private function getThemeUrl(): string
     {
         // Theme name
@@ -57,7 +57,7 @@ final class Core extends AbstractApp
         
         return $themeurl;
     }
-
+    
     private function initJsAssets()
     {
         $themedir = $this->getThemeDir() . '/Assets/Js';
@@ -122,12 +122,8 @@ final class Core extends AbstractApp
         
         // Insert Core apps JS asset
         $this->javascript->file($this->paths->get('url.assets') . '/app.core.js', $defer);
-        
-        // Write form token data into CORE.TOKEN namespace
-        $this->javascript->variable('CORE.SECURITY.TOKEN.name', $this->core->di->get('core.security.form.token.name'));
-        $this->javascript->variable('CORE.SECURITY.TOKEN.value', $this->core->di->get('core.security.form.token'));
     }
-
+    
     private function initCssAssets()
     {
         $themedir = $this->getThemeDir() . '/Assets/Css';
