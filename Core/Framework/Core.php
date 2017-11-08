@@ -867,12 +867,14 @@ final class Core
 
         // Add processor to replace relative font and image paths according to the used theme
         $theme = $this->config->get('Core', 'style.theme.name');
-        $replacement = $theme == 'Core' ? $this->config->get('Core', 'url.vendor_tekkla') . '/core-framework/Themes/Core' : '../Themes/' . $theme;
-
+        
+        $url = $theme == 'Core' ? $this->config->get('Core', 'url.vendor_tekkla') . '/core-framework/Themes/Core' : '../Themes/' . $theme;
+        $url .= '/Assets';
+        
         $replacements = [
-            '../fonts/' =>  $replacement . '/Fonts/',
-            '../img/' => $replacement  . '/Images/',
-            '../images/' => $replacement  . '/Images/'
+            '../fonts/' =>  $url . '/Fonts/',
+            '../img/' => $url  . '/Images/',
+            '../images/' => $url  . '/Images/'
         ];
         
         foreach ($replacements as $search => $replace) {
