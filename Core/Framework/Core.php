@@ -879,9 +879,6 @@ final class Core
             $css->addProcessor(new \Core\Asset\Processor\ReplaceProcessor($search, $replace));
         }
 
-        $css->addProcessor(new \Core\Asset\Processor\ReplaceProcessor('../img/', $replacement  . '/Img/'));
-        $css->addProcessor(new \Core\Asset\Processor\ReplaceProcessor('../images/', $replacement  . '/Img/'));
-
         $afh = new \Core\Asset\AssetFileHandler();
         $afh->setFilename($this->config->get('Core', 'dir.cache') . '/style.css');
         $afh->setTTL($this->config->get('Core', 'cache.ttl.css'));
