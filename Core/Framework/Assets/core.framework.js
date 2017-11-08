@@ -1,14 +1,19 @@
+/**
+ * Create framework related namespaces
+ */
+CORE.createNS("FRAMEWORK");
+CORE.createNS("FRAMEWORK.STYLE");
+
 // ----------------------------------------------------------------------------
 // Function with commands to use on "ready" and after ajax requests
 // ----------------------------------------------------------------------------
-CORE.ready = function() {
-
+CORE.FRAMEWORK.ready = function() {
+    
     // Bind datepicker
     $('.form-datepicker').coreDatepicker();
 
     // Bind error popover
     $('.form-control[data-error]').coreErrorPop();
-
     $('[data-toggle="popover"]').popover();
 
     // beautifiying xdebug oputput including ajax return values add styling
@@ -19,7 +24,9 @@ CORE.ready = function() {
     $('font>table tr:nth-child(2)').addClass('xdebug-error_callStack');
 
     // Fade out elements
-    $('.fadeout').delay(fadeout_time).slideUp(800, function() {
+    var style = CORE.FRAMEWORK.STYLE;
+    
+    $('.fadeout').delay(style.fadeout_time).slideUp(style.animation_speed, function() {
         $(this).remove();
     });
 };
@@ -40,10 +47,10 @@ $(document).ready(function() {
     });
    
     // Register CORE.ready() as a callback after ajax calls
-    CORE.AJAX.registerCallback(CORE.ready);
+    CORE.AJAX.registerCallback(CORE.FRAMEWORK.ready);
 
     // Run function with commands to be used on "ready" and "ajaxComplete"
-    CORE.ready();
+    CORE.FRAMEWORK.ready();
     
 });
 

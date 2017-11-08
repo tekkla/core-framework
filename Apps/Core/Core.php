@@ -62,8 +62,8 @@ final class Core extends AbstractApp
 
     private function initJsAssets()
     {
-        $themedir = $this->getThemeDir();
-        $themeurl = $this->getThemeUrl();
+        $themedir = $this->getThemeDir() . '/Assets';
+        $themeurl = $this->getThemeUrl(). '/Assets/';
 
         // jQuery version
         $version = $this->config->get('js.jquery.version');
@@ -94,33 +94,42 @@ final class Core extends AbstractApp
             $this->javascript->file('https://maxcdn.bootstrapcdn.com/bootstrap/' . $version . '/js/bootstrap.min.js', $defer, true);
         }
         
-        // Add framework plugins file
-        $this->javascript->file($this->config->get('url.vendor_tekkla') . '/core-framework/Core/Framework/Assets/plugins.js', $defer);
+        // Add framework plugins files
+        $pluginsdir = $themedir . '/*.js';
+
+        foreach (glob($pluginsdir) as $filename) {
+            $this->javascript->file($themeurl . '/' . $filename, $defer);
+        }
+        
+        $this->javascript->file($this->config->get('url.vendor_tekkla') . '/core-framework/Core/Framework/Assets/jquery.plugins.js', $defer);
         
         // Add global fadeout time var set in config
-        $this->javascript->variable('fadeout_time', $this->config->get('js.style.fadeout_time'), false, $defer);
+        $this->javascript->variable('CORE.FRAMEWORK.STYLE.fadeout_time', $this->config->get('js.style.fadeout_time'), false, $defer);
+        
+        // @TODO Add animation_speed as config value instead of a hardcoded one 
+        $this->javascript->variable('CORE.FRAMEWORK.STYLE.animation_speed', 800, false, $defer);
 
         // Add Core js
-        $this->javascript->file($this->config->get('url.vendor_tekkla') . '/core-js/Core/Js/Assets/core.js', $defer);
+        $this->javascript->file($this->config->get('url.vendor_tekkla') . '/core-js/Core/Js/Assets/core.js.js', $defer);
         
         // Add framework js
-        $this->javascript->file($this->config->get('url.vendor_tekkla') . '/core-framework/Core/Framework/Assets/framework.js', $defer);
+        $this->javascript->file($this->config->get('url.vendor_tekkla') . '/core-framework/Core/Framework/Assets/core.framework.js', $defer);
         
         // Add ajax handler
-        $this->javascript->file($this->config->get('url.vendor_tekkla') . '/core-ajax/Core/Ajax/Assets/ajax.js', $defer);
+        $this->javascript->file($this->config->get('url.vendor_tekkla') . '/core-ajax/Core/Ajax/Assets/core.ajax.js', $defer);
 
         // Insert Core apps JS asset
-        $this->javascript->file($this->paths->get('url.assets') . '/Core.js', $defer);
+        $this->javascript->file($this->paths->get('url.assets') . '/app.core.js', $defer);
 
         // Write form token data into CORE.TOKEN namespace
-        $this->javascript->variable('CORE.TOKEN.name', $this->core->di->get('core.security.form.token.name'));
-        $this->javascript->variable('CORE.TOKEN.value', $this->core->di->get('core.security.form.token'));
+        $this->javascript->variable('CORE.SECURITY.TOKEN.name', $this->core->di->get('core.security.form.token.name'));
+        $this->javascript->variable('CORE.SECURITY.TOKEN.value', $this->core->di->get('core.security.form.token'));
     }
 
     private function initCssAssets()
     {
-        $themedir = $this->getThemeDir();
-        $themeurl = $this->getThemeUrl();
+        $themedir = $this->getThemeDir(). '/Assets';
+        $themeurl = $this->getThemeUrl(). '/Assets';
 
         // Bootstrap version from config
         $version = $this->config->get('style.bootstrap.version');
@@ -156,6 +165,13 @@ final class Core extends AbstractApp
 
         if (file_exists($themedir . $file)) {
             $this->css->link($themeurl . $file);
+        }
+        
+        // Add framework plugins files
+        $pluginsdir = $themedir . '/*.css';
+        
+        foreach (glob($pluginsdir) as $filename) {
+            $this->javascript->file($themeurl . '/' . $filename, $defer);
         }
     }
 }
