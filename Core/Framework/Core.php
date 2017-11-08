@@ -875,7 +875,7 @@ final class Core
             '../images/', $replacement  . '/Images/'
         ];
         
-        foreach ($replacements as $seach => $replace) {
+        foreach ($replacements as $search => $replace) {
             $css->addProcessor(new \Core\Asset\Processor\ReplaceProcessor($search, $replace));
         }
 
