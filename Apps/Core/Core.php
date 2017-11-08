@@ -62,14 +62,14 @@ final class Core extends AbstractApp
 
     private function initJsAssets()
     {
-        $themedir = $this->getThemeDir() . '/Assets';
-        $themeurl = $this->getThemeUrl(). '/Assets/';
+        $themedir = $this->getThemeDir() . '/Assets/Js';
+        $themeurl = $this->getThemeUrl(). '/Assets/Js';
 
         // jQuery version
         $version = $this->config->get('js.jquery.version');
 
         // Add local jQuery file or the one from CDN
-        $file = '/js/jquery-' . $version . '.js';
+        $file = '/jquery-' . $version . '.js';
 
         // Files to bottom or to top?
         $defer = $this->config->get('js.general.position') == 'top' ? false : true;
@@ -85,7 +85,7 @@ final class Core extends AbstractApp
         $version = $this->config->get('style.bootstrap.version');
 
         // Add Bootstrap javascript from local or cdn
-        $file = '/js/bootstrap-' . $version . '.js';
+        $file = '/bootstrap-' . $version . '.js';
 
         if ($this->config->get('style.bootstrap.local') && file_exists($themedir . $file)) {
             $this->javascript->file($themeurl . $file, $defer);
@@ -95,13 +95,11 @@ final class Core extends AbstractApp
         }
         
         // Add framework plugins files
-        $pluginsdir = $themedir . '/*.js';
+        $pluginsdir = $themedir . '/Plugins/*.js';
 
         foreach (glob($pluginsdir) as $filename) {
-            $this->javascript->file($themeurl . '/' . $filename, $defer);
+            $this->javascript->file($pluginsdir . '/' . $filename, $defer);
         }
-        
-        $this->javascript->file($this->config->get('url.vendor_tekkla') . '/core-framework/Core/Framework/Assets/jquery.plugins.js', $defer);
         
         // Add global fadeout time var set in config
         $this->javascript->variable('CORE.FRAMEWORK.STYLE.fadeout_time', $this->config->get('js.style.fadeout_time'), false, $defer);
@@ -128,14 +126,14 @@ final class Core extends AbstractApp
 
     private function initCssAssets()
     {
-        $themedir = $this->getThemeDir(). '/Assets';
-        $themeurl = $this->getThemeUrl(). '/Assets';
+        $themedir = $this->getThemeDir(). '/Assets/Css';
+        $themeurl = $this->getThemeUrl(). '/Assets/Css';
 
         // Bootstrap version from config
         $version = $this->config->get('style.bootstrap.version');
 
         // Core and theme file
-        $file = '/css/bootstrap-' . $version . '.css';
+        $file = '/bootstrap-' . $version . '.css';
 
         // Add existing local user/theme related bootstrap file or load it from cdn
         if ($this->config->get('style.bootstrap.local') && file_exists($themedir . $file)) {
@@ -150,7 +148,7 @@ final class Core extends AbstractApp
         $version = $this->config->get('style.fontawesome.version');
 
         // Fontawesome file
-        $file = '/css/font-awesome-' . $version . '.css';
+        $file = '/font-awesome-' . $version . '.css';
 
         // Add existing font-awesome font icon css file or load it from cdn
         if ($this->config->get('style.fontawesome.local') && file_exists($themedir . $file)) {
@@ -161,14 +159,14 @@ final class Core extends AbstractApp
         }
 
         // Add general TekFW css file
-        $file = '/css/Core.css';
+        $file = '/Core.css';
 
         if (file_exists($themedir . $file)) {
             $this->css->link($themeurl . $file);
         }
         
         // Add framework plugins files
-        $pluginsdir = $themedir . '/*.css';
+        $pluginsdir = $themedir . '/Plugins/*.css';
         
         foreach (glob($pluginsdir) as $filename) {
             $this->javascript->file($themeurl . '/' . $filename, $defer);
