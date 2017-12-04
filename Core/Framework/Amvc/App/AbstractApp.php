@@ -736,6 +736,8 @@ abstract class AbstractApp
     /**
      * Generates an url by it's name
      *
+     * Adds automatically the name of the app as parameter if not already set.
+     *
      * @param string $name
      * @param array $params
      *
@@ -743,6 +745,10 @@ abstract class AbstractApp
      */
     public function url(string $name, array $params = []): string
     {
+        if (empty($params['app'])) {
+            $params['app'] = $this->getName();
+        }
+        
         return $this->core->router->generate($name, $params);
     }
     
