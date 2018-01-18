@@ -655,7 +655,7 @@ Das tut uns selbstverständlich leid. Wenn sie nicht aktiv werden, dann wird der
      */
     'validator' => [
         'rule' => [
-            'required' => 'Dieses Feld darf nicht fehlen existieren.',
+            'required' => 'Dieses Feld darf nicht fehlen.',
             'empty' => 'Dieses Feld darf nicht leer sein',
             // Strings
             'textrange' => 'Der Inhalt muss zwischen %d und %d Zeichen lang sein. Der aktuelle Inhalt hat %d Zeichen.',
