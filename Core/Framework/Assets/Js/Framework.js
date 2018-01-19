@@ -3,6 +3,7 @@
  */
 CORE.createNS("FRAMEWORK");
 CORE.createNS("FRAMEWORK.STYLE");
+CORE.createNS("FRAMEWORK.TOKEN");
 
 // ----------------------------------------------------------------------------
 // Function with commands to use on "ready" and after ajax requests
