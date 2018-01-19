@@ -110,6 +110,10 @@ final class Core extends AbstractApp
         
         // @TODO Add animation_speed as config value instead of a hardcoded one
         $this->javascript->variable('CORE.FRAMEWORK.STYLE.animation_speed', 800, false, $defer);
+
+        // Add session token to JS to be used in scripts
+        $this->javascript->variable('CORE.TOKEN.name', $this->core->di->get('core.security.form.token.name'));
+        $this->javascript->variable('CORE.TOKEN.value', $this->core->di->get('core.security.form.token'));
         
         // Add Core js
         $this->javascript->file($this->config->get('url.vendor_tekkla') . '/core-js/Core/Js/Assets/core.js.js', $defer);
@@ -119,10 +123,6 @@ final class Core extends AbstractApp
         
         // Add ajax handler
         $this->javascript->file($this->config->get('url.vendor_tekkla') . '/core-ajax/Core/Ajax/Assets/Js/Ajax.js', $defer);
-        
-        // Add session token to JS to be used in scripts
-        $this->javascript->variable('APP.CORE.TOKEN.name', $this->core->di->get('core.security.form.token.name'));
-        $this->javascript->variable('APP.CORE.TOKEN.value', $this->core->di->get('core.security.form.token'));
         
         // Insert Core apps JS asset
         $this->javascript->file($this->paths->get('url.assets') . '/Js/Core.js', $defer);
