@@ -93,12 +93,6 @@ class Page
     public $menu;
 
     /**
-     *
-     * @var Breadcrumb
-     */
-    public $breadcrumbs;
-
-    /**
      * Message
      *
      * @var Message
@@ -156,7 +150,7 @@ class Page
     public function getContent(): string
     {
         // # Insert content
-        return $this->content;
+        return $this->content ?? '';
     }
 
     /**
