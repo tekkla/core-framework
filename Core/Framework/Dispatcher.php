@@ -380,6 +380,7 @@ class Dispatcher extends AbstractAcap
         
         // Validate posted token with session token
         if (! $post->validateCompareWithPostToken($this->core->di->get('core.security.form.token'))) {
+            $this->core->logger->notice('Dropped POST data because of missing form token');
             return;
         }
         
