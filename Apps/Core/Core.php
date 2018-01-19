@@ -120,6 +120,10 @@ final class Core extends AbstractApp
         // Add ajax handler
         $this->javascript->file($this->config->get('url.vendor_tekkla') . '/core-ajax/Core/Ajax/Assets/Js/Ajax.js', $defer);
         
+        // Add session token to JS to be used in scripts
+        $this->javascript->variable('APP.CORE.TOKEN.name', $this->core->di->get('core.security.form.token.name'));
+        $this->javascript->variable('APP.CORE.TOKEN.value', $this->core->di->get('core.security.form.token'));
+        
         // Insert Core apps JS asset
         $this->javascript->file($this->paths->get('url.assets') . '/Js/Core.js', $defer);
     }
