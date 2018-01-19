@@ -74,13 +74,13 @@ abstract class AbstractMvc
      * Checks the current users permissions against one or more permissions
      *
      * @param string|array $perm
-     *            One permission by it'S name or an array of permissionnames
+     *            One permission by it's name or an array of permissionnames
      *
      * @return bool
      */
     protected function checkAccess($permission): bool
     {
-        return $this->app->core->user->permissions[$this->app->getName()]->allowedTo($permission);
+        return $this->app->core->user->permissions->allowedTo($permission);
     }
 
     /**
