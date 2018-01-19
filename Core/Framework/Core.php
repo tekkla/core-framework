@@ -271,7 +271,7 @@ final class Core
                     
                     // Inform that there was no content returned from controller action.
                     if (! $result) {
-                        $result = sprintf('There was no return result from the called %s::%s::%s', $dispatcher->getApp(), $dispatcher->getController(), $dispatcher->getAction());
+                        $result = sprintf('There was no return result from the called controller action %s\%s::%s()', $dispatcher->getApp(), $dispatcher->getController(), $dispatcher->getAction());
                     }
                     
                     $this->page->setContent($result);
