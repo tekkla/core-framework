@@ -246,7 +246,7 @@ final class Core
                     $language = $this->apps->getAppInstance('Core')->language;
                     
                     // Add logoff button for logged in users
-                    if ($this->user->isGuest()) {
+                    if ($this->user->permissions->isGuest()) {
                         $this->page->menu->createItem('register', $language->get('menu.register'), $this->router->generate('core.register'));
                         $this->page->menu->createItem('login', $language->get('menu.login'), $this->router->generate('core.login', [
                             'action' => 'login'
@@ -258,7 +258,7 @@ final class Core
                         $usermenu = $this->page->menu->createItem('login', $this->user->getDisplayname());
                         
                         // Show admin menu?
-                        if ($this->user->getAdmin()) {
+                        if ($this->user->permissions->getAdmin()) {
                             $usermenu->createItem('admin', $language->get('menu.admin'), $this->router->generate('core.admin'));
                         }
                         
@@ -285,7 +285,7 @@ final class Core
             
             $error = new ErrorHandler($t);
             $error->setAjax(isset($_REQUEST['ajax']));
-            $error->setPublic(isset($this->user) && $this->user->getAdmin());
+            $error->setPublic(isset($this->user) && $this->user->permissions->isAdmin());
             $error->setPublic(true);
             
             if (isset($this->logger)) {
@@ -463,7 +463,7 @@ final class Core
     {
         // Admin users can request to load config from db instead out of cache
         // @TODO Cache not implemented for now
-        // $refresh_cache = isset($this->user) && $this->user->getAdmin() && isset($_REQUEST['refresh_config_cache']);
+        // $refresh_cache = isset($this->user) && $this->user->permissions->getAdmin() && isset($_REQUEST['refresh_config_cache']);
         $repository = new \Core\Config\Repository\DbRepository();
         $repository->setPdo($this->di->get('db.default.conn'));
         $repository->setTable('tekfw_core_configs');

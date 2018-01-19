@@ -188,7 +188,7 @@ class AppHandler implements AppHandlerInterface
                 case 'Core':
 
                     // Create home url
-                    $type = $this->core->user->isGuest() ? 'guest' : 'user';
+                    $type = $this->core->user->permissions->isGuest() ? 'guest' : 'user';
                     $route = $app->config->get('home.' . $type . '.route');
                     $params = parse_ini_string($app->config->get('home.' . $type . '.params'));
 
