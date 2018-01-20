@@ -177,8 +177,8 @@ final class ConfigModel extends AbstractCoreModel
                 $results = [];
                 
                 foreach ($definition['validate'] as $rule) {
-                    
-                    $validator->setRule($rule);
+
+                    $validator->parseRule($rule);
                     
                     if (!$validator->validate()) {
                         $results[] = $validator->getResult();
