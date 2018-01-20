@@ -180,10 +180,10 @@ class ConfigController extends AbstractCoreController
 
                     $subgroup->html->addCss($css);
 
-                    $heading_size = 3;
+                    $heading_size = 4;
                 }
                 else {
-                    $heading_size = 3 + $level;
+                    $heading_size = 4 + $level;
                 }
 
                 if ($heading_size > 6) {
