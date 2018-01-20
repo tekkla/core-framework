@@ -14,7 +14,7 @@ final class ConfigView extends AbstractCoreView
     public function Config()
     {
         echo '
-        <h1>' . $this->icon . '&nbsp;' . $this->headline . '</h1>
+        <h2>' . $this->icon . '&nbsp;' . $this->headline . '</h1>
         <div class="panel-group" id="core-config" role="tablist" aria-multiselectable="true">';
         
         foreach ($this->groups as $group_name) {

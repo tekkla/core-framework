@@ -14,7 +14,7 @@ class AdminView extends AbstractCoreView
     public function Admin()
     {
         echo '
-        <h2 class="no-top-margin">Admincenter</h2>
+        <h1>Admincenter</h2>
         <ul class="nav nav-pills ">
             <li role="presentation"><a href="#">Home</a></li>
             <li role="presentation" class="dropdown">
