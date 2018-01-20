@@ -11,7 +11,7 @@ use Core\Framework\Amvc\Controller\ControllerException;
  * ConfigController.php
  *
  * @author Michael "Tekkla" Zorn <tekkla@tekkla.de>
- * @copyright 2015-2017
+ * @copyright 2015-2018
  * @license MIT
  */
 class ConfigController extends AbstractCoreController
@@ -88,8 +88,7 @@ class ConfigController extends AbstractCoreController
                 unset($data);
             }
         }
-
-        if (empty($data)) {
+        else {
             $data = $this->model->getData($app_name, $group_name);
         }
 
@@ -99,7 +98,7 @@ class ConfigController extends AbstractCoreController
         $fd->mapData($data);
         $fd->isHorizontal('sm', 4);
         $fd->isAjax();
-
+        
         // Set forms action route
         $fd->html->setAction($this->app->url('core.config.group', [
             'app_name' => $app_name,
@@ -128,7 +127,7 @@ class ConfigController extends AbstractCoreController
         $control->addCss([
             'btn-sm',
             'btn-block',
-            'btn-default',
+            'btn-primary',
             'top-buffer'
         ]);
 
@@ -237,10 +236,11 @@ class ConfigController extends AbstractCoreController
         $parts = explode('.', $settings['name']);
         $settings['name'] = array_pop($parts);
 
-        $config = $this->app->core->apps->getAppInstance($app_name)->config;
-        $config_value = $config->get($flat_name);
+        // What is the current config value?
+        $config_value = $this->app->core->apps->getAppInstance($app_name)->config->get($flat_name);
 
-        if (!empty($config_value)) {
+        // Take care of those 0 values coming from switches
+        if (!empty($config_value) || $config_value == 0) {
             $settings['value'] = $config_value;
         }
 
@@ -366,7 +366,6 @@ class ConfigController extends AbstractCoreController
                 break;
 
             case 'switch':
-
                 if ($settings['value'] == 1) {
                     $control->switchOn();
                 }

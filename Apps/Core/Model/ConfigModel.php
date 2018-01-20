@@ -76,8 +76,10 @@ final class ConfigModel extends AbstractCoreModel
             }
         }
         
-        // Set default value as value
-        $def['value'] = $def['default'];
+        // Default value should only be set when there is no value and a default value present
+        if (empty($def['value']) && ! empty($def['default'])) {
+            $def['value'] = $def['default'];
+        }
         
         // Define field type by control type
         switch ($def['control']) {
@@ -209,6 +211,8 @@ final class ConfigModel extends AbstractCoreModel
             catch (\Throwable $t) {
                 echo $t->getMessage() . '<br>' . $path . '<br>' . $value . '<hr>';
             }
+            
+            \FB::log($array->getValue());
         }
         
         if (!empty($data[$group_name])) {
