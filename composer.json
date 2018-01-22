@@ -90,10 +90,10 @@
 			"url" : "https://github.com/tekkla/core-js.git",
 			"name" : "Js"
 		}, {
-            "type" : "git",
-            "url" : "https://github.com/tekkla/core-page.git",
-            "name" : "Js"
-        }
+			"type" : "git",
+			"url" : "https://github.com/tekkla/core-page.git",
+			"name" : "Page"
+		}
 	],
 	"license" : "MIT",
 	"keywords" : [
