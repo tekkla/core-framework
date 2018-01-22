@@ -26,72 +26,55 @@
 			"url" : "https://github.com/tekkla/core-ajax.git"
 		}, {
 			"type" : "git",
-			"url" : "https://github.com/tekkla/core-html.git",
-			"name" : "Html"
+			"url" : "https://github.com/tekkla/core-html.git"
 		}, {
 			"type" : "git",
-			"url" : "https://github.com/tekkla/core-config.git",
-			"name" : "Config"
+			"url" : "https://github.com/tekkla/core-config.git"
 		}, {
 			"type" : "git",
-			"url" : "https://github.com/tekkla/core-asset.git",
-			"name" : "Asset"
+			"url" : "https://github.com/tekkla/core-asset.git"
 		}, {
 			"type" : "git",
-			"url" : "https://github.com/tekkla/core-logger.git",
-			"name" : "Logger"
+			"url" : "https://github.com/tekkla/core-logger.git"
 		}, {
 			"type" : "git",
-			"url" : "https://github.com/tekkla/core-di.git",
-			"name" : "DI"
+			"url" : "https://github.com/tekkla/core-di.git"
 		}, {
 			"type" : "git",
-			"url" : "https://github.com/tekkla/core-data.git",
-			"name" : "Data"
+			"url" : "https://github.com/tekkla/core-data.git"
 		}, {
 			"type" : "git",
-			"url" : "https://github.com/tekkla/core-storage.git",
-			"name" : "Storage"
+			"url" : "https://github.com/tekkla/core-storage.git"
 		}, {
 			"type" : "git",
-			"url" : "https://github.com/tekkla/core-security.git",
-			"name" : "Security"
+			"url" : "https://github.com/tekkla/core-security.git"
 		}, {
 			"type" : "git",
-			"url" : "https://github.com/tekkla/core-validator.git",
-			"name" : "Validator"
+			"url" : "https://github.com/tekkla/core-validator.git"
 		}, {
 			"type" : "git",
-			"url" : "https://github.com/tekkla/core-http.git",
-			"name" : "Http"
+			"url" : "https://github.com/tekkla/core-http.git"
 		}, {
 			"type" : "git",
-			"url" : "https://github.com/tekkla/core-toolbox.git",
-			"name" : "Toolbox"
+			"url" : "https://github.com/tekkla/core-toolbox.git"
 		}, {
 			"type" : "git",
-			"url" : "https://github.com/tekkla/core-mailer.git",
-			"name" : "Mailer"
+			"url" : "https://github.com/tekkla/core-mailer.git"
 		}, {
 			"type" : "git",
-			"url" : "https://github.com/tekkla/core-message.git",
-			"name" : "Message"
+			"url" : "https://github.com/tekkla/core-message.git"
 		}, {
 			"type" : "git",
-			"url" : "https://github.com/tekkla/core-router.git",
-			"name" : "Router"
+			"url" : "https://github.com/tekkla/core-router.git"
 		}, {
 			"type" : "git",
-			"url" : "https://github.com/tekkla/core-language.git",
-			"name" : "Language"
+			"url" : "https://github.com/tekkla/core-language.git"
 		}, {
 			"type" : "git",
-			"url" : "https://github.com/tekkla/core-js.git",
-			"name" : "Js"
+			"url" : "https://github.com/tekkla/core-js.git"
 		}, {
 			"type" : "git",
-			"url" : "https://github.com/tekkla/core-page.git",
-			"name" : "tekkla/core-page"
+			"url" : "https://github.com/tekkla/core-page.git"
 		}
 	],
 	"license" : "MIT",
