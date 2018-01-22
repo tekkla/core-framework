@@ -73,8 +73,8 @@
 			"type" : "git",
 			"url" : "https://github.com/tekkla/core-js.git"
 		}, {
-			"type" : "vcs",
-			"url" : "github.com/tekkla/core-page.git"
+			"type" : "git",
+			"url" : "https://github.com/tekkla/core-page.git"
 		}
 	],
 	"license" : "MIT",
