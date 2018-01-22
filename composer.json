@@ -1,133 +1,120 @@
 {
-	"name": "tekkla/core-framework",
-	"description": "Combining component for my core libraries. Note: This is currently not working alone. Some quite important core-libs are still missing!",
-	"require": {
-		"php": ">=7.0.0",
-		"tekkla/core-config": "dev-dev",
-		"tekkla/core-asset": "dev-dev",
-		"tekkla/core-logger": "dev-dev",
-		"tekkla/core-language": "dev-dev",
-		"tekkla/core-ajax": "dev-dev",
-		"tekkla/core-router": "dev-dev",
-		"tekkla/core-message": "dev-dev",
-		"tekkla/core-mailer": "dev-dev",
-		"tekkla/core-toolbox": "dev-dev",
-		"tekkla/core-di": "dev-dev",
-		"tekkla/core-html": "dev-dev",
-		"tekkla/core-data": "dev-dev",
-		"tekkla/core-http": "dev-dev",
-		"tekkla/core-security": "dev-dev",
-		"tekkla/core-validator": "dev-dev",
-		"tekkla/core-js": "dev-dev"
+	"name" : "tekkla/core-framework",
+	"description" : "Combining component for my core libraries. Note: This is currently not working alone. Some quite important core-libs are still missing!",
+	"require" : {
+		"php" : ">=7.0.0",
+		"tekkla/core-config" : "dev-dev",
+		"tekkla/core-asset" : "dev-dev",
+		"tekkla/core-logger" : "dev-dev",
+		"tekkla/core-language" : "dev-dev",
+		"tekkla/core-ajax" : "dev-dev",
+		"tekkla/core-router" : "dev-dev",
+		"tekkla/core-message" : "dev-dev",
+		"tekkla/core-mailer" : "dev-dev",
+		"tekkla/core-toolbox" : "dev-dev",
+		"tekkla/core-di" : "dev-dev",
+		"tekkla/core-html" : "dev-dev",
+		"tekkla/core-data" : "dev-dev",
+		"tekkla/core-http" : "dev-dev",
+		"tekkla/core-security" : "dev-dev",
+		"tekkla/core-validator" : "dev-dev",
+		"tekkla/core-js" : "dev-dev",
+		"tekkla/core-page" : "dev-dev"
 	},
-	"repositories": [
-		{
-			"type": "git",
-			"url": "https://github.com/tekkla/core-ajax.git",
-			"name": "Ajax"
-		},
-		{
-			"type": "git",
-			"url": "https://github.com/tekkla/core-html.git",
-			"name": "Html"
-		},
-		{
-			"type": "git",
-			"url": "https://github.com/tekkla/core-config.git",
-			"name": "Config"
-		},
-		{
-			"type": "git",
-			"url": "https://github.com/tekkla/core-asset.git",
-			"name": "Asset"
-		},
-		{
-			"type": "git",
-			"url": "https://github.com/tekkla/core-logger.git",
-			"name": "Logger"
-		},
-		{
-			"type": "git",
-			"url": "https://github.com/tekkla/core-di.git",
-			"name": "DI"
-		},
-		{
-			"type": "git",
-			"url": "https://github.com/tekkla/core-data.git",
-			"name": "Data"
-		},
-		{
-			"type": "git",
-			"url": "https://github.com/tekkla/core-storage.git",
-			"name": "Storage"
-		},
-		{
-			"type": "git",
-			"url": "https://github.com/tekkla/core-security.git",
-			"name": "Security"
-		},
-		{
-			"type": "git",
-			"url": "https://github.com/tekkla/core-validator.git",
-			"name": "Validator"
-		},
-		{
-			"type": "git",
-			"url": "https://github.com/tekkla/core-http.git",
-			"name": "Http"
-		},
-		{
-			"type": "git",
-			"url": "https://github.com/tekkla/core-toolbox.git",
-			"name": "Toolbox"
-		},
-		{
-			"type": "git",
-			"url": "https://github.com/tekkla/core-mailer.git",
-			"name": "Mailer"
-		},
-		{
-			"type": "git",
-			"url": "https://github.com/tekkla/core-message.git",
-			"name": "Message"
-		},
-		{
-			"type": "git",
-			"url": "https://github.com/tekkla/core-router.git",
-			"name": "Router"
-		},
-		{
-			"type": "git",
-			"url": "https://github.com/tekkla/core-language.git",
-			"name": "Language"
-		},
-		{
-			"type": "git",
-			"url": "https://github.com/tekkla/core-js.git",
-			"name": "Js"
-		}
+	"repositories" : [{
+			"type" : "git",
+			"url" : "https://github.com/tekkla/core-ajax.git",
+			"name" : "Ajax"
+		}, {
+			"type" : "git",
+			"url" : "https://github.com/tekkla/core-html.git",
+			"name" : "Html"
+		}, {
+			"type" : "git",
+			"url" : "https://github.com/tekkla/core-config.git",
+			"name" : "Config"
+		}, {
+			"type" : "git",
+			"url" : "https://github.com/tekkla/core-asset.git",
+			"name" : "Asset"
+		}, {
+			"type" : "git",
+			"url" : "https://github.com/tekkla/core-logger.git",
+			"name" : "Logger"
+		}, {
+			"type" : "git",
+			"url" : "https://github.com/tekkla/core-di.git",
+			"name" : "DI"
+		}, {
+			"type" : "git",
+			"url" : "https://github.com/tekkla/core-data.git",
+			"name" : "Data"
+		}, {
+			"type" : "git",
+			"url" : "https://github.com/tekkla/core-storage.git",
+			"name" : "Storage"
+		}, {
+			"type" : "git",
+			"url" : "https://github.com/tekkla/core-security.git",
+			"name" : "Security"
+		}, {
+			"type" : "git",
+			"url" : "https://github.com/tekkla/core-validator.git",
+			"name" : "Validator"
+		}, {
+			"type" : "git",
+			"url" : "https://github.com/tekkla/core-http.git",
+			"name" : "Http"
+		}, {
+			"type" : "git",
+			"url" : "https://github.com/tekkla/core-toolbox.git",
+			"name" : "Toolbox"
+		}, {
+			"type" : "git",
+			"url" : "https://github.com/tekkla/core-mailer.git",
+			"name" : "Mailer"
+		}, {
+			"type" : "git",
+			"url" : "https://github.com/tekkla/core-message.git",
+			"name" : "Message"
+		}, {
+			"type" : "git",
+			"url" : "https://github.com/tekkla/core-router.git",
+			"name" : "Router"
+		}, {
+			"type" : "git",
+			"url" : "https://github.com/tekkla/core-language.git",
+			"name" : "Language"
+		}, {
+			"type" : "git",
+			"url" : "https://github.com/tekkla/core-js.git",
+			"name" : "Js"
+		}, {
+            "type" : "git",
+            "url" : "https://github.com/tekkla/core-page.git",
+            "name" : "Js"
+        }
 	],
-	"license": "MIT",
-	"keywords": [
+	"license" : "MIT",
+	"keywords" : [
 		"core",
 		"framework",
 		"alpha"
 	],
-	"autoload": {
-		"psr-0": {
-			"Core\\Framework": "",
-			"Themes\\Core": "",
-			"Apps\\Core": ""
+	"autoload" : {
+		"psr-0" : {
+			"Core\\Framework" : "",
+			"Themes\\Core" : "",
+			"Apps\\Core" : ""
 		}
 	},
-	"type": "framework",
-	"homepage": "https://github.com/tekkla/core-framework",
-	"authors": [
-		{
-			"name": "Michael Zorn",
-			"email": "tekkla@tekkla.de",
-			"role": "Developer"
+	"type" : "framework",
+	"homepage" : "https://github.com/tekkla/core-framework",
+	"authors" : [{
+			"name" : "Michael Zorn",
+			"email" : "tekkla@tekkla.de",
+			"role" : "Developer"
 		}
 	],
-	"minimum-stability": "dev"
+	"minimum-stability" : "dev"
 }
