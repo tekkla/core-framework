@@ -23,8 +23,7 @@
 	},
 	"repositories" : [{
 			"type" : "git",
-			"url" : "https://github.com/tekkla/core-ajax.git",
-			"name" : "Ajax"
+			"url" : "https://github.com/tekkla/core-ajax.git"
 		}, {
 			"type" : "git",
 			"url" : "https://github.com/tekkla/core-html.git",
