@@ -2,7 +2,7 @@
 	"name" : "tekkla/core-framework",
 	"description" : "Combining component for my core libraries. Note: This is currently not working alone. Some quite important core-libs are still missing!",
 	"require" : {
-		"php" : ">=7.0.0",
+		"php" : ">=7.1.0",
 		"tekkla/core-config" : "dev-dev",
 		"tekkla/core-asset" : "dev-dev",
 		"tekkla/core-logger" : "dev-dev",
@@ -92,7 +92,7 @@
 		}, {
 			"type" : "git",
 			"url" : "https://github.com/tekkla/core-page.git",
-			"name" : "Page"
+			"name" : "tekkla/core-page"
 		}
 	],
 	"license" : "MIT",
